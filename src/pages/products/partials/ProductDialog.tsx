@@ -1,0 +1,549 @@
+import React, {
+  Dispatch,
+  PropsWithChildren,
+  SetStateAction,
+  useEffect,
+  useState,
+} from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { useForm } from 'react-hook-form'
+import axios from '@/lib/axios'
+import { toast } from '@/components/ui/use-toast'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { AxiosError } from 'axios'
+import { IProduct } from '@/types/product'
+import { KeyedMutator } from 'swr'
+import { DataTable } from '@/components/ui/data-table'
+import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
+import { SupplierCombobox } from "./combobox/SupplierCombobox"
+import { CategoryCombobox } from "./combobox/CategoryCombobox"
+import { IImage } from "@/types/image"
+import { ScannerDrawerDialog } from "@/components/Scanner"
+import { UnitCombobox } from "./combobox/UnitCombobox"
+
+interface IProductDialog<TData> {
+  data?: DataTable<TData>
+  id?: number
+  mutate?: KeyedMutator<any>
+  setDisabledContextMenu?: Dispatch<SetStateAction<boolean | undefined>>
+}
+
+const productFormSchema = z.object({
+  name: z.string(),
+  serial_number: z.string(),
+  description: z.string(),
+  stock: z
+    .number(),
+  price: z
+    .coerce
+    .number(),
+  expiry_period: z
+    .coerce
+    .number(),
+  unitId: z
+    .coerce
+    .number({
+      required_error: "Pilih unit produk.",
+      invalid_type_error: "Pilih unit produk.",
+    }),
+  supplierId: z
+    .coerce
+    .number({
+      required_error: "Pilih supplier produk.",
+      invalid_type_error: "Pilih supplier produk.",
+    }),
+  categoryId: z
+    .coerce
+    .number({
+      required_error: "Pilih kategori produk.",
+      invalid_type_error: "Pilih kategori produk.",
+    }),
+})
+
+export default function ProductDialog({
+  id,
+  mutate,
+  children,
+  setDisabledContextMenu,
+}: PropsWithChildren<IProductDialog<IProduct>>) {
+  const [open, setOpen] = useState(false)
+  const [product, setProduct] = useState<IProduct>()
+  const [selectedPeriod, setSelectedPeriod] = useState<"Bulan" | "Tahun">("Bulan")
+  const [existingImages, setExistingImages] = useState<IImage[]>([])
+  const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
+  const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
+
+  setDisabledContextMenu &&
+    useEffect(() => {
+      setDisabledContextMenu(open)
+    }, [open])
+
+  const form = useForm<z.infer<typeof productFormSchema>>({
+    resolver: zodResolver(productFormSchema),
+  })
+
+  useEffect(() => {
+    if (!open || !id) return
+
+    async function fetchProduct() {
+      try {
+        const response = await axios.get(`/api/v1/products/${id}`)
+        setProduct(response.data.data)
+      } catch (error) {
+        if (error instanceof AxiosError)
+          toast({
+            variant: 'destructive',
+            title: 'Terjadi kesalahan',
+            description: error.response?.data.errors,
+          })
+      }
+    }
+
+    fetchProduct()
+  }, [id, open])
+
+  useEffect(() => {
+    form.reset({
+      name: product?.name ?? '',
+      serial_number: product?.serial_number ?? '',
+      description: product?.description ?? '',
+      stock: product?.stock ?? 0,
+      price: product?.price ?? undefined,
+      expiry_period: product?.expiry_period ?? undefined,
+      unitId: product?.unit_id ?? undefined,
+      supplierId: product?.supplier_id ?? undefined,
+      categoryId: product?.category_id ?? undefined,
+    })
+
+    setExistingImages(product?.images ?? [])
+    setSelectedPeriod("Bulan")
+
+  }, [product])
+
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      form.reset()
+    }
+  }, [form.formState, form.reset])
+
+  const uploadImages = async (selectedImages: CustomFile[]) => {
+    const images = [];
+
+    for (const image of selectedImages) {
+      const formData = new FormData();
+      formData.append('image', image);
+
+      try {
+        const response = await axios({
+          method: 'post',
+          url: '/api/v1/products/image/',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        images.push(response.data.data);
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          toast({
+            variant: 'destructive',
+            title: 'Terjadi kesalahan',
+            description: error.response?.data.errors,
+          })
+        }
+      }
+    }
+
+    return images;
+  };
+
+  const onSubmit = async (values: z.infer<typeof productFormSchema>) => {
+    if (!mutate) return
+
+    const formData = new FormData();
+
+    product && formData.append('_method', 'put')
+    formData.append('status', "1");
+    formData.append('name', values.name);
+    formData.append('serial_number', values.serial_number);
+    formData.append('description', values.description);
+    formData.append('price', String(values.price));
+    formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period * 12));
+    formData.append('unit_id', String(values.unitId));
+    formData.append('supplier_id', String(values.supplierId));
+    formData.append('category_id', String(values.categoryId));
+
+    // append existing image
+    existingImages.forEach((image, index) => {
+      formData.append(`images[${index}]`, String(image.id));
+    })
+
+    // upload and append new image to next index
+    selectedImages && await uploadImages(selectedImages).then((images) => {
+      images.forEach((image, index) => {
+        formData.append(`images[${index + existingImages.length}]`, String(image.id));
+      })
+    })
+
+    const url = product
+      ? `/api/v1/products/${product?.id}` // update
+      : '/api/v1/products/' // create
+
+    try {
+      const response = await axios({
+        method: 'post',
+        url: url,
+        data: formData,
+      })
+      mutate()
+
+      if (response) {
+        setOpen(false)
+        toast({
+          variant: 'success',
+          title: 'Sukses',
+          description: `Data produk ${values.name} telah berhasil ${product ? 'diperbarui' : 'disimpan'
+            }.`,
+        })
+      }
+    } catch (error) {
+
+      console.log(error)
+      if (error instanceof AxiosError) {
+        const errStatus = error.response?.status
+        const errors = error.response?.data.errors
+        if (errStatus === 422) {
+          if (errors.name) {
+            form.setError('name', {
+              type: 'server',
+              message: errors.name,
+            })
+          }
+          if (errors.serial_number) {
+            form.setError('serial_number', {
+              type: 'server',
+              message: errors.serial_number,
+            })
+          }
+          if (errors.description) {
+            form.setError('description', {
+              type: 'server',
+              message: errors.description,
+            })
+          }
+          if (errors.price) {
+            form.setError('price', {
+              type: 'server',
+              message: errors.price,
+            })
+          }
+          if (errors.unitId) {
+            form.setError('unitId', {
+              type: 'server',
+              message: errors.unitId,
+            })
+          }
+          if (errors.supplierId) {
+            form.setError('supplierId', {
+              type: 'server',
+              message: errors.supplierId,
+            })
+          }
+          if (errors.categoryId) {
+            form.setError('categoryId', {
+              type: 'server',
+              message: errors.categoryId,
+            })
+          }
+          if (errors.expiry_period) {
+            form.setError('expiry_period', {
+              type: 'server',
+              message: errors.expiry_period
+            })
+          }
+        } else {
+          toast({
+            variant: 'destructive',
+            title: 'Terjadi kesalahan',
+            description: error.response?.data.errors,
+          })
+        }
+      }
+    }
+  }
+
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="max-h-[100vh] md:max-h-[80vh] overflow-y-scroll sm:max-w-[525px]">
+        <DialogHeader className="space-y-2">
+          <DialogTitle>{product ? 'Edit' : 'Tambah'} produk</DialogTitle>
+          <DialogDescription>
+            {product ? 'Edit' : 'Tambah'} data produk{' '}
+            {product ? 'yang sudah tersimpan di' : 'ke'} database sistem
+            inventaris CV. Indoka Surya Jaya
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="flex flex-col gap-4">
+            <div className="space-y-3">
+              <Dropzone
+                allowMultiple
+                multipleImages={existingImages}
+                onImagesChange={(images) => {
+                  setSelectedImages(images);
+                }}
+                onExistingImageRemove={(id) => {
+                  const updatedImages = existingImages.filter((image) => image.id !== id)
+                  setExistingImages(updatedImages)
+                }}
+                maxFiles={12 - existingImages.length - selectedImages.length}
+              />
+            </div>
+            <FormField
+              control={form.control}
+              name="serial_number"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Serial Number</FormLabel>
+                  <div className="flex flex-row justify-between space-x-4">
+                    <FormControl>
+                      <Input
+                        placeholder="Kode S/N Produk"
+                        {...field}
+                        required
+                      />
+                    </FormControl>
+                    <ScannerDrawerDialog scannerType={scannerType} />
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nama</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Nama Produk"
+                      {...field}
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="price"
+              render={({ field }) => (
+                <FormItem className='w-full'>
+                  <FormLabel>Harga</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      step={1}
+                      min={0}
+                      placeholder="Harga Produk"
+                      value={field.value ?? ""}
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex flex-row justify-between space-x-4">
+              {id && (
+                <FormField
+                  control={form.control}
+                  name="stock"
+                  render={({ field }) => (
+                    <FormItem className="w-1/2">
+                      <FormLabel>Stok</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="number"
+                          step={1}
+                          min={0}
+                          placeholder="Stok Produk"
+                          value={field.value}
+                          disabled
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+              <FormField
+                control={form.control}
+                name="unitId"
+                render={({ field }) => (
+                  <FormItem className={`md:mt-0 ${id ? 'w-1/2' : 'w-full'}`}>
+                    <FormLabel>Unit</FormLabel>
+                    <FormControl>
+                      <UnitCombobox
+                        value={field.value}
+                        onSelect={(unitId) => {
+                          form.setValue("unitId", unitId);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Deskripsi</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={5}
+                      placeholder="Deskripsi Produk"
+                      {...field}
+                      required
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="w-full flex flex-col md:flex-row md:justify-between md:gap-x-4 gap-4 md:space-y-0">
+              <FormField
+                control={form.control}
+                name="supplierId"
+                render={({ field }) => (
+                  <FormItem className="w-full md:mt-0">
+                    <FormLabel>Supplier</FormLabel>
+                    <FormControl>
+                      <SupplierCombobox
+                        value={field.value}
+                        onSelect={(supplierId) => {
+                          form.setValue("supplierId", supplierId);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem className="w-full md:mt-0">
+                    <FormLabel>Kategori</FormLabel>
+                    <FormControl>
+                      <CategoryCombobox
+                        value={field.value}
+                        onSelect={(categoryId) => {
+                          form.setValue("categoryId", categoryId);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="expiry_period"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Periode Kedaluwarsa</FormLabel>
+                  <div className="flex flex-row justify-between space-x-4">
+                    <FormControl>
+                      <Input
+                        {...field}
+                        type="number"
+                        step={1}
+                        min={0}
+                        placeholder={`Periode Kedaluwarsa (${selectedPeriod})`}
+                        value={field.value ?? ""}
+                        required
+                      />
+                    </FormControl>
+                    <Select
+                      defaultValue="Bulan"
+                      onValueChange={(value: "Bulan" | "Tahun") => setSelectedPeriod(value)}
+                      required
+                    >
+                      <SelectTrigger id="periode" className="w-[25%]">
+                        <SelectValue placeholder="Periode" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Periode</SelectLabel>
+                          <SelectItem key="0" value="Bulan">
+                            Bulan
+                          </SelectItem>
+                          <SelectItem key="1" value="Tahun">
+                            Tahun
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <DialogFooter className="mt-4">
+              <Button className="w-full" type="submit">
+                {product ? 'Edit' : 'Tambah'} Produk
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog >
+  )
+}
