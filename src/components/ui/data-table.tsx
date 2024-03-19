@@ -77,7 +77,7 @@ type DataTablePermission = {
 
 interface DataTableProps<TData, TValue> {
   isTrash?: boolean
-  permissions: DataTablePermission
+  permissions?: DataTablePermission
   setIsTrash?: Dispatch<SetStateAction<boolean | undefined>>
   disabledContextMenu?: boolean
   isValidating: boolean
@@ -98,7 +98,7 @@ declare module '@tanstack/table-core' {
     handleRestore: (arg0: TData[] | string[]) => Promise<void>
     handleGetAllId: () => Promise<void>
     handleExportData: (
-      fileType: 'XLSX' | 'CSV' | 'PDF',
+      fileType: 'XLSX' | 'CSV',
       id?: string[],
       startDate?: string,
       endDate?: string,
@@ -226,7 +226,7 @@ export function DataTable<TData, TValue>({
           </div>
         )
       )}
-      <div className="rounded-md border border-zinc-200 dark:border-zinc-800">
+      <div className="rounded-md border border-zinc-200 dark:border-zinc-700">
         <ContextMenu>
           <ContextMenuTrigger
             disabled={data?.totalRowCount <= 0 || disabledContextMenu}
@@ -235,7 +235,7 @@ export function DataTable<TData, TValue>({
               className={`${Object.keys(rowSelection).length === 0
                 ? 'bg-inherit dark:bg-inherit'
                 : 'bg-zinc-950 dark:bg-zinc-50'
-                } flex h-16 w-full items-center justify-between rounded-t-md border-b border-zinc-200 px-4 dark:border-zinc-800`}
+                } flex h-16 w-full items-center justify-between rounded-t-md border-b border-zinc-200 px-4 dark:border-zinc-700`}
             >
               <div
                 className={`flex-1 text-sm ${Object.keys(rowSelection).length === 0
@@ -300,27 +300,14 @@ export function DataTable<TData, TValue>({
                         >
                           XLSX
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (
-                              table.options?.meta?.handleExportData(
-                                'PDF',
-                                Object.keys(rowSelection),
-                              )
-                            )
-                              table.resetRowSelection()
-                          }}
-                        >
-                          PDF
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   )}
                 {Object.keys(rowSelection).length > 0 ? (
                   <>
                     {(isTrash
-                      ? permissions.forceDelete
-                      : permissions.delete) && (
+                      ? permissions?.forceDelete
+                      : permissions?.delete) && (
                         <Button
                           onClick={() => {
                             if (
@@ -342,7 +329,7 @@ export function DataTable<TData, TValue>({
                           <Trash2 size={16} />
                         </Button>
                       )}
-                    {isTrash && permissions.restore && (
+                    {isTrash && permissions?.restore && (
                       <Button
                         onClick={() => {
                           if (
@@ -432,7 +419,7 @@ export function DataTable<TData, TValue>({
           </ContextMenuTrigger>
           <ContextMenuContent className="w-80">
             {Object.keys(rowSelection).length > 0 &&
-              (isTrash ? permissions.forceDelete : permissions.delete) && (
+              (isTrash ? permissions?.forceDelete : permissions?.delete) && (
                 <ContextMenuItem
                   onClick={() => {
                     if (
@@ -518,7 +505,7 @@ export function DataTable<TData, TValue>({
                 <Shortcut keys={['command']}>R</Shortcut>
               </ContextMenuShortcut>
             </ContextMenuItem>
-            {!isTrash && (
+            {!isTrash && table.options?.meta?.handleRestore && (
               <ContextMenuItem
                 onClick={() => {
                   setIsTrash && setIsTrash(true)
@@ -557,19 +544,6 @@ export function DataTable<TData, TValue>({
                 <ContextMenuSeparator />
                 <ContextMenuItem onClick={() => table.resetRowSelection()}>
                   Batalkan pilihan untuk {Object.keys(rowSelection).length} data
-                </ContextMenuItem>
-              </>
-            )}
-            {table.options?.meta?.handleExportData && (
-              <>
-                <ContextMenuSeparator />
-                <ContextMenuItem
-                  onClick={() => table.options?.meta?.handleExportData('PDF')}
-                >
-                  Cetak PDF
-                  <ContextMenuShortcut>
-                    <Shortcut keys={['command', 'option']}>P</Shortcut>
-                  </ContextMenuShortcut>
                 </ContextMenuItem>
               </>
             )}

@@ -13,13 +13,17 @@ const buttonVariants = cva(
         default:
           'bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-50/90',
         destructive:
-          'bg-red-600 text-zinc-50 shadow-sm hover:bg-red-500 dark:bg-red-600 dark:text-zinc-50 dark:hover:bg-red-500',
+          'bg-red-600 text-zinc-50 shadow-sm hover:bg-red-600/80',
+        success:
+          'bg-green-600 text-zinc-50 shadow-sm hover:bg-green-600/80',
         outline:
-          'border border-zinc-200 bg-transparent shadow-sm hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-50',
+          'border border-zinc-200 bg-transparent shadow-sm hover:bg-zinc-100 hover:text-zinc-900 dark:border-zinc-700 dark:hover:bg-zinc-800 dark:hover:text-zinc-50',
         secondary:
           'bg-zinc-200 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80',
         ghost:
           'hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-50',
+        warning:
+          'bg-yellow-300 text-zinc-800 shadow-sm hover:bg-yellow-300/80',
         link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50',
         circle:
           'inline-flex items-center justify-center w-9 h-9 border dark:border-transparent rounded-full text-md leading-4 font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:bg-zinc-700 hover:dark:bg-zinc-700/90 focus:outline-none transition ease-in-out duration-150',
@@ -41,7 +45,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

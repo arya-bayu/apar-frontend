@@ -28,10 +28,9 @@ import { toast } from "@/components/ui/use-toast"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface CategoryComboboxProps {
-    value: number;
+    value: number | null;
     onSelect: (category: ICategory["id"]) => void;
 }
 
@@ -56,7 +55,6 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
             }
         }
 
-
         fetchCategories()
     }, [])
 
@@ -76,7 +74,7 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
                             ? categories.find(
                                 (category) => category.id === value
                             )?.name
-                            : "Pilih kategori produk"}
+                            : "Kategori produk"}
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
@@ -96,7 +94,7 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
                         ? categories.find(
                             (category) => category.id === value
                         )?.name
-                        : "Pilih kategori produk"}
+                        : "Kategori produk"}
 
                 </Button>
             </DrawerTrigger>
@@ -125,23 +123,30 @@ function CategoryList({
                 className="h-9"
             />
             <CommandList>
-                <CommandEmpty>Category tidak ditemukan.</CommandEmpty>
-                <ScrollArea className="max-h-[200px]">
-                    <CommandGroup>
-                        {categories.map((category) => (
-                            <CommandItem
-                                key={category.id}
-                                value={category.name}
-                                onSelect={() => {
-                                    onSelect(category.id)
-                                    setOpen(false)
-                                }}
-                            >
-                                {category.name}
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
-                </ScrollArea>
+                {categories.length < 1 ? (
+                    <div
+                        className="py-6 text-center text-sm">
+                        Kategori tidak ditemukan.
+                    </div>
+                ) : (
+                    <>
+                        <CommandEmpty>Kategori tidak ditemukan.</CommandEmpty>
+                        <CommandGroup>
+                            {categories.map((category) => (
+                                <CommandItem
+                                    key={category.id}
+                                    value={category.name}
+                                    onSelect={() => {
+                                        onSelect(category.id)
+                                        setOpen(false)
+                                    }}
+                                >
+                                    {category.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </>
+                )}
             </CommandList>
         </Command>
     )

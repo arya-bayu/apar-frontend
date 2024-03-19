@@ -61,7 +61,7 @@ const Navigation = ({ user }: INavigation) => {
   )
 
   return (
-    <nav className="relative z-[2] border-b bg-white dark:border-zinc-800 dark:bg-zinc-950">
+    <nav className="relative z-[2] border-b bg-white dark:border-zinc-700 dark:bg-zinc-950">
       {/* Primary Navigation Menu */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 justify-between md:justify-between">

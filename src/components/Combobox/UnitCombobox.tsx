@@ -28,10 +28,9 @@ import { toast } from "@/components/ui/use-toast"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface UnitComboboxProps {
-    value: number;
+    value: number | null;
     onSelect: (unit: IUnit["id"]) => void;
 }
 
@@ -126,23 +125,30 @@ function UnitList({
                 className="h-9"
             />
             <CommandList>
-                <CommandEmpty>Unit tidak ditemukan.</CommandEmpty>
-                <ScrollArea className="max-h-[200px]">
-                    <CommandGroup>
-                        {units.map((unit) => (
-                            <CommandItem
-                                key={unit.id}
-                                value={unit.name}
-                                onSelect={() => {
-                                    onSelect(unit.id)
-                                    setOpen(false)
-                                }}
-                            >
-                                {unit.name}
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
-                </ScrollArea>
+                {units.length < 1 ? (
+                    <div
+                        className="py-6 text-center text-sm">
+                        Unit tidak ditemukan.
+                    </div>
+                ) : (
+                    <>
+                        <CommandEmpty>Unit tidak ditemukan.</CommandEmpty>
+                        <CommandGroup>
+                            {units.map((unit) => (
+                                <CommandItem
+                                    key={unit.id}
+                                    value={unit.name}
+                                    onSelect={() => {
+                                        onSelect(unit.id)
+                                        setOpen(false)
+                                    }}
+                                >
+                                    {unit.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </>
+                )}
             </CommandList>
         </Command>
     )

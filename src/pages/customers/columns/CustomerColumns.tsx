@@ -13,7 +13,7 @@ export const customerColumns: ColumnDef<ICustomer>[] = [
   {
     accessorKey: 'company_name',
     meta: {
-      title: 'Nama Perusahaan',
+      title: 'Perusahaan',
     },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nama Perusahaan" />

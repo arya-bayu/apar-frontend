@@ -26,13 +26,13 @@ const Profile = () => {
             <UpdateProfilePhotoForm />
           </div>
           <div className="flex flex-col space-y-8 sm:w-[60%] md:w-[70%]">
-            <div className="rounded-lg border-[1.5px] border-none border-zinc-50 p-4 dark:border-zinc-800 sm:border-solid sm:p-6 sm:shadow-sm sm:dark:border-[0.1px]">
+            <div className="rounded-lg border-[1.5px] border-none border-zinc-50 p-4 dark:border-zinc-700 sm:border-solid sm:p-6 sm:shadow-sm sm:dark:border-[0.1px]">
               <div className="max-w-xl">
                 <UpdateProfileInformationForm />
               </div>
             </div>
 
-            <div className="border-[1.5px] border-none border-zinc-50 p-4 dark:border-zinc-800 sm:rounded-lg sm:border-solid sm:p-6 sm:shadow-sm sm:dark:border-[0.1px]">
+            <div className="border-[1.5px] border-none border-zinc-50 p-4 dark:border-zinc-700 sm:rounded-lg sm:border-solid sm:p-6 sm:shadow-sm sm:dark:border-[0.1px]">
               <div className="max-w-xl">
                 <DeleteUserForm forceUserDeletion={openUserDeletionModal} />
               </div>

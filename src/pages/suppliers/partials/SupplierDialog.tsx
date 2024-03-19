@@ -38,7 +38,7 @@ import validator from 'validator'
 
 interface ISupplierDialog<TData> {
   data?: DataTable<TData>
-  id?: string
+  id?: number
   mutate?: KeyedMutator<any>
   setDisabledContextMenu?: Dispatch<SetStateAction<boolean | undefined>>
 }
@@ -182,7 +182,7 @@ export default function SupplierDialog({
           <DialogDescription>
             {supplier ? 'Edit' : 'Tambah'} data supplier produk{' '}
             {supplier ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris CV. Indoka Surya Jaya
+            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

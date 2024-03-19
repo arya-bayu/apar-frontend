@@ -34,6 +34,7 @@ import { Label } from '@/components/ui/label'
 import { Html5Qrcode } from 'html5-qrcode'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { ScanLine } from 'lucide-react'
+import { set } from 'lodash'
 
 const qrConfig = { fps: 10, qrbox: { width: 300, height: 300 } }
 const barConfig = { fps: 10, qrbox: { width: 300, height: 150 } }
@@ -59,7 +60,6 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
 
   const handleClickAdvanced = () => {
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-      console.info(decodedResult, decodedText)
       onResult(decodedText)
       handleStop()
     }
@@ -73,7 +73,6 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
   const getCameras = () => {
     Html5Qrcode.getCameras()
       .then(devices => {
-        console.info(devices)
         if (devices && devices.length) {
           setCameraList(devices)
           setActiveCamera(devices[0])
@@ -135,7 +134,7 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
   )
 })
 
-export function ScannerDrawerDialog(scannerType) {
+export function ScannerDrawerDialog({ scannerType, onScanResult }) {
   const { isAboveMd } = useBreakpoint('md')
   const [open, setOpen] = useState(false)
 
@@ -145,7 +144,10 @@ export function ScannerDrawerDialog(scannerType) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button type="button" className="aspect-square px-2 py-0">
+          <Button
+            type="button"
+            variant="secondary"
+            className="aspect-square px-2 py-0">
             <ScanLine size={20} />
           </Button>
         </DialogTrigger>
@@ -153,13 +155,16 @@ export function ScannerDrawerDialog(scannerType) {
           <DialogHeader>
             <DialogTitle>Scan barcode</DialogTitle>
             <DialogDescription>
-              Pindai barcode produk untuk memperoleh kode serial number.
+              Pindai barcode produk inventory {process.env.NEXT_PUBLIC_APP_NAME}
             </DialogDescription>
           </DialogHeader>
           <Scanner
             ref={childRef}
             type={scannerType}
-            onResult={res => console.log(res)}
+            onResult={res => {
+              onScanResult(res)
+              setOpen(false)
+            }}
           />
         </DialogContent>
       </Dialog>
@@ -189,7 +194,10 @@ export function ScannerDrawerDialog(scannerType) {
           <Scanner
             ref={childRef}
             type={scannerType}
-            onResult={res => console.log(res)}
+            onResult={res => {
+              onScanResult(res)
+              setOpen(false)
+            }}
           />
         </div>
         <DrawerFooter className="pt-2">

@@ -44,11 +44,12 @@ import { IProduct } from '@/types/product'
 import { KeyedMutator } from 'swr'
 import { DataTable } from '@/components/ui/data-table'
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
-import { SupplierCombobox } from "./combobox/SupplierCombobox"
-import { CategoryCombobox } from "./combobox/CategoryCombobox"
+import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
+import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 import { IImage } from "@/types/image"
 import { ScannerDrawerDialog } from "@/components/Scanner"
-import { UnitCombobox } from "./combobox/UnitCombobox"
+import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
+import { RefreshCcw } from "lucide-react"
 
 interface IProductDialog<TData> {
   data?: DataTable<TData>
@@ -62,31 +63,37 @@ const productFormSchema = z.object({
   serial_number: z.string(),
   description: z.string(),
   stock: z
+    .coerce
     .number(),
   price: z
     .coerce
-    .number(),
+    .number()
+    .nullable(),
   expiry_period: z
     .coerce
-    .number(),
+    .number()
+    .nullable(),
   unitId: z
     .coerce
     .number({
       required_error: "Pilih unit produk.",
       invalid_type_error: "Pilih unit produk.",
-    }),
+    })
+    .nullable(),
   supplierId: z
     .coerce
     .number({
       required_error: "Pilih supplier produk.",
       invalid_type_error: "Pilih supplier produk.",
-    }),
+    })
+    .nullable(),
   categoryId: z
     .coerce
     .number({
       required_error: "Pilih kategori produk.",
       invalid_type_error: "Pilih kategori produk.",
-    }),
+    })
+    .nullable(),
 })
 
 export default function ProductDialog({
@@ -102,10 +109,9 @@ export default function ProductDialog({
   const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
   const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
 
-  setDisabledContextMenu &&
-    useEffect(() => {
-      setDisabledContextMenu(open)
-    }, [open])
+  useEffect(() => {
+    setDisabledContextMenu && setDisabledContextMenu(open)
+  }, [open])
 
   const form = useForm<z.infer<typeof productFormSchema>>({
     resolver: zodResolver(productFormSchema),
@@ -131,29 +137,43 @@ export default function ProductDialog({
     fetchProduct()
   }, [id, open])
 
+  const generateSerialNumber = async () => {
+    try {
+      const response = await axios.post('/api/v1/products/serial-number/generate');
+      if (response.data.code === 200) {
+        form.setValue("serial_number", response.data.data);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast({
+          variant: 'destructive',
+          title: 'Terjadi kesalahan',
+          description: error.response?.data.errors,
+        })
+      }
+    }
+  };
+
   useEffect(() => {
     form.reset({
       name: product?.name ?? '',
       serial_number: product?.serial_number ?? '',
       description: product?.description ?? '',
       stock: product?.stock ?? 0,
-      price: product?.price ?? undefined,
-      expiry_period: product?.expiry_period ?? undefined,
-      unitId: product?.unit_id ?? undefined,
-      supplierId: product?.supplier_id ?? undefined,
-      categoryId: product?.category_id ?? undefined,
+      price: product?.price ?? null,
+      expiry_period: product?.expiry_period ?? null,
+      unitId: product?.unit_id ?? null,
+      supplierId: product?.supplier_id ?? null,
+      categoryId: product?.category_id ?? null,
     })
 
+    !product?.serial_number && generateSerialNumber()
+
+    setSelectedImages([])
     setExistingImages(product?.images ?? [])
     setSelectedPeriod("Bulan")
 
   }, [product])
-
-  useEffect(() => {
-    if (form.formState.isSubmitSuccessful) {
-      form.reset()
-    }
-  }, [form.formState, form.reset])
 
   const uploadImages = async (selectedImages: CustomFile[]) => {
     const images = [];
@@ -198,7 +218,7 @@ export default function ProductDialog({
     formData.append('serial_number', values.serial_number);
     formData.append('description', values.description);
     formData.append('price', String(values.price));
-    formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period * 12));
+    formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period && values.expiry_period * 12));
     formData.append('unit_id', String(values.unitId));
     formData.append('supplier_id', String(values.supplierId));
     formData.append('category_id', String(values.categoryId));
@@ -208,12 +228,14 @@ export default function ProductDialog({
       formData.append(`images[${index}]`, String(image.id));
     })
 
-    // upload and append new image to next index
     selectedImages && await uploadImages(selectedImages).then((images) => {
       images.forEach((image, index) => {
+        console.log(String(image.id))
         formData.append(`images[${index + existingImages.length}]`, String(image.id));
       })
     })
+
+    console.log(formData.get("price"))
 
     const url = product
       ? `/api/v1/products/${product?.id}` // update
@@ -229,6 +251,16 @@ export default function ProductDialog({
 
       if (response) {
         setOpen(false)
+        form.reset({
+          name: '',
+          serial_number: '',
+          description: '',
+          price: null,
+          expiry_period: null,
+          unitId: null,
+          supplierId: null,
+          categoryId: null,
+        })
         toast({
           variant: 'success',
           title: 'Sukses',
@@ -237,12 +269,17 @@ export default function ProductDialog({
         })
       }
     } catch (error) {
-
-      console.log(error)
       if (error instanceof AxiosError) {
         const errStatus = error.response?.status
         const errors = error.response?.data.errors
         if (errStatus === 422) {
+          if (errors.images) {
+            toast({
+              variant: 'destructive',
+              title: 'Terjadi kesalahan pada input gambar',
+              description: errors.images,
+            })
+          }
           if (errors.name) {
             form.setError('name', {
               type: 'server',
@@ -312,7 +349,7 @@ export default function ProductDialog({
           <DialogDescription>
             {product ? 'Edit' : 'Tambah'} data produk{' '}
             {product ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris CV. Indoka Surya Jaya
+            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -321,14 +358,14 @@ export default function ProductDialog({
             className="flex flex-col gap-4">
             <div className="space-y-3">
               <Dropzone
+                required
                 allowMultiple
                 multipleImages={existingImages}
                 onImagesChange={(images) => {
                   setSelectedImages(images);
                 }}
-                onExistingImageRemove={(id) => {
-                  const updatedImages = existingImages.filter((image) => image.id !== id)
-                  setExistingImages(updatedImages)
+                onExistingImagesChange={(images) => {
+                  setExistingImages(images);
                 }}
                 maxFiles={12 - existingImages.length - selectedImages.length}
               />
@@ -347,7 +384,21 @@ export default function ProductDialog({
                         required
                       />
                     </FormControl>
-                    <ScannerDrawerDialog scannerType={scannerType} />
+                    <Button
+                      onClick={() => generateSerialNumber()}
+                      type="button"
+                      variant="secondary"
+                      className="aspect-square px-2 py-0">
+                      <RefreshCcw size={20} />
+                    </Button>
+                    <ScannerDrawerDialog
+                      scannerType={scannerType}
+                      onScanResult={(res: string) => {
+                        if (res) {
+                          form.setValue("serial_number", res);
+                        }
+                      }}
+                    />
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -379,11 +430,10 @@ export default function ProductDialog({
                   <FormControl>
                     <Input
                       {...field}
-                      type="number"
-                      step={1}
+                      value={field.value ?? ""}
+                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                       min={0}
                       placeholder="Harga Produk"
-                      value={field.value ?? ""}
                       required
                     />
                   </FormControl>
@@ -402,11 +452,8 @@ export default function ProductDialog({
                       <FormControl>
                         <Input
                           {...field}
-                          type="number"
-                          step={1}
                           min={0}
                           placeholder="Stok Produk"
-                          value={field.value}
                           disabled
                         />
                       </FormControl>
@@ -462,7 +509,7 @@ export default function ProductDialog({
                     <FormLabel>Supplier</FormLabel>
                     <FormControl>
                       <SupplierCombobox
-                        value={field.value}
+                        value={field.value ?? null}
                         onSelect={(supplierId) => {
                           form.setValue("supplierId", supplierId);
                         }}
@@ -502,11 +549,11 @@ export default function ProductDialog({
                     <FormControl>
                       <Input
                         {...field}
+                        value={field.value ?? ""}
                         type="number"
                         step={1}
                         min={0}
                         placeholder={`Periode Kedaluwarsa (${selectedPeriod})`}
-                        value={field.value ?? ""}
                         required
                       />
                     </FormControl>

@@ -307,7 +307,7 @@ export default function CategoryDialog({
           <DialogDescription>
             {category ? 'Edit' : 'Tambah'} data kategori produk{' '}
             {category ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris CV. Indoka Surya Jaya
+            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <div className="mx-6 flex flex-col gap-6 md:flex-row">
@@ -331,7 +331,7 @@ export default function CategoryDialog({
               Metadata
             </h3>
             <Form {...form}>
-              <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-scroll rounded-lg border border-zinc-200 px-4 py-4 dark:border-zinc-800">
+              <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-scroll rounded-lg border border-zinc-200 px-4 py-4 dark:border-zinc-700">
                 <div className="space-y-3">
                   <Dropzone
                     singleImage={form?.getValues("image")}

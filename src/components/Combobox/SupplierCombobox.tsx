@@ -30,11 +30,12 @@ import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
 
 interface SupplierComboboxProps {
-    value: number;
+    value: number | null;
     onSelect: (supplier: ISupplier["id"]) => void;
+    disabled?: boolean;
 }
 
-export function SupplierCombobox({ value, onSelect }: SupplierComboboxProps) {
+export function SupplierCombobox({ value, onSelect, disabled = false }: SupplierComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
     const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
@@ -64,6 +65,7 @@ export function SupplierCombobox({ value, onSelect }: SupplierComboboxProps) {
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
+                        disabled={disabled}
                         variant="outline"
                         role="combobox"
                         className={cn(
@@ -89,7 +91,7 @@ export function SupplierCombobox({ value, onSelect }: SupplierComboboxProps) {
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
+                <Button disabled={disabled} variant="outline" className="w-full justify-start">
 
                     {value
                         ? suppliers.find(
@@ -124,21 +126,30 @@ function SupplierList({
                 className="h-9"
             />
             <CommandList>
-                <CommandEmpty>Supplier tidak ditemukan.</CommandEmpty>
-                <CommandGroup>
-                    {suppliers.map((supplier) => (
-                        <CommandItem
-                            key={supplier.id}
-                            value={supplier.name}
-                            onSelect={() => {
-                                onSelect(supplier.id)
-                                setOpen(false)
-                            }}
-                        >
-                            {supplier.name}
-                        </CommandItem>
-                    ))}
-                </CommandGroup>
+                {suppliers.length < 1 ? (
+                    <div
+                        className="py-6 text-center text-sm">
+                        Supplier tidak ditemukan.
+                    </div>
+                ) : (
+                    <>
+                        <CommandEmpty>Supplier tidak ditemukan.</CommandEmpty>
+                        <CommandGroup>
+                            {suppliers.map((supplier) => (
+                                <CommandItem
+                                    key={supplier.id}
+                                    value={supplier.name}
+                                    onSelect={() => {
+                                        onSelect(supplier.id)
+                                        setOpen(false)
+                                    }}
+                                >
+                                    {supplier.name}
+                                </CommandItem>
+                            ))}
+                        </CommandGroup>
+                    </>
+                )}
             </CommandList>
         </Command>
     )

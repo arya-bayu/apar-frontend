@@ -41,6 +41,7 @@ interface ICustomerDialog<TData> {
   id?: number
   mutate?: KeyedMutator<any>
   setDisabledContextMenu?: Dispatch<SetStateAction<boolean | undefined>>
+  onSuccess?: () => void;
 }
 
 const customerFormSchema = z.object({
@@ -60,6 +61,7 @@ export default function CustomerDialog({
   mutate,
   children,
   setDisabledContextMenu,
+  onSuccess
 }: PropsWithChildren<ICustomerDialog<ICustomer>>) {
   const [open, setOpen] = useState(false)
   const [customer, setCustomer] = useState<ICustomer>()
@@ -110,7 +112,6 @@ export default function CustomerDialog({
   }, [form.formState, form.reset])
 
   const onSubmit = async (values: z.infer<typeof customerFormSchema>) => {
-    if (!mutate) return
 
     const data = {
       company_name: values.companyName,
@@ -125,7 +126,7 @@ export default function CustomerDialog({
         ? await axios.put(`/api/v1/customers/${customer?.id}`, data)
         : await axios.post('/api/v1/customers/', data)
 
-      mutate()
+      mutate && mutate()
 
       if (response) {
         setOpen(false)
@@ -135,6 +136,7 @@ export default function CustomerDialog({
           description: `Data pelanggan ${values.companyName} telah berhasil ${customer ? 'diperbarui' : 'disimpan'
             }.`,
         })
+        onSuccess && onSuccess()
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -191,12 +193,11 @@ export default function CustomerDialog({
           <DialogDescription>
             {customer ? 'Edit' : 'Tambah'} data pelanggan{' '}
             {customer ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris CV. Indoka Surya Jaya
+            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
             className="mt-4 flex flex-col gap-4"
           >
             <FormField
@@ -283,7 +284,7 @@ export default function CustomerDialog({
             />
 
             <DialogFooter className="mt-8">
-              <Button className="w-full" type="submit">
+              <Button className="w-full" type="button" onClick={form.handleSubmit(onSubmit)}>
                 {customer ? 'Edit' : 'Tambah'} Pelanggan
               </Button>
             </DialogFooter>

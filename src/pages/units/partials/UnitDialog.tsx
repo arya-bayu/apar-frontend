@@ -151,7 +151,7 @@ export default function UnitDialog({
           <DialogDescription>
             {unit ? 'Edit' : 'Tambah'} data unit produk{' '}
             {unit ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris CV. Indoka Surya Jaya
+            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

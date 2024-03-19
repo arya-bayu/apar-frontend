@@ -107,7 +107,7 @@ const UpdateProfilePhotoForm = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center space-y-6 bg-white px-4 dark:bg-transparent sm:rounded-lg sm:border-[1.5px] sm:border-solid sm:border-zinc-50 sm:pb-6 sm:pt-4 sm:shadow-lg sm:dark:border-[0.1px] sm:dark:border-zinc-800">
+    <div className="flex flex-col justify-center space-y-6 bg-white px-4 dark:bg-transparent sm:rounded-lg sm:border-[1.5px] sm:border-solid sm:border-zinc-50 sm:pb-6 sm:pt-4 sm:shadow-lg sm:dark:border-[0.1px] sm:dark:border-zinc-700">
       <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-red-500 text-[8rem] uppercase text-zinc-50 sm:text-[4rem] lg:text-[6rem] xl:text-[8rem]">
         <div className={`${authUser?.photo && 'hidden'}`}>
           {authUser?.name && authUser?.name.charAt(0)}
@@ -121,9 +121,8 @@ const UpdateProfilePhotoForm = () => {
           height={0}
           sizes="100vw"
           style={{ objectFit: 'cover' }}
-          className={`${
-            !authUser?.photo && 'hidden'
-          } aspect-square w-full rounded-lg`}
+          className={`${!authUser?.photo && 'hidden'
+            } aspect-square w-full rounded-lg`}
         />
       </div>
 

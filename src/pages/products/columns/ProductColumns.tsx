@@ -1,13 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { PenSquare, DatabaseBackup, Trash2 } from 'lucide-react'
-import { ColumnDef, Row } from '@tanstack/react-table'
+import { ColumnDef } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
-import Link from 'next/link'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
 import ProductDialog from '../partials/ProductDialog'
-import { SupplierCombobox } from "../partials/combobox/SupplierCombobox"
 import { IProduct } from "@/types/product"
+import BarcodeWithText from "@/components/BarcodeExportDialog"
+import { useState } from "react"
+import BarcodeExportDialog from "@/components/BarcodeExportDialog"
+
 
 export const productColumns: ColumnDef<IProduct>[] = [
   createSelectColumn(),
@@ -19,6 +21,22 @@ export const productColumns: ColumnDef<IProduct>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Kode" />
     ),
+    cell: ({ row, table }) => {
+      const product = row.original
+
+      return (
+        <BarcodeExportDialog
+          setDisabledContextMenu={
+            table.options.meta?.setDisabledContextMenu
+          }
+          value={product.serial_number}
+          productName={product.name}
+          company={process.env.NEXT_PUBLIC_APP_NAME}
+        >
+          <p>{product.serial_number}</p>
+        </BarcodeExportDialog>
+      )
+    }
   },
   {
     accessorKey: 'name',

@@ -8,10 +8,6 @@ import { shallow } from 'zustand/shallow'
 import useSidebarStore from '@/store/useSidebarStore'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 
-interface ISidebar {
-  user: IUser
-}
-
 export interface ISidebarItem extends LinkProps {
   icon: React.ReactNode
   text: string
@@ -19,7 +15,7 @@ export interface ISidebarItem extends LinkProps {
   active?: boolean
 }
 
-const Sidebar = ({ user, children }: PropsWithChildren<ISidebar>) => {
+const Sidebar = ({ children }: PropsWithChildren) => {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
   const [expanded, hidden, setExpanded, setHidden, toggleSidebar] =
     useSidebarStore(
@@ -42,14 +38,14 @@ const Sidebar = ({ user, children }: PropsWithChildren<ISidebar>) => {
   return (
     <aside
       className={`${hidden ? '-translate-x-full' : '-translate-x-0'
-        } absolute z-[5] h-screen border-r bg-zinc-50 shadow-sm transition-transform duration-300 ease-in-out dark:border-zinc-800 dark:bg-zinc-950 sm:static`}
+        } absolute z-[5] h-screen border-r bg-zinc-50 shadow-sm transition-transform duration-300 ease-in-out dark:border-zinc-700 dark:bg-zinc-950 sm:static`}
     >
       <nav className="flex h-full flex-col">
         <div className="relative flex items-center justify-between px-6 py-6">
           <Link href="/">
             <img
-              src="https://img.logoipsum.com/291.svg"
-              className={`overflow-hidden transition-all ease-in-out ${expanded ? 'w-16' : 'w-0'
+              src="logo.png"
+              className={`overflow-hidden transition-all ease-in-out ${expanded ? 'w-12' : 'w-0'
                 }`}
               alt="Logo"
             ></img>
@@ -67,19 +63,20 @@ const Sidebar = ({ user, children }: PropsWithChildren<ISidebar>) => {
           </Button>
         </div>
 
-        <ul className={`flex-1 px-3 ${isBelowSm && 'overflow-y-scroll'}`}>
+        <ul className={`flex-1 px-3 h-full overflow-y-scroll overflow-x-hidden`}>
           {children}
         </ul>
 
+
         <span
-          className={`px-3 py-4 transition-all ${expanded ? 'opacity-1 w-60' : 'w-0 opacity-0'
+          className={`px-3 py-4 transition-all ${expanded ? 'w-60' : 'w-0'
             }`}
         >
           <p
-            className={`ml-3 text-sm font-medium text-gray-600 text-zinc-600/60 dark:text-zinc-50/60  ${expanded ? 'opacity-1 transition-opacity delay-100' : 'opacity-0'
+            className={`ml-3 text-sm font-medium text-gray-600 text-zinc-600/60 dark:text-zinc-50/60 ${expanded ? 'opacity-100 transition-opacity delay-100' : 'opacity-0'
               }`}
           >
-            {appName}. © {new Date().getFullYear()}. All rights reserved.
+            {expanded && `${appName}. © ${new Date().getFullYear()}. All rights reserved.`}
           </p>
         </span>
       </nav>

@@ -23,7 +23,7 @@ const TableHeader = React.forwardRef<
   <thead
     ref={ref}
     className={cn(
-      'border-zinc-200 dark:border-zinc-800 [&_tr]:border-b',
+      'border-zinc-200 dark:border-zinc-700 [&_tr]:border-b',
       className,
     )}
     {...props}
@@ -38,7 +38,7 @@ const TableBody = React.forwardRef<
   <tbody
     ref={ref}
     className={cn(
-      'border-zinc-200 dark:border-zinc-800 [&_tr:last-child]:border-0',
+      'border-zinc-200 dark:border-zinc-700 [&_tr:last-child]:border-0',
       className,
     )}
     {...props}
@@ -68,7 +68,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b border-zinc-200 transition-colors hover:bg-zinc-100/50 data-[state=selected]:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-800/50 dark:data-[state=selected]:bg-zinc-800',
+      'border-b border-zinc-200 transition-colors hover:bg-zinc-100/50 data-[state=selected]:bg-zinc-100 dark:border-zinc-700 dark:hover:bg-zinc-800/50 dark:data-[state=selected]:bg-zinc-800',
       className,
     )}
     {...props}

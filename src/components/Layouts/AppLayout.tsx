@@ -5,7 +5,6 @@ import { useAuth } from '@/hooks/useAuth'
 import { Toaster } from '@/components/ui/toaster'
 import {
   LayoutDashboard,
-  Users,
   Building2,
   Boxes,
   Settings,
@@ -13,7 +12,9 @@ import {
   Package,
   Ruler,
   Users2Icon,
-  User2,
+  ArrowUpSquareIcon,
+  ArrowDownSquareIcon,
+  UserSquare2,
 } from 'lucide-react'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import useSidebarStore from '@/store/useSidebarStore'
@@ -22,11 +23,13 @@ import Head from 'next/head'
 
 interface IAppLayout {
   title: string
+  customHeaderTitle?: ReactElement
   headerAction?: ReactElement | boolean
 }
 
 const AppLayout = ({
   title,
+  customHeaderTitle,
   headerAction,
   children,
 }: PropsWithChildren<IAppLayout>) => {
@@ -54,7 +57,7 @@ const AppLayout = ({
           </Head>
 
           {/* Page Sidebar z-[5] */}
-          <Sidebar user={authUser}>
+          <Sidebar>
             <SidebarItem
               href="/dashboard"
               icon={<LayoutDashboard size={20} />}
@@ -95,12 +98,26 @@ const AppLayout = ({
                 text="Produk"
               />
             )}
+            {can('access purchases') && (
+              <SidebarItem
+                href="/purchases"
+                icon={<ArrowDownSquareIcon size={20} />}
+                text="Inbound"
+              />
+            )}
+            {can('access invoices') && (
+              <SidebarItem
+                href="/invoices"
+                icon={<ArrowUpSquareIcon size={20} />}
+                text="Outbound"
+              />
+            )}
             {/* <SidebarItem href="/blogs" icon={<Newspaper size={20} />} text="Blog" alert /> */}
             <hr className="m-3 divide-y rounded-full border-zinc-600/10 dark:border-zinc-50/10" />
             {can('access users') && (
               <SidebarItem
                 href="/users"
-                icon={<User2 size={20} />}
+                icon={<UserSquare2 size={20} />}
                 text="Pengguna"
               />
             )}
@@ -136,7 +153,7 @@ const AppLayout = ({
               <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
                 <div className="flex h-8 items-center justify-between">
                   <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    {title}
+                    {customHeaderTitle ?? title}
                   </h2>
                   {headerAction && <>{headerAction}</>}
                 </div>
