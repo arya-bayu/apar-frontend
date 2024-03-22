@@ -4,10 +4,8 @@ import { Button } from '@/components/ui/button'
 import { PenSquare, DatabaseBackup, Trash2 } from 'lucide-react'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
-import Link from 'next/link'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
 import CategoryDialog from '../partials/CategoryDialog'
-import { Switch } from '@/components/ui/switch'
 
 export const categoryColumns: ColumnDef<ICategory>[] = [
   createSelectColumn(),

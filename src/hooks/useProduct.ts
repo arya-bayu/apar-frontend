@@ -19,20 +19,21 @@ export const useProduct = (callback?: Function) => {
     [pageIndex, pageSize],
   )
 
+  const apiUrl =
+    'api/v1/products' +
+    (isTrash ? '/trash' : '') +
+    '/?columns=id,status,serial_number,name,stock,price,supplier_id,category_id' +
+    `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
+    (filter ? `&filter=${filter}` : '')
+
   const {
     data: products,
     error,
     isValidating,
     mutate,
-  } = useSWR(
-    `api/v1/products${isTrash ? '/trash' : ''}?pageIndex=${
-      pageIndex + 1
-    }&pageSize=${pageSize}${filter && `&filter=${filter}`}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    },
-  )
+  } = useSWR(apiUrl, fetcher, {
+    keepPreviousData: true,
+  })
 
   return {
     isTrash,

@@ -64,7 +64,7 @@ export const purchaseColumns: ColumnDef<IPurchase>[] = [
     ),
     cell: ({ row }) => {
       const purchase = row.original
-      return currencyFormatter(purchase.purchase_items.reduce((acc, item) => acc + item.total_price, 0))
+      return currencyFormatter(purchase.total)
     }
   },
   {

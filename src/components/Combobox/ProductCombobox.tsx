@@ -49,10 +49,16 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
             //     return
             // }
 
-            try {
-                const response = await axios.get('api/v1/products?columns[]=id&columns[]=name' + (supplierId ? `%columns[]=supplier_id&supplier_id=${supplierId}` : '') + (categoryId ? `%columns[]=category_id&category_id=${categoryId}` : ''));
+            const columns = ['id', 'name'];
+            if (supplierId) columns.push('supplier_id');
+            if (categoryId) columns.push('category_id');
+            const columnsParam = columns.join(',');
 
-                setProducts(response.data.data.rows)
+            try {
+                const response = await axios.get(`api/v1/products?status=1&columns=${columnsParam}${supplierId ? `&supplier_id=${supplierId}` : ``}${categoryId ? `\&category_id=${categoryId}` : ``}
+                `);
+
+                setProducts(response.data.data)
             } catch (error) {
                 if (error instanceof AxiosError)
                     toast({
@@ -98,11 +104,13 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
             <DrawerTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
 
-                    {value
-                        ? products.find(
-                            (product) => product.id === value
-                        )?.name
-                        : "Pilih produk"}
+                    <p className="truncate">
+                        {value
+                            ? products.find(
+                                (product) => product.id === value
+                            )?.name
+                            : "Pilih produk"}
+                    </p>
 
                 </Button>
             </DrawerTrigger>

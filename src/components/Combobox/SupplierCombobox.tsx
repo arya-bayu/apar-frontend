@@ -43,9 +43,9 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
     useEffect(() => {
         async function fetchSuppliers() {
             try {
-                const response = await axios.get('api/v1/suppliers?columns[]=id&columns[]=name');
+                const response = await axios.get('api/v1/suppliers?columns=id,name');
 
-                setSuppliers(response.data.data.rows)
+                setSuppliers(response.data.data)
             } catch (error) {
                 if (error instanceof AxiosError)
                     toast({
@@ -93,11 +93,13 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
             <DrawerTrigger asChild>
                 <Button disabled={disabled} variant="outline" className="w-full justify-start">
 
-                    {value
-                        ? suppliers.find(
-                            (supplier) => supplier.id === value
-                        )?.name
-                        : "Pilih supplier produk"}
+                    <p className="truncate">
+                        {value
+                            ? suppliers.find(
+                                (supplier) => supplier.id === value
+                            )?.name
+                            : "Pilih supplier produk"}
+                    </p>
 
                 </Button>
             </DrawerTrigger>

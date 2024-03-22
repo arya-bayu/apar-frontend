@@ -16,9 +16,10 @@ import { ToastAction } from '@/components/ui/toast'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusIcon, RotateCcw, Trash, Undo2 } from 'lucide-react'
+import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
+import CustomAlertDialog from "@/components/AlertDialog"
 
 const Categories = () => {
   const {
@@ -38,6 +39,13 @@ const Categories = () => {
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
   const { isBelowXs } = useBreakpoint('xs')
 
+  const [alert, setAlert] = useState(false)
+  const [alertTitle, setAlertTitle] = useState<string>("")
+  const [alertDescription, setAlertDescription] = useState<string>("")
+  const [alertContinueAction, setAlertContinueAction] = useState(() => {
+    return () => { };
+  });
+
   useEffect(() => {
     const isTrashRoute = router.asPath.includes('/trash')
     setIsTrash(isTrashRoute)
@@ -55,10 +63,10 @@ const Categories = () => {
   const handleGetAllId = async () => {
     try {
       const response = await axios.get(
-        `api/v1/categories${isTrash ? '/trash' : ''}/?columns[]=id`,
+        `api/v1/categories${isTrash ? '/trash' : ''}/?columns=id`,
       )
 
-      return response.data.data.rows
+      return response.data.data
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -163,96 +171,197 @@ const Categories = () => {
   }
 
   const handleDelete = async (data: ICategory[] | string[]) => {
-    try {
-      const id = isCategoriesArray(data)
-        ? data.map(category => category.id)
-        : data
+    const id = isCategoriesArray(data)
+      ? data.map(category => category.id)
+      : data
 
-      await axios.delete(`api/v1/categories${isTrash ? '/trash' : ''}`, {
-        params: { id: id },
-      })
 
-      mutate()
+    setAlertTitle("Hapus Kategori?")
+    setAlertDescription(`
+      ${(isCategoriesArray(data) ? data[0]["name"] : data.length + ' data ')}
+      akan ${isTrash
+        ? 'dihapus secara permanen'
+        : can('force delete categories')
+          ? 'dipindahkan ke folder sampah'
+          : 'dihapus dari tabel kategori'
+      }`
+    )
+    setAlertContinueAction(() => {
+      return async () => {
+        try {
+          await axios.delete(`api/v1/categories${isTrash ? '/trash' : ''}`, {
+            params: { id: id },
+          })
 
-      if (id.length > 1) {
-        toast({
-          variant: 'success',
-          title: 'Data kategori berhasil dihapus',
-          description: `${id.length} data telah ${isTrash
-            ? 'dihapus secara permanen'
-            : can('force delete categories')
-              ? 'dipindahkan ke folder sampah'
-              : 'dihapus'
-            }`,
-          action:
-            !isTrash && can('restore categories') ? (
-              <ToastAction
-                altText="Batal"
-                onClick={() => handleRestore(data)}
-                asChild
-              >
-                <Button variant="ghost" size="icon">
-                  <Undo2 />
-                </Button>
-              </ToastAction>
-            ) : undefined,
-        })
-      } else {
-        toast({
-          variant: 'default',
-          title: 'Data kategori berhasil dihapus.',
-          description: `${isCategoriesArray(data) ? data[0]['name'] : 'Data'
-            } telah ${isTrash
-              ? 'dihapus secara permanen'
-              : can('force delete categories')
-                ? 'dipindahkan ke folder sampah'
-                : 'dihapus'
-            }`,
-          action:
-            !isTrash && can('restore categories') ? (
-              <ToastAction
-                altText="Batal"
-                onClick={() => handleRestore(data)}
-                asChild
-              >
-                <Button variant="ghost" size="icon">
-                  <Undo2 />
-                </Button>
-              </ToastAction>
-            ) : undefined,
-        })
+          mutate()
+
+          if (id.length > 1) {
+            toast({
+              variant: 'default',
+              title: 'Data kategori berhasil dihapus',
+              description: `${id.length} data telah ${isTrash
+                ? 'dihapus secara permanen'
+                : can('force delete categories')
+                  ? 'dipindahkan ke folder sampah'
+                  : 'dihapus'
+                }`,
+              action:
+                !isTrash && can('restore categories') ? (
+                  <ToastAction
+                    altText="Batal"
+                    onClick={() => handleRestore(data)}
+                    asChild
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Undo2 />
+                    </Button>
+                  </ToastAction>
+                ) : undefined,
+            })
+          } else {
+            toast({
+              variant: 'default',
+              title: 'Data kategori berhasil dihapus.',
+              description: `${isCategoriesArray(data) ? data[0]['name'] : 'Data'
+                } telah ${isTrash
+                  ? 'dihapus secara permanen'
+                  : can('force delete categories')
+                    ? 'dipindahkan ke folder sampah'
+                    : 'dihapus'
+                }`,
+              action:
+                !isTrash && can('restore categories') ? (
+                  <ToastAction
+                    altText="Batal"
+                    onClick={() => handleRestore(data)}
+                    asChild
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Undo2 />
+                    </Button>
+                  </ToastAction>
+                ) : undefined,
+            })
+          }
+        } catch (error) {
+          if (error instanceof AxiosError && error.response?.data.code === 409) {
+            toast({
+              variant: 'destructive',
+              title: 'Gagal',
+              description: "Kategori masih terasosiasi dengan beberapa data produk.",
+            })
+          }
+          else {
+            toast({
+              variant: 'destructive',
+              title: 'Gagal',
+              description:
+                error instanceof AxiosError
+                  ? error.response?.data.status
+                  : 'Terjadi kesalahan',
+            })
+          }
+        }
       }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Gagal',
-        description:
-          error instanceof AxiosError
-            ? error.response?.data.status
-            : 'Terjadi kesalahan',
-      })
-    }
+    })
+
+    setAlert(true)
   }
 
   const handleEmptyTrash = async () => {
     if (!isTrash) return
-    try {
-      await axios.delete(`api/v1/categories/trash/empty`)
-      mutate()
 
-      toast({
-        variant: 'success',
-        title: 'Folder sampah berhasil dikosongkan',
-        description:
-          'Seluruh data kategori pada folder Sampah telah dihapus secara permanen',
+    setAlertTitle("Kosongkan Sampah?")
+    setAlertDescription(`Seluruh data akan dihapus secara permanen`)
+    setAlertContinueAction(() => {
+      return async () => {
+        try {
+          await axios.delete(`api/v1/categories/trash/empty`)
+          mutate()
+
+          toast({
+            variant: 'success',
+            title: 'Folder sampah berhasil dikosongkan',
+            description:
+              'Seluruh data kategori pada folder Sampah telah dihapus secara permanen',
+          })
+        } catch (error) {
+          toast({
+            variant: 'destructive',
+            title: 'Gagal',
+            description:
+              error instanceof AxiosError
+                ? error.response?.data.status
+                : 'Terjadi kesalahan',
+          })
+        }
+      }
+    })
+
+    setAlert(true)
+  }
+
+  const handleExportData = async (
+    fileType: 'XLSX' | 'CSV',
+    id?: ICategory['id'][],
+    startDate?: string,
+    endDate?: string,
+  ) => {
+    const params = {
+      id: id,
+      startDate: startDate,
+      endDate: endDate,
+      fileType: fileType,
+    }
+
+    try {
+      const response = await axios.get(`api/v1/categories/export`, {
+        responseType: 'blob',
+        params: _.pickBy(params, value => !!value),
       })
+
+      const moment = require('moment')
+
+      const appName = process.env.NEXT_PUBLIC_APP_NAME
+
+      const date = moment().format('YYYY-MM-DD')
+      const time = moment().format('HHmmss')
+
+      let fileName = title
+
+      if (id && id.length > 0) {
+        fileName += ' (Custom Export)'
+      }
+
+      if (startDate && endDate) {
+        fileName += ` (Custom Range Export) ${startDate}-${endDate}`
+      }
+
+      fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`
+
+      const url = URL.createObjectURL(
+        new Blob([response.data], {
+          type:
+            fileType === 'XLSX'
+              ? 'application/vnd.ms-excel'
+              : fileType === 'CSV'
+                ? 'text/csv'
+                : 'application/octet-stream',
+        }),
+      )
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Gagal',
         description:
           error instanceof AxiosError
-            ? error.response?.data.status
+            ? error.response?.data.errors
             : 'Terjadi kesalahan',
       })
     }
@@ -328,10 +437,18 @@ const Categories = () => {
             handleDelete,
             handleRestore,
             handleGetAllId,
+            handleExportData,
             mutate,
           }}
         />
       </ContentLayout>
+      <CustomAlertDialog
+        open={alert}
+        onOpenChange={setAlert}
+        title={alertTitle}
+        description={alertDescription}
+        onContinue={alertContinueAction}
+      />
     </AppLayout>
   )
 }

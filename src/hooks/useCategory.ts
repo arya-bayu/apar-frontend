@@ -19,20 +19,21 @@ export const useCategory = (callback?: Function) => {
     [pageIndex, pageSize],
   )
 
+  const apiUrl =
+    'api/v1/categories' +
+    (isTrash ? '/trash' : '') +
+    '/?columns=id,name,description' +
+    `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
+    (filter ? `&filter=${filter}` : '')
+
   const {
     data: categories,
     error,
     isValidating,
     mutate,
-  } = useSWR(
-    `api/v1/categories${isTrash ? '/trash' : ''}?pageIndex=${
-      pageIndex + 1
-    }&pageSize=${pageSize}${filter && `&filter=${filter}`}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    },
-  )
+  } = useSWR(apiUrl, fetcher, {
+    keepPreviousData: true,
+  })
 
   return {
     isTrash,

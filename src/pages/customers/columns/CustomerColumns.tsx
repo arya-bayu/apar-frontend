@@ -16,16 +16,16 @@ export const customerColumns: ColumnDef<ICustomer>[] = [
       title: 'Perusahaan',
     },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama Perusahaan" />
+      <DataTableColumnHeader column={column} title="Perusahaan" />
     ),
   },
   {
     accessorKey: 'pic_name',
     meta: {
-      title: 'Nama PIC',
+      title: 'PIC',
     },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama PIC" />
+      <DataTableColumnHeader column={column} title="PIC" />
     ),
   },
   {

@@ -18,20 +18,20 @@ export const useUsers = (callback?: Function) => {
     [pageIndex, pageSize],
   )
 
+  const apiUrl =
+    'api/v1/users' +
+    '/?columns=id,name,phone,email' +
+    `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
+    (filter ? `&filter=${filter}` : '')
+
   const {
     data: users,
     error,
     isValidating,
     mutate,
-  } = useSWR(
-    `/api/v1/users?pageIndex=${pageIndex + 1}&pageSize=${pageSize}${
-      filter && `&filter=${filter}`
-    }`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    },
-  )
+  } = useSWR(apiUrl, fetcher, {
+    keepPreviousData: true,
+  })
 
   return {
     filter,

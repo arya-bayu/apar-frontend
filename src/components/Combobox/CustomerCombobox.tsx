@@ -45,9 +45,9 @@ export function CustomerCombobox({ value, disabled = false, onSelect }: Customer
 
     async function fetchCustomers() {
         try {
-            const response = await axios.get('api/v1/customers?columns[]=id&columns[]=company_name');
+            const response = await axios.get('api/v1/customers?columns=id,company_name');
 
-            setCustomers(response.data.data.rows)
+            setCustomers(response.data.data)
         } catch (error) {
             if (error instanceof AxiosError)
                 toast({
@@ -95,11 +95,13 @@ export function CustomerCombobox({ value, disabled = false, onSelect }: Customer
             <DrawerTrigger asChild>
                 <Button disabled={disabled} variant="outline" className="w-full justify-start">
 
-                    {value
-                        ? customers.find(
-                            (customer) => customer.id === value
-                        )?.company_name
-                        : "Pilih customer"}
+                    <p className="truncate">
+                        {value
+                            ? customers.find(
+                                (customer) => customer.id === value
+                            )?.company_name
+                            : "Pilih customer"}
+                    </p>
 
                 </Button>
             </DrawerTrigger>

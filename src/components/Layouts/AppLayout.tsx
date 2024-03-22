@@ -15,6 +15,8 @@ import {
   ArrowUpSquareIcon,
   ArrowDownSquareIcon,
   UserSquare2,
+  ShoppingBag,
+  FileBox,
 } from 'lucide-react'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import useSidebarStore from '@/store/useSidebarStore'
@@ -101,18 +103,17 @@ const AppLayout = ({
             {can('access purchases') && (
               <SidebarItem
                 href="/purchases"
-                icon={<ArrowDownSquareIcon size={20} />}
-                text="Inbound"
+                icon={<ShoppingBag size={20} />}
+                text="Pembelian"
               />
             )}
             {can('access invoices') && (
               <SidebarItem
                 href="/invoices"
-                icon={<ArrowUpSquareIcon size={20} />}
-                text="Outbound"
+                icon={<FileBox size={20} />}
+                text="Invoice"
               />
             )}
-            {/* <SidebarItem href="/blogs" icon={<Newspaper size={20} />} text="Blog" alert /> */}
             <hr className="m-3 divide-y rounded-full border-zinc-600/10 dark:border-zinc-50/10" />
             {can('access users') && (
               <SidebarItem
@@ -125,11 +126,6 @@ const AppLayout = ({
               href="/settings"
               icon={<Settings size={20} />}
               text="Pengaturan"
-            />
-            <SidebarItem
-              href="/help"
-              icon={<LifeBuoy size={20} />}
-              text="Bantuan"
             />
           </Sidebar>
 

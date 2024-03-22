@@ -19,6 +19,7 @@ import Link from 'next/link'
 import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
+import CustomAlertDialog from "@/components/AlertDialog"
 
 const Customers = () => {
   const {
@@ -38,6 +39,13 @@ const Customers = () => {
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
   const { isBelowXs } = useBreakpoint('xs')
 
+  const [alert, setAlert] = useState(false)
+  const [alertTitle, setAlertTitle] = useState<string>("")
+  const [alertDescription, setAlertDescription] = useState<string>("")
+  const [alertContinueAction, setAlertContinueAction] = useState(() => {
+    return () => { };
+  });
+
   useEffect(() => {
     const isTrashRoute = router.asPath.includes('/trash')
     setIsTrash(isTrashRoute)
@@ -55,10 +63,10 @@ const Customers = () => {
   const handleGetAllId = async () => {
     try {
       const response = await axios.get(
-        `api/v1/customers${isTrash ? '/trash' : ''}/?columns[]=id`,
+        `api/v1/customers${isTrash ? '/trash' : ''}/?columns=id`,
       )
 
-      return response.data.data.rows
+      return response.data.data
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -163,103 +171,138 @@ const Customers = () => {
   }
 
   const handleDelete = async (data: ICustomer[] | string[]) => {
-    try {
-      const id = isCustomerArray(data)
-        ? data.map(customer => customer.id)
-        : data
+    const id = isCustomerArray(data)
+      ? data.map(customer => customer.id)
+      : data
 
-      await axios.delete(`api/v1/customers${isTrash ? '/trash' : ''}`, {
-        params: { id: id },
-      })
 
-      mutate()
+    setAlertTitle("Hapus Customer?")
+    setAlertDescription(`
+      ${(isCustomerArray(data) ? data[0]["company_name"] : data.length + ' data ')}
+      akan ${isTrash
+        ? 'dihapus secara permanen'
+        : can('force delete customers ')
+          ? 'dipindahkan ke folder sampah'
+          : 'dihapus dari tabel customer  '
+      }`
+    )
+    setAlertContinueAction(() => {
+      return async () => {
+        try {
+          await axios.delete(`api/v1/customers${isTrash ? '/trash' : ''}`, {
+            params: { id: id },
+          })
 
-      if (id.length > 1) {
-        toast({
-          variant: 'success',
-          title: 'Data pelanggan berhasil dihapus',
-          description: `${id.length} data telah ${isTrash
-            ? 'dihapus secara permanen'
-            : can('force delete customers')
-              ? 'dipindahkan ke folder sampah'
-              : 'dihapus'
-            }`,
-          action:
-            !isTrash && can('restore customers') ? (
-              <ToastAction
-                altText="Batal"
-                onClick={() => handleRestore(data)}
-                asChild
-              >
-                <Button variant="ghost" size="icon">
-                  <Undo2 />
-                </Button>
-              </ToastAction>
-            ) : undefined,
-        })
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Data pelanggan berhasil dihapus.',
-          description: `${isCustomerArray(data) ? data[0]['company_name'] : 'Data'
-            } telah ${isTrash
-              ? 'dihapus secara permanen'
-              : can('force delete customers')
-                ? 'dipindahkan ke folder sampah'
-                : 'dihapus'
-            }`,
-          action:
-            !isTrash && can('restore customers') ? (
-              <ToastAction
-                altText="Batal"
-                onClick={() => handleRestore(data)}
-                asChild
-              >
-                <Button variant="ghost" >
-                  Undo
-                </Button>
-              </ToastAction>
-            ) : undefined,
-        })
+          mutate()
+
+          if (id.length > 1) {
+            toast({
+              variant: 'default',
+              title: 'Data customer berhasil dihapus',
+              description: `${id.length} data telah ${isTrash
+                ? 'dihapus secara permanen'
+                : can('force delete customers')
+                  ? 'dipindahkan ke folder sampah'
+                  : 'dihapus'
+                }`,
+              action:
+                !isTrash && can('restore customers') ? (
+                  <ToastAction
+                    altText="Batal"
+                    onClick={() => handleRestore(data)}
+                    asChild
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Undo2 />
+                    </Button>
+                  </ToastAction>
+                ) : undefined,
+            })
+          } else {
+            toast({
+              variant: 'default',
+              title: 'Data customer berhasil dihapus.',
+              description: `${isCustomerArray(data) ? data[0]['company_name'] : 'Data'
+                } telah ${isTrash
+                  ? 'dihapus secara permanen'
+                  : can('force delete customers')
+                    ? 'dipindahkan ke folder sampah'
+                    : 'dihapus'
+                }`,
+              action:
+                !isTrash && can('restore customers') ? (
+                  <ToastAction
+                    altText="Batal"
+                    onClick={() => handleRestore(data)}
+                    asChild
+                  >
+                    <Button variant="ghost" size="icon">
+                      <Undo2 />
+                    </Button>
+                  </ToastAction>
+                ) : undefined,
+            })
+          }
+        } catch (error) {
+          if (error instanceof AxiosError && error.response?.data.code === 409) {
+            toast({
+              variant: 'destructive',
+              title: 'Gagal',
+              description: "Customer masih terasosiasi dengan beberapa data invoice.",
+            })
+          }
+          else {
+            toast({
+              variant: 'destructive',
+              title: 'Gagal',
+              description:
+                error instanceof AxiosError
+                  ? error.response?.data.status
+                  : 'Terjadi kesalahan',
+            })
+          }
+        }
       }
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Gagal',
-        description:
-          error instanceof AxiosError
-            ? error.response?.data.status
-            : 'Terjadi kesalahan',
-      })
-    }
+    })
+
+    setAlert(true)
   }
 
   const handleEmptyTrash = async () => {
     if (!isTrash) return
-    try {
-      await axios.delete(`api/v1/customers/trash/empty`)
-      mutate()
 
-      toast({
-        variant: 'success',
-        title: 'Folder sampah berhasil dikosongkan',
-        description:
-          'Seluruh data pelanggan pada folder Sampah telah dihapus secara permanen',
-      })
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Gagal',
-        description:
-          error instanceof AxiosError
-            ? error.response?.data.status
-            : 'Terjadi kesalahan',
-      })
-    }
+    setAlertTitle("Kosongkan Sampah?")
+    setAlertDescription(`Seluruh data akan dihapus secara permanen`)
+    setAlertContinueAction(() => {
+      return async () => {
+        try {
+          await axios.delete(`api/v1/customers/trash/empty`)
+          mutate()
+
+          toast({
+            variant: 'success',
+            title: 'Folder sampah berhasil dikosongkan',
+            description:
+              'Seluruh data produk pada folder Sampah telah dihapus secara permanen',
+          })
+        } catch (error) {
+          toast({
+            variant: 'destructive',
+            title: 'Gagal',
+            description:
+              error instanceof AxiosError
+                ? error.response?.data.status
+                : 'Terjadi kesalahan',
+          })
+        }
+      }
+    })
+
+    setAlert(true)
   }
 
   const handleExportData = async (
-    fileType: 'XLSX' | 'CSV' | 'PDF',
+    fileType: 'XLSX' | 'CSV',
     id?: ICustomer['id'][],
     startDate?: string,
     endDate?: string,
@@ -296,30 +339,22 @@ const Customers = () => {
 
       fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`
 
-      if (fileType === 'PDF') {
-        const blob = new Blob([response.data], {
-          type: 'application/pdf',
-        })
-        const url = URL.createObjectURL(blob)
-        const printWindow = window.open(url)
-        printWindow?.print()
-      } else {
-        const url = URL.createObjectURL(
-          new Blob([response.data], {
-            type:
-              fileType === 'XLSX'
-                ? 'application/vnd.ms-excel'
-                : fileType === 'CSV'
-                  ? 'text/csv'
-                  : 'application/octet-stream',
-          }),
-        )
-        const link = document.createElement('a')
-        link.href = url
-        link.setAttribute('download', fileName)
-        document.body.appendChild(link)
-        link.click()
-      }
+      const url = URL.createObjectURL(
+        new Blob([response.data], {
+          type:
+            fileType === 'XLSX'
+              ? 'application/vnd.ms-excel'
+              : fileType === 'CSV'
+                ? 'text/csv'
+                : 'application/octet-stream',
+        }),
+      )
+      const link = document.createElement('a')
+      link.href = url
+      link.setAttribute('download', fileName)
+      document.body.appendChild(link)
+      link.click()
+
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -407,6 +442,13 @@ const Customers = () => {
           }}
         />
       </ContentLayout>
+      <CustomAlertDialog
+        open={alert}
+        onOpenChange={setAlert}
+        title={alertTitle}
+        description={alertDescription}
+        onContinue={alertContinueAction}
+      />
     </AppLayout>
   )
 }

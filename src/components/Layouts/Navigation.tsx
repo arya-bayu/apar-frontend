@@ -82,7 +82,7 @@ const Navigation = ({ user }: INavigation) => {
           </div>
 
           <div className="mx-2 my-auto flex flex-grow sm:mx-0 sm:mr-6 md:mr-2 md:w-52 md:flex-none">
-            <Button
+            {/* <Button
               variant="outline"
               className="hidden h-9 flex-grow justify-start py-2 pl-4 pr-2 text-zinc-500 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-zinc-50 xs:flex"
             >
@@ -91,7 +91,7 @@ const Navigation = ({ user }: INavigation) => {
                 <span className="text-zinc-500">Telusuri</span>
               </div>
               <Shortcut keys={['command']}>K</Shortcut>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Settings Dropdown */}
@@ -101,12 +101,12 @@ const Navigation = ({ user }: INavigation) => {
               <span className="sr-only">Penelusuran</span>
             </Button>
             <ModeToggle />
-            <Button variant="ghost" size="icon" className="relative">
+            {/* <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-[1.2rem] w-[1.2rem]" />
-              {/** To do: notification alert */}
+              {/** To do: notification alert 
               <div className="absolute right-2 top-1.5 h-2 w-2 rounded bg-red-400" />
               <span className="sr-only">Notifikasi</span>
-            </Button>
+            </Button> */}
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

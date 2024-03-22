@@ -1,12 +1,14 @@
-import React from 'react'
+import React, { PropsWithChildren, useState } from 'react'
 import { useUserRoles } from '@/hooks/useUserRoles'
 import axios from '@/lib/axios'
 import {
+  Dialog,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -49,7 +51,8 @@ const inviteUserFormSchema = z.object({
   ),
 })
 
-export default function InviteUserDialog() {
+export default function InviteUserDialog({ children }: PropsWithChildren) {
+  const [open, setOpen] = useState(false)
   const { roles } = useUserRoles()
   const { toast } = useToast()
 
@@ -101,80 +104,85 @@ export default function InviteUserDialog() {
   }
 
   return (
-    <DialogContent className="sm:max-w-[425px]">
-      <DialogHeader className="space-y-2">
-        <DialogTitle>Undang Pengguna</DialogTitle>
-        <DialogDescription>
-          Undang seseorang menjadi pengguna sistem inventaris CV. Indoka Surya
-          Jaya
-        </DialogDescription>
-      </DialogHeader>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="grid gap-4 py-4"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem className="grid grid-cols-5 items-center gap-4">
-                <FormLabel className="text-right">Email</FormLabel>
-                <FormControl className="col-span-4">
-                  <div className="flex flex-col">
-                    <Input
-                      placeholder="hello@indokasuryajaya.com"
-                      {...field}
-                      required
-                    />
-                    <FormMessage />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {children}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader className="space-y-2">
+          <DialogTitle>Undang Pengguna</DialogTitle>
+          <DialogDescription>
+            Undang seseorang menjadi pengguna sistem inventaris CV. Indoka Surya
+            Jaya
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="grid gap-4 py-4"
+          >
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-5 items-center gap-4">
+                  <FormLabel className="text-right">Email</FormLabel>
+                  <FormControl className="col-span-4">
+                    <div className="flex flex-col">
+                      <Input
+                        placeholder="hello@indokasuryajaya.com"
+                        {...field}
+                        required
+                      />
+                      <FormMessage />
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="role"
-            render={({ field }) => (
-              <FormItem className="grid grid-cols-5 items-center gap-4">
-                <FormLabel className="text-right">Role</FormLabel>
-                <FormControl className="col-span-4">
-                  <div className="flex flex-col">
-                    <Select
-                      {...field}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                      required
-                    >
-                      <SelectTrigger id="role" className="col-span-4">
-                        <SelectValue placeholder="Pilih Role" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Pilih Role</SelectLabel>
-                          {roles?.data.map((role: Role) => {
-                            return (
-                              <SelectItem key={role} value={role}>
-                                {role}
-                              </SelectItem>
-                            )
-                          })}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <DialogFooter>
-            <Button type="submit">Kirim Undangan</Button>
-          </DialogFooter>
-        </form>
-      </Form>
-    </DialogContent>
+            <FormField
+              control={form.control}
+              name="role"
+              render={({ field }) => (
+                <FormItem className="grid grid-cols-5 items-center gap-4">
+                  <FormLabel className="text-right">Role</FormLabel>
+                  <FormControl className="col-span-4">
+                    <div className="flex flex-col">
+                      <Select
+                        {...field}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        required
+                      >
+                        <SelectTrigger id="role" className="col-span-4">
+                          <SelectValue placeholder="Pilih Role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>Pilih Role</SelectLabel>
+                            {roles?.data.map((role: Role) => {
+                              return (
+                                <SelectItem key={role} value={role}>
+                                  {role}
+                                </SelectItem>
+                              )
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </div>
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Kirim Undangan</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -42,9 +42,9 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
     useEffect(() => {
         async function fetchCategories() {
             try {
-                const response = await axios.get('api/v1/categories?columns[]=id&columns[]=name');
+                const response = await axios.get('api/v1/categories?columns=id,name');
 
-                setCategories(response.data.data.rows)
+                setCategories(response.data.data)
             } catch (error) {
                 if (error instanceof AxiosError)
                     toast({
@@ -90,11 +90,13 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
             <DrawerTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
 
-                    {value
-                        ? categories.find(
-                            (category) => category.id === value
-                        )?.name
-                        : "Kategori produk"}
+                    <p className="truncate">
+                        {value
+                            ? categories.find(
+                                (category) => category.id === value
+                            )?.name
+                            : "Kategori produk"}
+                    </p>
 
                 </Button>
             </DrawerTrigger>

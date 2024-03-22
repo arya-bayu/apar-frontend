@@ -33,6 +33,7 @@ import Shortcut from '@/components/Shortcut'
 
 import '@tanstack/react-table'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
+import { Dialog } from "@/components/ui/dialog"
 
 declare module '@tanstack/table-core' {
   interface TableMeta<TData extends RowData> {
@@ -128,76 +129,78 @@ export const userColumns: ColumnDef<IUser>[] = [
       if (!can) return null
 
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="relative float-right">
-              <DotsHorizontalIcon />
-              <span className="sr-only">Action</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuLabel>Menu</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Kontak</DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent className="w-44">
-                    <DropdownMenuItem
-                      onClick={() =>
-                        (window.location.href = `mailto:${user.email}`)
-                      }
-                    >
-                      Email
-                      <DropdownMenuShortcut>
-                        <Shortcut keys={['command']}>K</Shortcut>
-                      </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        window.open(`https://wa.me/${user.phone}`, '_blank')
-                      }
-                    >
-                      WhatsApp
-                      <DropdownMenuShortcut>
-                        <Shortcut keys={['command']}>W</Shortcut>
-                      </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() =>
-                        (window.location.href = `tel:${user.phone}`)
-                      }
-                    >
-                      Telepon
-                      <DropdownMenuShortcut>
-                        <Shortcut keys={['command']}>T</Shortcut>
-                      </DropdownMenuShortcut>
-                    </DropdownMenuItem>
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            </DropdownMenuGroup>
-            {(authUser?.id === user.id || can('delete users')) && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() =>
-                    user.id && table.options.meta?.handleDelete([user])
-                  }
-                  className="bg-red-500 text-white focus:bg-red-600 focus:text-white dark:focus:bg-red-600"
-                >
-                  Hapus Akun
-                  <DropdownMenuShortcut className="opacity-80">
-                    <Shortcut
-                      variant="destructive"
-                      keys={['shift', 'command', 'delete']}
-                    />
-                  </DropdownMenuShortcut>
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <Dialog>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="relative float-right">
+                <DotsHorizontalIcon />
+                <span className="sr-only">Action</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>Menu</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>Kontak</DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent className="w-44">
+                      <DropdownMenuItem
+                        onClick={() =>
+                          (window.location.href = `mailto:${user.email}`)
+                        }
+                      >
+                        Email
+                        <DropdownMenuShortcut>
+                          <Shortcut keys={['command']}>K</Shortcut>
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          window.open(`https://wa.me/${user.phone}`, '_blank')
+                        }
+                      >
+                        WhatsApp
+                        <DropdownMenuShortcut>
+                          <Shortcut keys={['command']}>W</Shortcut>
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          (window.location.href = `tel:${user.phone}`)
+                        }
+                      >
+                        Telepon
+                        <DropdownMenuShortcut>
+                          <Shortcut keys={['command']}>T</Shortcut>
+                        </DropdownMenuShortcut>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              </DropdownMenuGroup>
+              {(authUser?.id === user.id || can('delete users')) && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() =>
+                      user.id && table.options.meta?.handleDelete([user])
+                    }
+                    className="bg-red-500 text-white focus:bg-red-600 focus:text-white dark:focus:bg-red-600"
+                  >
+                    Hapus Akun
+                    <DropdownMenuShortcut className="opacity-80">
+                      <Shortcut
+                        variant="destructive"
+                        keys={['shift', 'command', 'delete']}
+                      />
+                    </DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Dialog>
       )
     },
   },

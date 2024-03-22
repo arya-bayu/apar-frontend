@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { PenSquare, DatabaseBackup, Trash2, X, Check, Eye, EditIcon } from 'lucide-react'
+import { Eye, EditIcon } from 'lucide-react'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
@@ -65,7 +65,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
     ),
     cell: ({ row }) => {
       const invoice = row.original
-      return currencyFormatter(invoice.invoice_items.reduce((acc, item) => acc + item.total_price, 0))
+      return currencyFormatter(invoice.total)
     }
   },
   {

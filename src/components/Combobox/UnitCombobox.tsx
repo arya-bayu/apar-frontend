@@ -42,9 +42,9 @@ export function UnitCombobox({ value, onSelect }: UnitComboboxProps) {
     useEffect(() => {
         async function fetchUnits() {
             try {
-                const response = await axios.get('api/v1/units?columns[]=id&columns[]=name');
+                const response = await axios.get('api/v1/units?columns=id,name');
 
-                setUnits(response.data.data.rows)
+                setUnits(response.data.data)
             } catch (error) {
                 if (error instanceof AxiosError)
                     toast({
@@ -91,13 +91,13 @@ export function UnitCombobox({ value, onSelect }: UnitComboboxProps) {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button variant="outline" className="w-full justify-start">
-
-                    {value
-                        ? units.find(
-                            (unit) => unit.id === value
-                        )?.name
-                        : "Pilih unit produk"}
-
+                    <p className="truncate">
+                        {value
+                            ? units.find(
+                                (unit) => unit.id === value
+                            )?.name
+                            : "Pilih unit produk"}
+                    </p>
                 </Button>
             </DrawerTrigger>
             <DrawerContent>

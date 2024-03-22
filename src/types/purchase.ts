@@ -8,6 +8,7 @@ export interface IPurchase {
   purchase_number: string
   date: Date
   supplier_id: number
+  total: number
   images: IImage[]
   supplier: ISupplier
   purchase_items: IPurchaseItem[]

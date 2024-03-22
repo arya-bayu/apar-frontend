@@ -44,7 +44,7 @@ const Sidebar = ({ children }: PropsWithChildren) => {
         <div className="relative flex items-center justify-between px-6 py-6">
           <Link href="/">
             <img
-              src="logo.png"
+              src="/logo.png"
               className={`overflow-hidden transition-all ease-in-out ${expanded ? 'w-12' : 'w-0'
                 }`}
               alt="Logo"

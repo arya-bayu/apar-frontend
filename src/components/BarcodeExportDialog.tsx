@@ -85,7 +85,7 @@ export default function BarcodeExportDialog({
                 </DialogHeader>
                 <div className="flex justify-center">
                     <div ref={printRef} className="flex flex-col items-center w-[210px] bg-white">
-                        <div className="text-center text-xs tracking-tighter font-mono text-wrap">
+                        <div className="text-center text-xs tracking-tighter font-mono text-wrap dark:text-black mt-2">
                             {showCompanyName && (<p className="font-semibold">{company}</p>)}
                             {showProductName && (<p className="leading-[1.2] ">{productName}</p>)}
                         </div>

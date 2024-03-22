@@ -13,11 +13,11 @@ export const unitColumns: ColumnDef<IUnit>[] = [
   {
     accessorKey: 'name',
     meta: {
-      title: 'Nama',
+      title: 'Unit of Measure',
     },
     enableHiding: false,
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Nama" disableHiding />
+      <DataTableColumnHeader column={column} title="Unit of Measure" disableHiding />
     ),
   },
   {

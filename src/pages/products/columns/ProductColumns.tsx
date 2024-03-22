@@ -6,13 +6,43 @@ import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
 import ProductDialog from '../partials/ProductDialog'
 import { IProduct } from "@/types/product"
-import BarcodeWithText from "@/components/BarcodeExportDialog"
-import { useState } from "react"
 import BarcodeExportDialog from "@/components/BarcodeExportDialog"
+import currencyFormatter from "@/lib/currency"
+import { Switch } from "@/components/ui/switch"
+import axios from "@/lib/axios"
+import { usePathname } from "next/navigation"
 
 
 export const productColumns: ColumnDef<IProduct>[] = [
   createSelectColumn(),
+  {
+    accessorKey: 'status',
+    meta: {
+      title: 'Status',
+    },
+    sortDescFirst: true,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row, table }) => {
+      const product = row.original
+      const pathname = usePathname()
+
+      if (pathname === '/products/trash') return <></>
+      return (
+        <Switch
+          className="ml-2"
+          checked={product.status}
+          onCheckedChange={(checked) => {
+            axios.put(`/api/v1/products/update-status`, {
+              'product_ids': [product.id],
+              'active': checked
+            }).then(() => table.options?.meta?.mutate?.())
+          }}
+        />
+      )
+    }
+  },
   {
     accessorKey: 'serial_number',
     meta: {
@@ -64,6 +94,10 @@ export const productColumns: ColumnDef<IProduct>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Harga" />
     ),
+    cell: ({ row }) => {
+      const product = row.original
+      return currencyFormatter(product.price)
+    }
   },
   {
     accessorKey: 'supplier_id',

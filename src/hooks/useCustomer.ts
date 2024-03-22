@@ -19,20 +19,21 @@ export const useCustomer = (callback?: Function) => {
     [pageIndex, pageSize],
   )
 
+  const apiUrl =
+    'api/v1/customers' +
+    (isTrash ? '/trash' : '') +
+    '/?columns=id,company_name,pic_name,phone,email,address' +
+    `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
+    (filter ? `&filter=${filter}` : '')
+
   const {
     data: customers,
     error,
     isValidating,
     mutate,
-  } = useSWR(
-    `api/v1/customers${isTrash ? '/trash' : ''}?pageIndex=${
-      pageIndex + 1
-    }&pageSize=${pageSize}${filter && `&filter=${filter}`}`,
-    fetcher,
-    {
-      keepPreviousData: true,
-    },
-  )
+  } = useSWR(apiUrl, fetcher, {
+    keepPreviousData: true,
+  })
 
   return {
     isTrash,

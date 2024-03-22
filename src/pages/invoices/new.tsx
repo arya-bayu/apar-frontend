@@ -172,8 +172,8 @@ const NewInvoicePage = () => {
             formData.append(`invoice_items[${index}][product_id]`, String(item.product.id));
             formData.append(`invoice_items[${index}][unit_price]`, String(item.unit_price));
             formData.append(`invoice_items[${index}][quantity]`, String(item.quantity));
-            if (item.product.description) {
-                formData.append(`invoice_items[${index}][description]`, String(item.product.description));
+            if (item.description) {
+                formData.append(`invoice_items[${index}][description]`, String(item.description));
             }
         });
 
@@ -445,6 +445,7 @@ const NewInvoicePage = () => {
                                     <TableRow>
                                         <TableHead>Nama</TableHead>
                                         <TableHead>Kategori</TableHead>
+                                        <TableHead>Stok</TableHead>
                                         <TableHead>Qty</TableHead>
                                         <TableHead>Harga</TableHead>
                                         <TableHead className="text-right">Note</TableHead>
@@ -735,7 +736,7 @@ const NewInvoicePage = () => {
                             )}
                             <TableFooter>
                                 <TableRow>
-                                    <TableCell colSpan={isBelowSm ? 1 : 5}>Total</TableCell>
+                                    <TableCell colSpan={isBelowSm ? 1 : 6}>Total</TableCell>
                                     <TableCell className="text-right">{currencyFormatter(invoiceItems.reduce((acc, item) => acc + item.total_price, 0))}</TableCell>
                                     {!isBelowSm && (<TableCell />)}
                                 </TableRow>

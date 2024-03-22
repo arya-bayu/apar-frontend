@@ -8,6 +8,7 @@ export interface IInvoice {
   invoice_number: string
   date: Date
   customer_id: number
+  total: number
   images: IImage[]
   customer: ICustomer
   invoice_items: IInvoiceItem[]

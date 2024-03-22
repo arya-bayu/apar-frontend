@@ -499,7 +499,7 @@ const InvoicePage = () => {
                                     <TableRow>
                                         <TableHead>Nama</TableHead>
                                         <TableHead>Kategori</TableHead>
-                                        <TableHead>Stok</TableHead>
+                                        {invoice.status === 0 && (<TableHead>Stok</TableHead>)}
                                         <TableHead>Qty</TableHead>
                                         <TableHead>Harga</TableHead>
                                         <TableHead className="text-right">Note</TableHead>
@@ -529,10 +529,12 @@ const InvoicePage = () => {
                                                 <TableHead>Kategori</TableHead>
                                                 <TableCell className="whitespace-nowrap">{item.category.name}</TableCell>
                                             </TableRow>
-                                            <TableRow>
-                                                <TableHead className="gap-2">Stok  {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableHead>
-                                                <TableCell className="whitespace-nowrap">{item.product.stock}</TableCell>
-                                            </TableRow>
+                                            {invoice.status === 0 && (
+                                                <TableRow>
+                                                    <TableHead className="gap-2">Stok </TableHead>
+                                                    <TableCell className="whitespace-nowrap">{item.product.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
+                                                </TableRow>
+                                            )}
                                             <TableRow>
                                                 <TableHead>Qty</TableHead>
                                                 <TableCell className="whitespace-nowrap">
@@ -550,7 +552,7 @@ const InvoicePage = () => {
                                                                         placeholder="Kuantitas"
                                                                         width={80}
                                                                         value={(item.quantity).toString()}
-                                                                        className={invoice.status === 0 && item.quantity > item.product.stock ? `border-yellow-300 bg-yellow-100` : ''}
+                                                                        className={invoice.status === 0 && item.quantity > item.product.stock ? `text-zinc-800 border-yellow-300 bg-yellow-100` : ''}
                                                                         onChange={(event) => {
                                                                             let newValue = Number(event.target.value);
                                                                             const updatedItems = [...invoiceItems];
@@ -654,22 +656,24 @@ const InvoicePage = () => {
                                                 <TableCell className="text-right whitespace-nowrap">{currencyFormatter(item.total_price)}</TableCell>
 
                                             </TableRow>
-                                            {invoice.status == 0 && (
-                                                <TableRow className="">
-                                                    <TableCell colSpan={2} className="text-right">
-                                                        <Button
-                                                            variant="destructive"
-                                                            className="w-full"
-                                                            onClick={() => {
-                                                                const updatedItems = invoiceItems.filter((product) => product.id !== item.id);
-                                                                setInvoiceItems(updatedItems);
-                                                            }}>
-                                                            Hapus {item.product.name}
-                                                            <span className="sr-only">Hapus</span>
-                                                        </Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            )}
+                                            {
+                                                invoice.status == 0 && (
+                                                    <TableRow className="">
+                                                        <TableCell colSpan={2} className="text-right">
+                                                            <Button
+                                                                variant="destructive"
+                                                                className="w-full"
+                                                                onClick={() => {
+                                                                    const updatedItems = invoiceItems.filter((product) => product.id !== item.id);
+                                                                    setInvoiceItems(updatedItems);
+                                                                }}>
+                                                                Hapus {item.product.name}
+                                                                <span className="sr-only">Hapus</span>
+                                                            </Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            }
                                         </TableBody>
                                     ))}
                                 </>
@@ -679,7 +683,7 @@ const InvoicePage = () => {
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium">{item.product?.name}</TableCell>
                                             <TableCell>{item.category?.name}</TableCell>
-                                            <TableCell className="gap-2">{item.product?.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
+                                            {invoice.status === 0 && (<TableCell className="gap-2">{item.product?.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>)}
                                             {invoice.status == 1 && (<TableCell>{item.quantity}</TableCell>)}
                                             {invoice.status == 1 && (<TableCell>{currencyFormatter(item.total_price)}</TableCell>)}
                                             {invoice.status == 1 && (<TableCell className="text-right">{item.description}</TableCell>)}
@@ -799,7 +803,7 @@ const InvoicePage = () => {
                             )}
                             <TableFooter>
                                 <TableRow>
-                                    <TableCell colSpan={isBelowSm ? 1 : 6}>Total Penjualan</TableCell>
+                                    <TableCell colSpan={isBelowSm ? 1 : invoice.status === 0 ? 6 : 5}>Total Penjualan</TableCell>
                                     <TableCell className="text-right">{currencyFormatter(invoiceItems.reduce((acc, item) => acc + item.total_price, 0))}</TableCell>
                                     {!isBelowSm && (<TableCell />)}
                                 </TableRow>

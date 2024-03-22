@@ -5,6 +5,7 @@ import { IImage } from './image'
 
 export interface IProduct {
   id: number
+  status: boolean
   serial_number: string
   name: string
   description: string

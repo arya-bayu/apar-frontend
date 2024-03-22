@@ -481,13 +481,16 @@ export function DataTable<TData, TValue>({
             {!(Object.keys(rowSelection).length === data?.totalRowCount) && (
               <ContextMenuItem
                 onClick={async () => {
-                  const rows = await meta.handleGetAllId()
+                  const data: { id: number }[] = await meta.handleGetAllId()
                   let updatedRowSelection = {
                     ...rowSelection,
                   }
-                  for (const row of rows) {
-                    updatedRowSelection[row.id] = true
-                  }
+                  data?.map((item) => {
+                    updatedRowSelection[item.id] = true
+                  })
+                  // for (const row of rows) {
+                  //   updatedRowSelection[row.id] = true
+                  // }
 
                   table.setRowSelection(updatedRowSelection)
                 }}
@@ -518,7 +521,7 @@ export function DataTable<TData, TValue>({
                 </ContextMenuShortcut>
               </ContextMenuItem>
             )}
-            {table.options?.meta?.handleExportData && (
+            {!isTrash && table.options?.meta?.handleExportData && (
               <ContextMenuSub>
                 <ContextMenuSubTrigger>
                   Ekspor Seluruh Data

@@ -37,10 +37,10 @@ const Invoices = () => {
   const handleGetAllId = async () => {
     try {
       const response = await axios.get(
-        `api/v1/invoices/?columns[]=id`,
+        `api/v1/invoices/?columns=id`,
       )
 
-      return response.data.data.rows
+      return response.data.data
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -90,7 +90,6 @@ const Invoices = () => {
       }
 
       fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`
-
 
       const url = URL.createObjectURL(
         new Blob([response.data], {

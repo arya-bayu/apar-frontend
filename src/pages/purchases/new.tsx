@@ -170,8 +170,8 @@ const NewPurchasePage = () => {
             formData.append(`purchase_items[${index}][product_id]`, String(item.product.id));
             formData.append(`purchase_items[${index}][unit_price]`, String(item.unit_price));
             formData.append(`purchase_items[${index}][quantity]`, String(item.quantity));
-            if (item.product.description) {
-                formData.append(`purchase_items[${index}][description]`, String(item.product.description));
+            if (item.description) {
+                formData.append(`purchase_items[${index}][description]`, String(item.description));
             }
         });
 
