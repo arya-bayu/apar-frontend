@@ -5,7 +5,7 @@ import React, {
 
 import { useAuth } from '@/hooks/useAuth'
 
-import _ from 'lodash'
+import _, { set } from 'lodash'
 import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
@@ -33,7 +33,7 @@ import { AxiosError } from 'axios'
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
 import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
 import { IImage } from "@/types/image"
-import { ScannerDrawerDialog } from "@/components/Scanner"
+import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
@@ -52,9 +52,10 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { EditText } from 'react-edit-text';
 import currencyFormatter from "@/lib/currency"
+import { Textarea } from "@/components/ui/textarea"
 
 const purchaseFormSchema = z.object({
     purchase_number: z.string(),
@@ -93,7 +94,9 @@ const NewPurchasePage = () => {
     const [purchaseItems, setPurchaseItems] = useState<IPurchaseItem[]>([])
     const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
     const [selectedSupplierId, setSelectedSupplierId] = useState<number | undefined>(undefined);
-    const [existingImages, setExistingImages] = useState<IImage[]>([])
+    const [discount, setDiscount] = useState('0')
+    const [taxPercentage, setTaxPercentage] = useState('0')
+    const [description, setDescription] = useState('')
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
 
@@ -153,15 +156,13 @@ const NewPurchasePage = () => {
         formData.append('date', format(values.date, 'yyyy-MM-dd'));
         formData.append('purchase_number', values.purchase_number);
         formData.append('supplier_id', String(values.supplierId));
-
-        // append existing image
-        existingImages.forEach((image, index) => {
-            formData.append(`images[${index}]`, String(image.id));
-        })
+        formData.append('discount', discount);
+        formData.append('tax', taxPercentage);
+        formData.append('description', description);
 
         selectedImages && await uploadImages(selectedImages).then((images) => {
             images.forEach((image, index) => {
-                formData.append(`images[${index + existingImages.length}]`, String(image.id));
+                formData.append(`images[${index}]`, String(image.id));
             })
         })
 
@@ -283,18 +284,18 @@ const NewPurchasePage = () => {
         <AppLayout
             title={title}
             headerAction={
-                <div className="flex flex-row space-x-2">
+                <div className="flex flex-row space-x-2 ml-4">
                     <Button onClick={form.handleSubmit(onSubmit)} size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
                         {isBelowXs ? <Save size={18} /> : 'Simpan'}
                     </Button>
                 </div>
             }
         >
-            <ContentLayout className="my-0 sm:my-12 px-6 py-8 sm:mx-6 lg:mx-8 overflow-hidden">
+            <ContentLayout className="my-0 sm:my-12 sm:mx-6 lg:mx-8 overflow-hidden">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="flex flex-col gap-4 overflow-scroll">
+                        className="flex flex-col gap-4 overflow-scroll px-6 py-8 ">
                         <div className="flex flex-col md:flex-row  items-center gap-4">
                             <FormField
                                 control={form.control}
@@ -457,7 +458,7 @@ const NewPurchasePage = () => {
                                         <TableHead>Harga</TableHead>
                                         <TableHead className="text-right">Note</TableHead>
                                         <TableHead className="text-right">Total</TableHead>
-                                        <TableHead>Aksi</TableHead>
+                                        <TableHead></TableHead>
                                     </TableRow>
                                 </TableHeader>
                             )}
@@ -510,12 +511,6 @@ const NewPurchasePage = () => {
                                                                         }}
                                                                         onBlur={(e) => {
                                                                             if (Number(e.target.value) < 1) {
-                                                                                toast({
-                                                                                    variant: 'destructive',
-                                                                                    title: 'Gagal',
-                                                                                    description: 'Kuantitas barang harus lebih dari 0',
-                                                                                })
-
                                                                                 const updatedItems = [...purchaseItems];
                                                                                 updatedItems[index] = {
                                                                                     ...updatedItems[index],
@@ -641,22 +636,19 @@ const NewPurchasePage = () => {
                                                                     inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
                                                                     onChange={(event) => {
                                                                         let newValue = Number(event.target.value);
-                                                                        const updatedItems = [...purchaseItems];
-                                                                        updatedItems[index] = {
-                                                                            ...updatedItems[index],
-                                                                            quantity: newValue,
-                                                                            total_price: newValue * item.unit_price
-                                                                        };
-                                                                        setPurchaseItems(updatedItems);
+
+                                                                        if (newValue >= 0) {
+                                                                            const updatedItems = [...purchaseItems];
+                                                                            updatedItems[index] = {
+                                                                                ...updatedItems[index],
+                                                                                quantity: newValue,
+                                                                                total_price: newValue * item.unit_price
+                                                                            };
+                                                                            setPurchaseItems(updatedItems);
+                                                                        }
                                                                     }}
                                                                     onSave={(e) => {
                                                                         if (Number(e.value) < 1) {
-                                                                            toast({
-                                                                                variant: 'destructive',
-                                                                                title: 'Gagal',
-                                                                                description: 'Kuantitas barang harus lebih dari 0',
-                                                                            })
-
                                                                             const updatedItems = [...purchaseItems];
                                                                             updatedItems[index] = {
                                                                                 ...updatedItems[index],
@@ -686,14 +678,17 @@ const NewPurchasePage = () => {
                                                                     inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                                     onChange={(event) => {
                                                                         const newValue = Number(event.target.value);
-                                                                        const updatedItems = [...purchaseItems];
-                                                                        updatedItems[index] = {
-                                                                            ...updatedItems[index],
-                                                                            unit_price: newValue,
-                                                                            total_price: item.quantity * newValue
-                                                                        };
-                                                                        setPurchaseItems(updatedItems);
+                                                                        if (newValue >= 0) {
+                                                                            const updatedItems = [...purchaseItems];
+                                                                            updatedItems[index] = {
+                                                                                ...updatedItems[index],
+                                                                                unit_price: newValue,
+                                                                                total_price: item.quantity * newValue
+                                                                            };
+                                                                            setPurchaseItems(updatedItems);
+                                                                        }
                                                                     }}
+                                                                    formatDisplayText={(value) => `${currencyFormatter(Number(value))}`}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
@@ -730,7 +725,7 @@ const NewPurchasePage = () => {
                                                 />
                                             </TableCell>
                                             <TableCell className="text-right">{currencyFormatter(item.total_price)}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="text-center w-0">
                                                 <Button
                                                     size="icon"
                                                     variant="outline"
@@ -748,26 +743,100 @@ const NewPurchasePage = () => {
                                 </TableBody>
                             )}
                             <TableFooter>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Subtotal</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    purchaseItems.reduce((acc, item) => acc + item.total_price, 0),
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Diskon</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            placeholder="0"
+                                            type="number"
+                                            value={discount}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                if (Number(e.target.value) >= 0)
+                                                    setDiscount(e.target.value)
+                                            }}
+                                            formatDisplayText={(value) => `${currencyFormatter(Number(value))}`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak (%)</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            placeholder="0"
+                                            type="number"
+                                            value={taxPercentage}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                if (Number(e.target.value) >= 0)
+                                                    setTaxPercentage(e.target.value)
+                                            }}
+                                            formatDisplayText={(value) => `${value}%`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    (purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount)) * Number(taxPercentage) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={isBelowSm ? 1 : 5}>Total</TableCell>
-                                    <TableCell className="text-right">{currencyFormatter(purchaseItems.reduce((acc, item) => acc + item.total_price, 0))}</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount) + (purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount)) * Number(taxPercentage) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
                                     {!isBelowSm && (<TableCell />)}
                                 </TableRow>
                             </TableFooter>
                         </Table>
 
-                        <div className="space-y-3">
-                            <Dropzone
-                                allowMultiple
-                                multipleImages={existingImages}
-                                onImagesChange={(images) => {
-                                    setSelectedImages(images);
-                                }}
-                                onExistingImagesChange={(images) => {
-                                    setExistingImages(images);
-                                }}
-                                maxFiles={20 - existingImages.length - selectedImages.length}
-                            />
+                        <div className="space-y-4 mt-4">
+                            <div className="space-y-3">
+                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian</p>
+                                <Textarea placeholder="Catatan Pembelian" value={description} onChange={(e) => setDescription(e.target.value)} />
+                            </div>
+                            <div className="space-y-3">
+                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Lampiran</p>
+                                <Dropzone
+                                    allowMultiple
+                                    onImagesChange={(images) => {
+                                        setSelectedImages(images);
+                                    }}
+                                    maxFiles={20 - selectedImages.length}
+                                />
+                            </div>
                         </div>
                     </form>
                 </Form>

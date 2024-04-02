@@ -10,6 +10,7 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
+    CommandSeparator
 } from "@/components/ui/command"
 import {
     Drawer,
@@ -33,9 +34,10 @@ interface SupplierComboboxProps {
     value: number | null;
     onSelect: (supplier: ISupplier["id"]) => void;
     disabled?: boolean;
+    hasReset?: boolean;
 }
 
-export function SupplierCombobox({ value, onSelect, disabled = false }: SupplierComboboxProps) {
+export function SupplierCombobox({ value, onSelect, disabled = false, hasReset = false }: SupplierComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
     const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
@@ -69,20 +71,22 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
                         variant="outline"
                         role="combobox"
                         className={cn(
-                            "w-full justify-between",
+                            "w-full justify-between ",
                             !value && "text-muted-foreground"
                         )}
                     >
-                        {value
-                            ? suppliers.find(
-                                (supplier) => supplier.id === value
-                            )?.name
-                            : "Pilih supplier produk"}
+                        <p className="truncate ...">
+                            {value
+                                ? suppliers.find(
+                                    (supplier) => supplier.id === value
+                                )?.name
+                                : "Pilih supplier produk"}
+                        </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <SupplierList suppliers={suppliers} setOpen={setOpen} onSelect={onSelect} />
+                    <SupplierList suppliers={suppliers} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </PopoverContent>
             </Popover>
         )
@@ -93,7 +97,7 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
             <DrawerTrigger asChild>
                 <Button disabled={disabled} variant="outline" className="w-full justify-start">
 
-                    <p className="truncate">
+                    <p className="truncate ...">
                         {value
                             ? suppliers.find(
                                 (supplier) => supplier.id === value
@@ -105,7 +109,7 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <SupplierList suppliers={suppliers} setOpen={setOpen} onSelect={onSelect} />
+                    <SupplierList suppliers={suppliers} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -113,20 +117,43 @@ export function SupplierCombobox({ value, onSelect, disabled = false }: Supplier
 }
 
 function SupplierList({
+    hasReset,
     suppliers,
     setOpen,
     onSelect,
 }: {
+    hasReset?: boolean
     suppliers: ISupplier[]
     setOpen: (open: boolean) => void
     onSelect: (supplier: ISupplier["id"]) => void
 }) {
+
     return (
         <Command>
             <CommandInput
                 placeholder="Cari supplier..."
                 className="h-9"
             />
+            {hasReset && (
+                <>
+                    <CommandGroup>
+                        <CommandItem
+                            className="py-2 px-2 rounded-md"
+                            key={0}
+                            value={"Reset"}
+                            onSelect={() => {
+                                onSelect(0)
+                                setOpen(false)
+                            }}
+                        >
+                            <p className="text-sm font-bold">
+                                Reset
+                            </p>
+                        </CommandItem>
+                    </CommandGroup>
+                    <CommandSeparator />
+                </>
+            )}
             <CommandList>
                 {suppliers.length < 1 ? (
                     <div

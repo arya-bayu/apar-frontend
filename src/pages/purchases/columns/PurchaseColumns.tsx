@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { AxiosError } from "axios"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
 

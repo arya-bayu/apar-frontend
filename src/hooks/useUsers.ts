@@ -4,7 +4,7 @@ import { PaginationState } from '@tanstack/react-table'
 import fetcher from '@/lib/fetcher'
 
 export const useUsers = (callback?: Function) => {
-  const [filter, setFilter] = useState<string>('')
+  const [filter, setFilter] = useState<string>('') //searcch
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: -1,
     pageSize: 10,

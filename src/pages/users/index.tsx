@@ -13,7 +13,7 @@ import { userColumns } from './partials/UserColumns'
 import { AxiosError } from 'axios'
 import axios from '@/lib/axios'
 import ContentLayout from '@/components/Layouts/ContentLayout'
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 
@@ -22,8 +22,7 @@ const Users = () => {
   const title = 'Pengguna'
   const router = useRouter()
   const { authUser, can } = useAuth({ middleware: 'auth' })
-  const { mutate, users, isValidating, pagination, setPagination, setFilter } =
-    useUsers()
+  const { mutate, users, isValidating, pagination, setPagination, setFilter } = useUsers()
 
   const [alert, setAlert] = useState(false)
   const [alertTitle, setAlertTitle] = useState<string>("")
@@ -56,8 +55,10 @@ const Users = () => {
 
   const handleDelete = async (data: IUser[] | string[]) => {
     let id = isUserArray(data) ? data.map(user => user.id) : data
+
     if (id.includes(String(authUser?.id)) || id.includes(authUser?.id)) {
       router.push('/profile?deleteAccount')
+
       if (id.length > 1) {
         id = id.filter(id => id !== String(authUser?.id))
       } else {

@@ -44,7 +44,6 @@ import {
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuSeparator,
-  ContextMenuShortcut,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
@@ -54,7 +53,6 @@ import {
 import { Input } from '@/components/ui/input'
 import { DataTablePagination } from '../DataTablePagination'
 import { DataTableViewOptions } from '../DataTableViewOptions'
-import Shortcut from '../Shortcut'
 
 import '@tanstack/react-table'
 import useDebounce from '@/hooks/useDebounce'
@@ -99,9 +97,7 @@ declare module '@tanstack/table-core' {
     handleGetAllId: () => Promise<void>
     handleExportData: (
       fileType: 'XLSX' | 'CSV',
-      id?: string[],
-      startDate?: string,
-      endDate?: string,
+      id?: string[]
     ) => Promise<void>
     mutate?: KeyedMutator<any>
     data: DataTable<TData>
@@ -441,12 +437,6 @@ export function DataTable<TData, TValue>({
                     ? `Hapus ${Object.keys(rowSelection).length} Data`
                     : `Pindahkan ${Object.keys(rowSelection).length
                     } Data ke Sampah`}
-                  <ContextMenuShortcut>
-                    <Shortcut
-                      variant="destructive"
-                      keys={['command', 'delete']}
-                    />
-                  </ContextMenuShortcut>
                 </ContextMenuItem>
               )}
             {Object.keys(rowSelection).length > 0 && isTrash && (
@@ -463,9 +453,6 @@ export function DataTable<TData, TValue>({
                 }}
               >
                 Pulihkan {Object.keys(rowSelection).length} Data
-                <ContextMenuShortcut>
-                  <Shortcut keys={['shift', 'option']}>R</Shortcut>
-                </ContextMenuShortcut>
               </ContextMenuItem>
             )}
             {!table.getIsAllPageRowsSelected() && (
@@ -473,9 +460,6 @@ export function DataTable<TData, TValue>({
                 onClick={() => table.toggleAllPageRowsSelected(true)}
               >
                 Pilih semua data di halaman ini
-                <ContextMenuShortcut>
-                  <Shortcut keys={['command']}>A</Shortcut>
-                </ContextMenuShortcut>
               </ContextMenuItem>
             )}
             {!(Object.keys(rowSelection).length === data?.totalRowCount) && (
@@ -496,17 +480,11 @@ export function DataTable<TData, TValue>({
                 }}
               >
                 Pilih semua data di tabel ini ({data?.totalRowCount})
-                <ContextMenuShortcut>
-                  <Shortcut keys={['command']}>A</Shortcut>
-                </ContextMenuShortcut>
               </ContextMenuItem>
             )}
 
             <ContextMenuItem onClick={() => router.reload()}>
               Reload
-              <ContextMenuShortcut>
-                <Shortcut keys={['command']}>R</Shortcut>
-              </ContextMenuShortcut>
             </ContextMenuItem>
             {!isTrash && table.options?.meta?.handleRestore && (
               <ContextMenuItem
@@ -516,9 +494,6 @@ export function DataTable<TData, TValue>({
                 }}
               >
                 Sampah
-                <ContextMenuShortcut>
-                  <Shortcut keys={['option', 'command', 'delete']} />
-                </ContextMenuShortcut>
               </ContextMenuItem>
             )}
             {!isTrash && table.options?.meta?.handleExportData && (

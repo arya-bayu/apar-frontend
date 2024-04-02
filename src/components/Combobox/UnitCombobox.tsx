@@ -72,11 +72,13 @@ export function UnitCombobox({ value, onSelect }: UnitComboboxProps) {
                             !value && "text-muted-foreground"
                         )}
                     >
-                        {value
-                            ? units.find(
-                                (unit) => unit.id === value
-                            )?.name
-                            : "Pilih unit produk"}
+                        <p className="truncate ...">
+                            {value
+                                ? units.find(
+                                    (unit) => unit.id === value
+                                )?.name
+                                : "Pilih unit produk"}
+                        </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>

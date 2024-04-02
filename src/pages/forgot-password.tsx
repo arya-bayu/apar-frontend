@@ -26,6 +26,7 @@ const forgotPasswordSchema = z.object({
 })
 
 const ForgotPassword = () => {
+  //react hooks
   const { forgotPassword } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/dashboard',
@@ -61,7 +62,7 @@ const ForgotPassword = () => {
   return (
     <GuestLayout title="Forgot Password">
       <AuthCard>
-        <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <div className="mb-4 text-sm text-blue-500 dark:text-gray-400 ">
           Masukkan alamat email Anda dan kami akan mengirim tautan untuk
           mengatur ulang kata sandi.
         </div>

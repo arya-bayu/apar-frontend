@@ -20,7 +20,7 @@ export const usePurchase = (callback?: Function) => {
 
   const apiUrl =
     'api/v1/purchases' +
-    '/?columns=id,status,purchase_number,date,supplier_id' +
+    '/?columns=id,status,purchase_number,date,supplier_id,tax,discount' +
     `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
     (filter ? `&filter=${filter}` : '')
 

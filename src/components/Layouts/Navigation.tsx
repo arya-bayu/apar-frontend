@@ -4,20 +4,19 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/hooks/useAuth'
 import { IUser } from '@/types/user'
 import { ModeToggle } from '../ModeToggle'
-import { Bell, ChevronDown, ChevronLast, Search } from 'lucide-react'
-import Shortcut from '../Shortcut'
+import { ChevronDown, ChevronLast, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import useSidebarStore from '@/store/useSidebarStore'
 import { shallow } from 'zustand/shallow'
 import Link from 'next/link'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import Image from 'next/image'
+import { IImage } from "@/types/image"
 
 interface INavigation {
   user: IUser
@@ -25,28 +24,32 @@ interface INavigation {
 
 interface IProfilePhoto {
   className?: string
-  photo?: IUser['photo']
+  photo?: IImage
   name?: IUser['name']
 }
 
 const ProfilePhoto = ({ className, photo, name }: IProfilePhoto) => {
+
   return (
-    <div
-      className={`inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-500 uppercase text-zinc-200 ${className}`}
-    >
-      <div className={`${photo && 'hidden'}`}>
-        {name && name.charAt(0)}
-        <span className="sr-only">User Profile</span>
-      </div>
-      <Image
-        src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${photo}`}
-        alt={`Foto profil ${name}`}
-        width={0}
-        height={0}
-        sizes="100vw"
-        style={{ objectFit: 'cover' }}
-        className={`${!photo && 'hidden'} aspect-square w-full rounded-full`}
-      />
+    <div className={`${className}`} >
+      {!photo?.path ? (
+        <div className="h-8 w-8 inline-flex items-center justify-center bg-red-500 rounded-full uppercase text-zinc-200">
+          {name && name.charAt(0)}
+          <span className="sr-only">User Profile</span>
+        </div>
+      ) : (
+        <Image
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${photo.path}`}
+          alt={`Foto profil ${name}`}
+          width={0}
+          height={0}
+          sizes="100vw"
+          className={`object-cover aspect-square rounded-full h-8 w-8 z-10`}
+          style={{
+            transition: "opacity 0.2s cubic-bezier(0.3, 0.2, 0.2, 0.8)"
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -96,10 +99,10 @@ const Navigation = ({ user }: INavigation) => {
 
           {/* Settings Dropdown */}
           <div className="flex items-center md:space-x-2">
-            <Button variant="ghost" size="icon" className="relative xs:hidden">
+            {/* <Button variant="ghost" size="icon" className="relative xs:hidden">
               <Search className="h-[1.2rem] w-[1.2rem]" />
               <span className="sr-only">Penelusuran</span>
-            </Button>
+            </Button> */}
             <ModeToggle />
             {/* <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-[1.2rem] w-[1.2rem]" />
@@ -148,9 +151,6 @@ const Navigation = ({ user }: INavigation) => {
                 <DropdownMenuItem asChild>
                   <Link href={'/profile'}>
                     Profil
-                    <DropdownMenuShortcut>
-                      <Shortcut keys={['command', 'option']}>P</Shortcut>
-                    </DropdownMenuShortcut>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />

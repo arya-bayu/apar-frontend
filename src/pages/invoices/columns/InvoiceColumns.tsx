@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Eye, EditIcon } from 'lucide-react'
+import { Eye, EditIcon, Download, DownloadIcon } from 'lucide-react'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/ColumnHelpers/CreateSelectColumn'
@@ -17,20 +17,22 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { AxiosError } from "axios"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
 import { useRouter } from "next/router"
+import InvoiceDialog from "../partials/InvoiceDialog"
+import InvoiceDownloader from "../InvoiceDownloader"
 
 export const invoiceColumns: ColumnDef<IInvoice>[] = [
   createSelectColumn(),
   {
     accessorKey: 'invoice_number',
     meta: {
-      title: 'No. Pembelian',
+      title: 'No. Invoice',
     },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="No. Pembelian" />
+      <DataTableColumnHeader column={column} title="No. Invoice" />
     ),
   },
   {
@@ -180,14 +182,18 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
 
       return (
         <div className="flex flex-row justify-end gap-2">
-          {!table.options.meta?.isTrash && can('access invoices') && (
-            <Link href={`/invoices/${invoice.id}`}>
-              <Button size="icon" variant="outline" className="relative">
-                {invoice.status === 0 ? <EditIcon size={16} /> : <Eye size={16} />}
-                <span className="sr-only">View</span>
-              </Button>
-            </Link>
-          )}
+          <Link href={`/invoices/${invoice.id}`}>
+            <Button size="icon" variant="outline" className="relative">
+              {invoice.status === 0 ? <EditIcon size={16} /> : <Eye size={16} />}
+              <span className="sr-only">View</span>
+            </Button>
+          </Link>
+          <InvoiceDownloader id={invoice.id}>
+            <Button size="icon" variant="outline" className="relative">
+              <DownloadIcon size={16} />
+              <span className="sr-only">Download</span>
+            </Button>
+          </InvoiceDownloader>
         </div>
       )
     },

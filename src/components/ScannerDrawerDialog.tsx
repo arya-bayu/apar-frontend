@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { forwardRef, useImperativeHandle, useRef } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -29,26 +28,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Html5Qrcode } from 'html5-qrcode'
+import { Html5Qrcode, Html5QrcodeResult, QrcodeSuccessCallback } from 'html5-qrcode'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { ScanLine } from 'lucide-react'
-import { set } from 'lodash'
+import { CameraDevice } from "html5-qrcode/esm/camera/core"
 
 const qrConfig = { fps: 10, qrbox: { width: 300, height: 300 } }
 const barConfig = { fps: 10, qrbox: { width: 300, height: 150 } }
-let html5QrCode
+let html5QrCode: Html5Qrcode | null = null;
 
-export const Scanner = forwardRef(({ onResult, type }, ref) => {
-  const [cameraList, setCameraList] = useState([])
-  const [activeCamera, setActiveCamera] = useState()
+interface ScannerProps {
+  isScanning: boolean;
+  onResult: (result: string) => void;
+  type: string;
+}
 
-  useImperativeHandle(ref, () => ({
-    handleStop() {
+export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
+  const [cameraList, setCameraList] = useState<CameraDevice[]>([]);
+  const [activeCamera, setActiveCamera] = useState<CameraDevice | undefined>();
+
+  useEffect(() => {
+    if (!isScanning) {
       handleStop()
-    },
-  }))
+    }
+  }, [isScanning])
 
   useEffect(() => {
     html5QrCode = new Html5Qrcode('reader')
@@ -59,14 +62,15 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
   }, [])
 
   const handleClickAdvanced = () => {
-    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+    const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
       onResult(decodedText)
       handleStop()
     }
-    html5QrCode.start(
+    html5QrCode?.start(
       { facingMode: 'environment' },
       type === 'QR' ? qrConfig : barConfig,
       qrCodeSuccessCallback,
+      () => { }
     )
   }
 
@@ -84,7 +88,7 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
       })
   }
 
-  const onCameraChange = e => {
+  const onCameraChange = (e: any) => {
     if (e.target.selectedIndex) {
       let selectedCamera = e.target.options[e.target.selectedIndex]
       console.info(selectedCamera)
@@ -95,23 +99,20 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
 
   const handleStop = () => {
     try {
-      html5QrCode
-        .stop()
+      html5QrCode?.stop()
         .then(res => {
-          html5QrCode.clear()
+          html5QrCode?.clear()
         })
         .catch(err => {
-          console.log(err.message)
         })
     } catch (err) {
-      console.log(err)
     }
   }
 
   return (
     <div className="sn:px-0 flex flex-col space-y-4">
       {cameraList.length > 0 && (
-        <Select value={activeCamera.id} onValueChange={onCameraChange}>
+        <Select value={activeCamera?.id} onValueChange={onCameraChange}>
           <SelectTrigger id="camera" className="col-span-4">
             <SelectValue placeholder="Pilih Kamera" />
           </SelectTrigger>
@@ -129,16 +130,19 @@ export const Scanner = forwardRef(({ onResult, type }, ref) => {
           </SelectContent>
         </Select>
       )}
-      <div id="reader" width="100%"></div>
+      <div id="reader" className="w-[100%]"></div>
     </div>
   )
-})
+}
 
-export function ScannerDrawerDialog({ scannerType, onScanResult }) {
+export interface ScannerDrawerDialogProps {
+  scannerType: string;
+  onScanResult: (result: string) => void;
+}
+
+export function ScannerDrawerDialog({ scannerType, onScanResult }: ScannerDrawerDialogProps) {
   const { isAboveMd } = useBreakpoint('md')
   const [open, setOpen] = useState(false)
-
-  const childRef = useRef(null)
 
   if (isAboveMd) {
     return (
@@ -159,7 +163,7 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }) {
             </DialogDescription>
           </DialogHeader>
           <Scanner
-            ref={childRef}
+            isScanning={open}
             type={scannerType}
             onResult={res => {
               onScanResult(res)
@@ -175,9 +179,7 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }) {
     <Drawer
       open={open}
       onOpenChange={setOpen}
-      onClose={() => {
-        childRef.current.handleStop()
-      }}>
+    >
       <DrawerTrigger asChild>
         <Button type="button" className="aspect-square px-2 py-0">
           <ScanLine size={20} />
@@ -192,7 +194,7 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }) {
         </DrawerHeader>
         <div className="px-4">
           <Scanner
-            ref={childRef}
+            isScanning={open}
             type={scannerType}
             onResult={res => {
               onScanResult(res)

@@ -10,6 +10,7 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
+    CommandSeparator
 } from "@/components/ui/command"
 import {
     Drawer,
@@ -32,9 +33,10 @@ import { cn } from "@/lib/utils"
 interface CategoryComboboxProps {
     value: number | null;
     onSelect: (category: ICategory["id"]) => void;
+    hasReset?: boolean;
 }
 
-export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
+export function CategoryCombobox({ value, onSelect, hasReset = false }: CategoryComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -70,16 +72,18 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
                             !value && "text-muted-foreground"
                         )}
                     >
-                        {value
-                            ? categories.find(
-                                (category) => category.id === value
-                            )?.name
-                            : "Kategori produk"}
+                        <p className="truncate ...">
+                            {value
+                                ? categories.find(
+                                    (category) => category.id === value
+                                )?.name
+                                : "Kategori produk"}
+                        </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} />
+                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </PopoverContent>
             </Popover>
         )
@@ -102,7 +106,7 @@ export function CategoryCombobox({ value, onSelect }: CategoryComboboxProps) {
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} />
+                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -113,7 +117,9 @@ function CategoryList({
     categories,
     setOpen,
     onSelect,
+    hasReset
 }: {
+    hasReset?: boolean
     categories: ICategory[]
     setOpen: (open: boolean) => void
     onSelect: (category: ICategory["id"]) => void
@@ -124,6 +130,24 @@ function CategoryList({
                 placeholder="Cari kategori..."
                 className="h-9"
             />
+            {hasReset && (
+                <CommandGroup>
+                    <CommandItem
+                        className="py-2 px-2 rounded-md"
+                        key={0}
+                        value={"Reset"}
+                        onSelect={() => {
+                            onSelect(0)
+                            setOpen(false)
+                        }}
+                    >
+                        <p className="text-sm font-bold">
+                            Reset
+                        </p>
+                    </CommandItem>
+                </CommandGroup>
+            )}
+            <CommandSeparator />
             <CommandList>
                 {categories.length < 1 ? (
                     <div

@@ -18,7 +18,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
@@ -151,9 +150,6 @@ export const userColumns: ColumnDef<IUser>[] = [
                         }
                       >
                         Email
-                        <DropdownMenuShortcut>
-                          <Shortcut keys={['command']}>K</Shortcut>
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
@@ -161,9 +157,6 @@ export const userColumns: ColumnDef<IUser>[] = [
                         }
                       >
                         WhatsApp
-                        <DropdownMenuShortcut>
-                          <Shortcut keys={['command']}>W</Shortcut>
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() =>
@@ -171,9 +164,6 @@ export const userColumns: ColumnDef<IUser>[] = [
                         }
                       >
                         Telepon
-                        <DropdownMenuShortcut>
-                          <Shortcut keys={['command']}>T</Shortcut>
-                        </DropdownMenuShortcut>
                       </DropdownMenuItem>
                     </DropdownMenuSubContent>
                   </DropdownMenuPortal>
@@ -189,12 +179,6 @@ export const userColumns: ColumnDef<IUser>[] = [
                     className="bg-red-500 text-white focus:bg-red-600 focus:text-white dark:focus:bg-red-600"
                   >
                     Hapus Akun
-                    <DropdownMenuShortcut className="opacity-80">
-                      <Shortcut
-                        variant="destructive"
-                        keys={['shift', 'command', 'delete']}
-                      />
-                    </DropdownMenuShortcut>
                   </DropdownMenuItem>
                 </>
               )}

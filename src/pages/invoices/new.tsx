@@ -33,7 +33,7 @@ import { AxiosError } from 'axios'
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
 import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 import { IImage } from "@/types/image"
-import { ScannerDrawerDialog } from "@/components/Scanner"
+import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
@@ -52,11 +52,12 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { EditText } from 'react-edit-text';
 import currencyFormatter from "@/lib/currency"
 import { CustomerCombobox } from "@/components/Combobox/CustomerCombobox"
 import { Badge } from "@/components/ui/badge"
+import { Textarea } from "@/components/ui/textarea"
 
 const invoiceFormSchema = z.object({
     invoice_number: z.string(),
@@ -66,8 +67,8 @@ const invoiceFormSchema = z.object({
     customerId: z
         .coerce
         .number({
-            required_error: "Pilih customer penjualan.",
-            invalid_type_error: "Pilih customer penjualan.",
+            required_error: "Pilih customer invoice.",
+            invalid_type_error: "Pilih customer invoice.",
         }),
 })
 
@@ -80,7 +81,7 @@ const NewInvoicePage = () => {
         return <></>
     }
 
-    const title = 'Penjualan Baru'
+    const title = 'Invoice Baru'
     const { isBelowXs } = useBreakpoint('xs')
     const { isBelowSm } = useBreakpoint('sm')
 
@@ -95,7 +96,9 @@ const NewInvoicePage = () => {
     const [invoiceItems, setInvoiceItems] = useState<IInvoiceItem[]>([])
     const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
     const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-    const [existingImages, setExistingImages] = useState<IImage[]>([])
+    const [discount, setDiscount] = useState('0')
+    const [taxPercentage, setTaxPercentage] = useState('0')
+    const [description, setDescription] = useState('')
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
 
@@ -143,7 +146,7 @@ const NewInvoicePage = () => {
         if (invoiceItems.length === 0) {
             toast({
                 variant: 'destructive',
-                title: 'Daftar penjualan kosong!',
+                title: 'Daftar invoice kosong!',
                 description: 'Anda belum melakukan input data barang yang dibeli',
             })
             return;
@@ -155,15 +158,13 @@ const NewInvoicePage = () => {
         formData.append('date', format(values.date, 'yyyy-MM-dd'));
         formData.append('invoice_number', values.invoice_number);
         formData.append('customer_id', String(values.customerId));
-
-        // append existing image
-        existingImages.forEach((image, index) => {
-            formData.append(`images[${index}]`, String(image.id));
-        })
+        formData.append('discount', discount);
+        formData.append('tax', taxPercentage);
+        formData.append('description', description);
 
         selectedImages && await uploadImages(selectedImages).then((images) => {
             images.forEach((image, index) => {
-                formData.append(`images[${index + existingImages.length}]`, String(image.id));
+                formData.append(`images[${index}]`, String(image.id));
             })
         })
 
@@ -188,7 +189,7 @@ const NewInvoicePage = () => {
                 toast({
                     variant: 'success',
                     title: 'Sukses',
-                    description: `Data penjualan ${values.invoice_number} telah berhasil disimpan.`,
+                    description: `Data invoice ${values.invoice_number} telah berhasil disimpan.`,
                 })
                 router.push('/invoices')
             }
@@ -232,7 +233,7 @@ const NewInvoicePage = () => {
             toast({
                 variant: 'destructive',
                 title: 'Gagal',
-                description: 'Produk telah ada di penjualan ini.',
+                description: 'Produk telah ada di invoice ini.',
             })
             return
         }
@@ -269,25 +270,25 @@ const NewInvoicePage = () => {
         <AppLayout
             title={title}
             headerAction={
-                <div className="flex flex-row space-x-2">
+                <div className="flex flex-row space-x-2 ml-4">
                     <Button onClick={form.handleSubmit(onSubmit)} size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
                         {isBelowXs ? <Save size={18} /> : 'Simpan'}
                     </Button>
                 </div>
             }
         >
-            <ContentLayout className="my-0 sm:my-12 px-6 py-8 sm:mx-6 lg:mx-8 overflow-hidden">
+            <ContentLayout className="my-0 sm:my-12 sm:mx-6 lg:mx-8 overflow-hidden">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="flex flex-col gap-4 overflow-scroll">
+                        className="flex flex-col gap-4 overflow-scroll px-6 py-8">
                         <div className="flex flex-col md:flex-row  items-center gap-4">
                             <FormField
                                 control={form.control}
                                 name="date"
                                 render={({ field }) => (
                                     <FormItem className="flex flex-col w-full">
-                                        <FormLabel className="mt-1 mb-2">Tanggal Penjualan</FormLabel>
+                                        <FormLabel className="mt-1 mb-2">Tanggal Invoice</FormLabel>
                                         <Popover>
                                             <PopoverTrigger asChild>
                                                 <FormControl>
@@ -328,11 +329,11 @@ const NewInvoicePage = () => {
                                 name="invoice_number"
                                 render={({ field }) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>No. Penjualan</FormLabel>
+                                        <FormLabel>No. Invoice</FormLabel>
                                         <FormControl>
                                             <Input
                                                 {...field}
-                                                placeholder="Nomor Penjualan"
+                                                placeholder="Nomor Invoice"
                                                 required
                                             />
                                         </FormControl>
@@ -450,7 +451,7 @@ const NewInvoicePage = () => {
                                         <TableHead>Harga</TableHead>
                                         <TableHead className="text-right">Note</TableHead>
                                         <TableHead className="text-right">Total</TableHead>
-                                        <TableHead>Aksi</TableHead>
+                                        <TableHead></TableHead>
                                     </TableRow>
                                 </TableHeader>
                             )}
@@ -717,7 +718,7 @@ const NewInvoicePage = () => {
                                                 />
                                             </TableCell>
                                             <TableCell className="text-right">{currencyFormatter(item.total_price)}</TableCell>
-                                            <TableCell>
+                                            <TableCell className="text-center w-0">
                                                 <Button
                                                     size="icon"
                                                     variant="outline"
@@ -735,26 +736,100 @@ const NewInvoicePage = () => {
                                 </TableBody>
                             )}
                             <TableFooter>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 6} className="sm:text-right">Subtotal</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    invoiceItems.reduce((acc, item) => acc + item.total_price, 0),
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 6} className="sm:text-right">Diskon</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            placeholder="0"
+                                            type="number"
+                                            value={discount}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                if (Number(e.target.value) >= 0)
+                                                    setDiscount(e.target.value)
+                                            }}
+                                            formatDisplayText={(value) => `${currencyFormatter(Number(value))}`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 6} className="sm:text-right">Pajak (%)</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            placeholder="0"
+                                            type="number"
+                                            value={taxPercentage}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                if (Number(e.target.value) >= 0)
+                                                    setTaxPercentage(e.target.value)
+                                            }}
+                                            formatDisplayText={(value) => `${value}%`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 6} className="sm:text-right">Pajak</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    (invoiceItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount)) * Number(taxPercentage) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={isBelowSm ? 1 : 6}>Total</TableCell>
-                                    <TableCell className="text-right">{currencyFormatter(invoiceItems.reduce((acc, item) => acc + item.total_price, 0))}</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    invoiceItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount) + (invoiceItems.reduce((acc, item) => acc + item.total_price, 0) - Number(discount)) * Number(taxPercentage) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
                                     {!isBelowSm && (<TableCell />)}
                                 </TableRow>
                             </TableFooter>
                         </Table>
 
-                        <div className="space-y-3">
-                            <Dropzone
-                                allowMultiple
-                                multipleImages={existingImages}
-                                onImagesChange={(images) => {
-                                    setSelectedImages(images);
-                                }}
-                                onExistingImagesChange={(images) => {
-                                    setExistingImages(images);
-                                }}
-                                maxFiles={20 - existingImages.length - selectedImages.length}
-                            />
+                        <div className="space-y-4 mt-4">
+                            <div className="space-y-3">
+                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian</p>
+                                <Textarea placeholder="Catatan Pembelian" value={description} onChange={(e) => setDescription(e.target.value)} />
+                            </div>
+                            <div className="space-y-3">
+                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Lampiran</p>
+                                <Dropzone
+                                    allowMultiple
+                                    onImagesChange={(images) => {
+                                        setSelectedImages(images);
+                                    }}
+                                    maxFiles={20 - selectedImages.length}
+                                />
+                            </div>
                         </div>
                     </form>
                 </Form>

@@ -19,8 +19,6 @@ export interface IProduct {
   supplier: ISupplier
   category: ICategory
   unit: IUnit
-  created_by: number | null
-  updated_by: number | null
   created_at: string
   updated_at: string
   deleted_at?: string | null

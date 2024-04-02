@@ -8,12 +8,13 @@ export interface IPurchase {
   purchase_number: string
   date: Date
   supplier_id: number
+  tax: number
+  discount: number
   total: number
+  description: string
   images: IImage[]
   supplier: ISupplier
   purchase_items: IPurchaseItem[]
-  created_by: number | null
-  updated_by: number | null
   created_at: string
   updated_at: string
 }

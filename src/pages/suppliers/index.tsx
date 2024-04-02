@@ -19,7 +19,7 @@ import Link from 'next/link'
 import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 
 const Suppliers = () => {
   const {
@@ -390,7 +390,7 @@ const Suppliers = () => {
             </Button>
           )
         ) : (
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-2 ml-4">
             {can('create suppliers') && (
               <SupplierDialog mutate={mutate}>
                 <Button size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>

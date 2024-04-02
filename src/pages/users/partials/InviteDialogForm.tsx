@@ -71,7 +71,7 @@ export default function InviteUserDialog({ children }: PropsWithChildren) {
 
       if (response)
         toast({
-          variant: 'success',
+          variant: 'default',
           title: 'Sukses',
           description: `${response.data.data.email} telah diundang untuk bergabung.`,
         })

@@ -145,7 +145,7 @@ export default function UnitDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="max-h-[100vh] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
         <DialogHeader className="space-y-2">
           <DialogTitle>{unit ? 'Edit' : 'Tambah'} unit</DialogTitle>
           <DialogDescription>
@@ -157,7 +157,7 @@ export default function UnitDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-4 flex flex-col gap-4"
+            className="flex flex-col gap-4"
           >
             <FormField
               control={form.control}
@@ -177,7 +177,7 @@ export default function UnitDialog({
               )}
             />
 
-            <DialogFooter className="mt-4">
+            <DialogFooter className="mt-2">
               <Button className="w-full" type="submit">
                 {unit ? 'Edit' : 'Tambah'} Unit
               </Button>

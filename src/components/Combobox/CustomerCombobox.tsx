@@ -33,12 +33,13 @@ import { ChevronRightIcon } from "lucide-react";
 import CustomerDialog from "@/pages/customers/partials/CustomerDialog";
 
 interface CustomerComboboxProps {
-    value: number;
+    value: number | null;
     onSelect: (customer: ICustomer["id"]) => void;
     disabled?: boolean;
+    hasReset?: boolean;
 }
 
-export function CustomerCombobox({ value, disabled = false, onSelect }: CustomerComboboxProps) {
+export function CustomerCombobox({ value, disabled = false, onSelect, hasReset = false }: CustomerComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
     const [customers, setCustomers] = useState<ICustomer[]>([]);
@@ -75,16 +76,18 @@ export function CustomerCombobox({ value, disabled = false, onSelect }: Customer
                             !value && "text-muted-foreground"
                         )}
                     >
-                        {value
-                            ? customers.find(
-                                (customer) => customer.id === value
-                            )?.company_name
-                            : "Pilih customer"}
+                        <p className="truncate ...">
+                            {value
+                                ? customers.find(
+                                    (customer) => customer.id === value
+                                )?.company_name
+                                : "Pilih customer"}
+                        </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} />
+                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
                 </PopoverContent>
             </Popover>
         )
@@ -107,7 +110,7 @@ export function CustomerCombobox({ value, disabled = false, onSelect }: Customer
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} />
+                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -115,11 +118,13 @@ export function CustomerCombobox({ value, disabled = false, onSelect }: Customer
 }
 
 function CustomerList({
+    hasReset,
     customers,
     setOpen,
     onSelect,
     fetchCustomers,
 }: {
+    hasReset?: boolean
     customers: ICustomer[]
     setOpen: (open: boolean) => void
     onSelect: (customerId: ICustomer["id"]) => void
@@ -131,6 +136,24 @@ function CustomerList({
                 placeholder="Cari customer..."
                 className="h-9"
             />
+            {hasReset && (
+                <CommandGroup>
+                    <CommandItem
+                        className="py-2 px-2 rounded-md"
+                        key={0}
+                        value={"Reset"}
+                        onSelect={() => {
+                            onSelect(0)
+                            setOpen(false)
+                        }}
+                    >
+                        <p className="text-sm font-bold">
+                            Reset
+                        </p>
+                    </CommandItem>
+                </CommandGroup>
+            )}
+            <CommandSeparator />
             <CommandList>
                 {customers.length < 1 ? (
                     <CommandGroup className="py-6 text-center text-sm">

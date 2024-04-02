@@ -13,6 +13,7 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 import { on } from "events";
+import { useInView } from "react-intersection-observer";
 
 export interface CustomFile extends File {
     preview: string;
@@ -105,6 +106,11 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
         }
     };
 
+    const { ref, inView } = useInView({
+        triggerOnce: true,
+        threshold: 0.5
+    })
+
     return (
         <div>
             {!disabled && (
@@ -122,7 +128,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                                 ? 'bg-white/80 opacity-0 hover:opacity-95 hover:backdrop-blur-md dark:bg-zinc-800/80'
                                 : 'bg-white hover:bg-gray-50 dark:bg-zinc-950/80 dark:hover:bg-zinc-800 '
                             }
-                    `}>
+                        `}>
                         <svg
                             className={`${isDragActive ? 'scale-110' : 'scale-100'
                                 } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95 dark:text-zinc-50`}
@@ -149,121 +155,129 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                         </p>
                     </div>
                     {maxImages === 1 && (singleImage || images.length > 0) && (
-                        < img
+                        <Image
+                            priority
                             src={images.length > 0 ? images[0].preview : `http://localhost:8000/storage/` + singleImage?.path}
                             alt={images.length > 0 ? images[0].name : "Header Image"}
+                            width={0}
+                            height={0}
+                            sizes="100vw"
+                            unoptimized
                             className="h-full w-full rounded-md object-cover"
                         />
                     )}
-                </div>)}
+                </div>)
+            }
 
-            {!disabled && (
-                <div className="my-2 gap-2">
-                    {maxImages === 1 && (singleImage || images.length > 0) && (
-                        <Button
-                            variant="destructive"
-                            type="button"
-                            className="w-full my-3"
-                            onClick={() => {
-                                removeAll()
-                            }}
-                        >
-                            Hapus Gambar
-                        </Button>
-                    )}
-
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Besar file: maksimum 10.000.000 bytes (10 Megabytes). Ekstensi
-                        file yang diperbolehkan: .JPG .JPEG .PNG
-                    </p>
-                </div>)}
+            {
+                !disabled && (
+                    <div className="my-2 gap-2">
+                        {maxImages === 1 && (singleImage || images.length > 0) && (
+                            <Button
+                                variant="destructive"
+                                type="button"
+                                className="w-full my-3"
+                                onClick={() => {
+                                    removeAll()
+                                }}
+                            >
+                                Hapus Gambar
+                            </Button>
+                        )}
+                    </div>)
+            }
 
             {/* Preview for Multiple Images */}
-            {maxImages > 1 && (multipleImages.length > 0 || images.length > 0) && (
-                <section className={disabled ? '' : 'mt-10'}>
-                    {!disabled && (<div className='flex justify-between
+            {
+                maxImages > 1 && (multipleImages.length > 0 || images.length > 0) && (
+                    <section className={disabled ? '' : 'mt-10'}>
+                        {!disabled && (<div className='flex justify-between
                 '>
-                        <h2 className="text-center text-lg font-bold text-zinc-950 dark:text-zinc-50">Preview</h2>
-                        <Button
-                            variant="outline"
-                            type="button"
-                            className="uppercase text-[0.6rem] tracking-wider px-3 "
-                            onClick={() => {
-                                removeAll()
-                                // singleImage && onImageRemove()
-                            }}
-                        >
-                            Hapus Semua Gambar
-                        </Button>
-                    </div>)}
+                            <h2 className="text-center text-lg font-bold text-zinc-950 dark:text-zinc-50">Preview</h2>
+                            <Button
+                                variant="outline"
+                                type="button"
+                                className="uppercase text-[0.6rem] tracking-wider px-3 "
+                                onClick={() => {
+                                    removeAll()
+                                    // singleImage && onImageRemove()
+                                }}
+                            >
+                                Hapus Semua Gambar
+                            </Button>
+                        </div>)}
 
-                    <div className="flex">
-                        <Carousel
-                            opts={{
-                                align: "start",
-                            }}
-                            className="mt-6 w-full"
-                        >
-                            <CarouselContent>
-                                {multipleImages.map((image, index) => (
-                                    <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
-                                        <Image
-                                            src={`http://localhost:8000/storage/` + image.path}
-                                            alt={`Gambar Produk ${index}`}
-                                            width={100}
-                                            height={100}
-                                            className='h-full w-full object-cover rounded-md'
-                                        />
-                                        {!disabled && onExistingImagesChange && (
+                        <div className="flex">
+                            <Carousel
+                                opts={{
+                                    align: "start",
+                                }}
+                                className="mt-6 w-full"
+                            >
+                                <CarouselContent>
+                                    {multipleImages.map((image, index) => (
+                                        <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
+                                            <Image
+                                                priority
+                                                src={`http://localhost:8000/storage/` + image.path}
+                                                alt={`Gambar ${index}`}
+                                                width={100}
+                                                height={100}
+                                                unoptimized
+                                                className='h-full w-full object-cover rounded-md'
+                                            />
+                                            {!disabled && onExistingImagesChange && (
+                                                <button
+                                                    type='button'
+                                                    className='w-7 h-7 border dark:border-zinc-950 border-zinc-300 dark:bg-zinc-800 bg-zinc-200 rounded-full flex justify-center items-center absolute top-1.5 right-1 hover:bg-white transition-colors'
+                                                    onClick={() => {
+                                                        const idToRemove = image.id;
+                                                        const updatedImages = multipleImages.filter(img => img.id !== idToRemove);
+                                                        onExistingImagesChange(updatedImages);
+                                                    }}>
+                                                    <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-200 hover:fill-zinc-400 transition-colors' />
+                                                </button>
+                                            )
+
+                                            }
+
+                                        </CarouselItem>
+                                    ))}
+                                    {images.map((file, index) => (
+                                        <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
+                                            <Image
+                                                priority
+                                                src={file.preview}
+                                                alt={file.name}
+                                                width={100}
+                                                height={100}
+                                                className='h-full w-full object-cover rounded-md'
+                                            />
                                             <button
                                                 type='button'
                                                 className='w-7 h-7 border dark:border-zinc-950 border-zinc-300 dark:bg-zinc-800 bg-zinc-200 rounded-full flex justify-center items-center absolute top-1.5 right-1 hover:bg-white transition-colors'
-                                                onClick={() => {
-                                                    const idToRemove = image.id;
-                                                    const updatedImages = multipleImages.filter(img => img.id !== idToRemove);
-                                                    onExistingImagesChange(updatedImages);
-                                                }}>
+                                                onClick={() => removeFile(index)}
+                                            >
                                                 <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-200 hover:fill-zinc-400 transition-colors' />
                                             </button>
-                                        )
 
-                                        }
-
-                                    </CarouselItem>
-                                ))}
-                                {images.map((file, index) => (
-                                    <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
-                                        <Image
-                                            src={file.preview}
-                                            alt={file.name}
-                                            width={100}
-                                            height={100}
-                                            className='h-full w-full object-cover rounded-md'
-                                        />
-                                        <button
-                                            type='button'
-                                            className='w-7 h-7 border dark:border-zinc-950 border-zinc-300 dark:bg-zinc-800 bg-zinc-200 rounded-full flex justify-center items-center absolute top-1.5 right-1 hover:bg-white transition-colors'
-                                            onClick={() => removeFile(index)}
-                                        >
-                                            <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-200 hover:fill-zinc-400 transition-colors' />
-                                        </button>
-
-                                    </CarouselItem>
-                                ))}
-                            </CarouselContent>
-                            <div className="flex flex-row justify-between items-center">
-                                <div className="flex flex-row gap-2">
-                                    <CarouselPrevious />
-                                    <CarouselNext />
+                                        </CarouselItem>
+                                    ))}
+                                </CarouselContent>
+                                <div className="flex flex-row justify-between items-center">
+                                    <div className="flex flex-row gap-2">
+                                        <CarouselPrevious />
+                                        <CarouselNext />
+                                    </div>
+                                    {!disabled && (<p className="text-sm font-bold text-zinc-500 dark:text-zinc-50">{multipleImages.length + images.length}/{maxImages}</p>)}
                                 </div>
-                                {!disabled && (<p className="text-sm font-bold text-zinc-500 dark:text-zinc-50">{multipleImages.length + images.length}/{maxImages}</p>)}
-                            </div>
-                        </Carousel>
-                    </div>
-                </section>
-            )}
+                            </Carousel>
+                        </div>
+                    </section>
+                )
+            }
 
-        </div>
+        </div >
     );
 };
 

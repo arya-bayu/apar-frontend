@@ -1,4 +1,3 @@
-import { IUser } from '@/types/user'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
@@ -7,6 +6,7 @@ import Link, { LinkProps } from 'next/link'
 import { shallow } from 'zustand/shallow'
 import useSidebarStore from '@/store/useSidebarStore'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
+import Image from "next/image"
 
 export interface ISidebarItem extends LinkProps {
   icon: React.ReactNode
@@ -33,38 +33,44 @@ const Sidebar = ({ children }: PropsWithChildren) => {
 
   useEffect(() => {
     setHidden(isBelowSm)
+    if (!isBelowSm) setExpanded(false)
   }, [isBelowSm])
 
   return (
     <aside
       className={`${hidden ? '-translate-x-full' : '-translate-x-0'
-        } absolute z-[5] h-screen border-r bg-zinc-50 shadow-sm transition-transform duration-300 ease-in-out dark:border-zinc-700 dark:bg-zinc-950 sm:static`}
+        } z-[5] h-screen border-r bg-zinc-50 shadow-sm transition-transform duration-300 ease-in-out dark:border-zinc-700 dark:bg-zinc-950 absolute`}
+      onMouseEnter={() => setExpanded(true)}
+      onMouseLeave={() => setExpanded(false)}
     >
       <nav className="flex h-full flex-col">
-        <div className="relative flex items-center justify-between px-6 py-6">
+        <div className="relative flex items-center justify-between px-4 py-6">
           <Link href="/">
-            <img
+            <Image
               src="/logo.png"
-              className={`overflow-hidden transition-all ease-in-out ${expanded ? 'w-12' : 'w-0'
-                }`}
+              className={`overflow-hidden transition-all ease-in-out`}
+              width={'36'}
+              height={'36'}
               alt="Logo"
-            ></img>
+            />
           </Link>
-          <Button
-            onClick={isBelowSm ? () => setHidden(true) : toggleSidebar}
-            variant={isBelowSm ? 'secondary' : 'circle'}
-            size="icon"
-            className={`h-6 w-6 transform border-none bg-red-500 text-zinc-50 shadow-md shadow-red-500/90 hover:bg-red-500/90 hover:text-zinc-50/90 hover:drop-shadow-lg dark:bg-red-500 dark:hover:bg-red-500/90
-                                ${expanded &&
-              'sm:absolute sm:-right-0 sm:translate-x-1/2'
-              }`}
-          >
-            {expanded ? <ChevronLeft size={14} /> : <ChevronLast size={14} />}
-          </Button>
+          {isBelowSm && (
+            <Button
+              onClick={() => setHidden(true)}
+              variant={'secondary'}
+              size="icon"
+              className="h-6 w-6 transition-opacity transform border-none bg-red-500 text-zinc-50 shadow-md shadow-red-500/90 hover:bg-red-500/90 hover:text-zinc-50/90 hover:drop-shadow-lg dark:bg-red-500 dark:hover:bg-red-500/90"
+            >
+              {expanded ? <ChevronLeft size={14} /> : <ChevronLast size={14} />}
+            </Button>
+          )}
         </div>
 
-        <ul className={`flex-1 px-3 h-full overflow-y-scroll overflow-x-hidden`}>
-          {children}
+        <ul
+          className={`flex-1 px-3 h-full overflow-y-scroll overflow-x-hidden`}>
+          <div>
+            {children}
+          </div>
         </ul>
 
 
@@ -92,7 +98,6 @@ export function SidebarItem({
   alert,
   ...props
 }: PropsWithChildren<ISidebarItem>) {
-  const { isBelowSm } = useBreakpoint('sm')
   const [expanded] = useSidebarStore(state => [state.expanded])
   const router = useRouter()
   let active = router.pathname.startsWith(String(props.href))
@@ -108,8 +113,7 @@ export function SidebarItem({
                 ${active
           ? 'bg-zinc-200 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50'
           : 'text-zinc-900/70 dark:text-zinc-50/60'
-        }
-            `}
+        }`}
     >
       {icon}
 
@@ -132,7 +136,7 @@ export function SidebarItem({
       )}
 
       {/* {Tooltip} */}
-      {!expanded && !isBelowSm && (
+      {/* {!expanded && !isBelowSm && (
         <div
           className={`
                     invisible absolute left-full z-[10] ml-6 -translate-x-3 rounded-md
@@ -144,7 +148,7 @@ export function SidebarItem({
         >
           {text}
         </div>
-      )}
+      )} */}
     </Link>
   )
 }

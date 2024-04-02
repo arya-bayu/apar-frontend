@@ -10,6 +10,7 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
+    CommandSeparator
 } from "@/components/ui/command"
 import {
     Drawer,
@@ -21,62 +22,28 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
-import { IProduct } from "@/types/product"
-import axios from "@/lib/axios"
-import { AxiosError } from "axios"
-import { toast } from "@/components/ui/use-toast"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
-import { ISupplier } from "@/types/supplier";
-import { ICategory } from "@/types/category";
 
-interface ProductComboboxProps {
+interface StatusComboboxProps {
     value: number | null;
-    supplierId?: ISupplier["id"];
-    categoryId?: ICategory["id"] | null;
-    onSelect: (product: IProduct["id"], supplierId?: IProduct["supplier_id"]) => void;
+    onSelect: (status: number | null) => void;
+    disabled?: boolean;
+    hasReset?: boolean;
+    statusData: { id: number; name: string }[]
 }
 
-export function ProductCombobox({ supplierId, categoryId, value, onSelect }: ProductComboboxProps) {
+export function StatusCombobox({ value, onSelect, disabled = false, hasReset = false, statusData }: StatusComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
-    const [products, setProducts] = useState<IProduct[]>([]);
-
-    useEffect(() => {
-        async function fetchProducts() {
-            // if (supplierId === undefined) {
-            //     return
-            // }
-
-            const columns = ['id', 'name'];
-            if (supplierId) columns.push('supplier_id');
-            if (categoryId) columns.push('category_id');
-            const columnsParam = columns.join(',');
-
-            try {
-                const response = await axios.get(`api/v1/products?status=1&columns=${columnsParam}${supplierId ? `&supplier_id=${supplierId}` : ``}${categoryId ? `\&category_id=${categoryId}` : ``}
-                `);
-
-                setProducts(response.data.data)
-            } catch (error) {
-                if (error instanceof AxiosError)
-                    toast({
-                        variant: 'destructive',
-                        title: 'Terjadi kesalahan',
-                        description: error.response?.data.errors,
-                    })
-            }
-        }
-
-        fetchProducts()
-    }, [supplierId, categoryId])
 
     if (isAboveMd) {
         return (
             <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
+                        disabled={disabled}
                         variant="outline"
                         role="combobox"
                         className={cn(
@@ -86,16 +53,16 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
                     >
                         <p className="truncate ...">
                             {value
-                                ? products.find(
-                                    (product) => product.id === value
+                                ? statusData.find(
+                                    (status) => status.id === value
                                 )?.name
-                                : "Pilih produk"}
+                                : "Pilih status"}
                         </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <ProductList products={products} setOpen={setOpen} onSelect={onSelect} />
+                    <StatusList statusData={statusData} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </PopoverContent>
             </Popover>
         )
@@ -104,69 +71,88 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
+                <Button disabled={disabled} variant="outline" className="w-full justify-start">
 
                     <p className="truncate">
                         {value
-                            ? products.find(
-                                (product) => product.id === value
+                            ? statusData.find(
+                                (status) => status.id === value
                             )?.name
-                            : "Pilih produk"}
+                            : "Pilih status"}
                     </p>
 
                 </Button>
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <ProductList products={products} setOpen={setOpen} onSelect={onSelect} />
+                    <StatusList statusData={statusData} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </div>
             </DrawerContent>
         </Drawer>
     )
 }
 
-function ProductList({
-    products,
+function StatusList({
+    hasReset,
+    statusData,
     setOpen,
     onSelect,
 }: {
-    products: IProduct[]
+    hasReset?: boolean
+    statusData: { id: number; name: string }[]
     setOpen: (open: boolean) => void
-    onSelect: (productId: IProduct["id"], supplierId?: IProduct["supplier_id"]) => void
+    onSelect: (status: number | null) => void
 }) {
+
     return (
         <Command>
             <CommandInput
-                placeholder="Cari produk..."
+                placeholder="Cari status..."
                 className="h-9"
             />
+            {hasReset && (
+                <CommandGroup>
+                    <CommandItem
+                        className="py-2 px-2 rounded-md"
+                        key={0}
+                        value={"Reset"}
+                        onSelect={() => {
+                            onSelect(null)
+                            setOpen(false)
+                        }}
+                    >
+                        <p className="text-sm font-bold">
+                            Reset
+                        </p>
+                    </CommandItem>
+                </CommandGroup>
+            )}
+            <CommandSeparator />
             <CommandList>
-                {products.length < 1 ? (
+                {statusData.length < 1 ? (
                     <div
                         className="py-6 text-center text-sm">
-                        Produk tidak ditemukan.
+                        Status tidak ditemukan.
                     </div>
                 ) : (
                     <>
-                        <CommandEmpty>Produk tidak ditemukan.</CommandEmpty>
+                        <CommandEmpty>Status tidak ditemukan.</CommandEmpty>
                         <CommandGroup>
-                            {products.map((product) => (
+                            {statusData.map((status) => (
                                 <CommandItem
-                                    key={product.id}
-                                    value={product.name}
+                                    key={status.id}
+                                    value={status.name}
                                     onSelect={() => {
-                                        onSelect(product.id, product.supplier_id)
+                                        onSelect(status.id)
                                         setOpen(false)
                                     }}
                                 >
-                                    {product.name}
+                                    {status.name}
                                 </CommandItem>
                             ))}
                         </CommandGroup>
                     </>
                 )}
-
-
             </CommandList>
         </Command>
     )

@@ -107,7 +107,7 @@ const UpdatePasswordForm = () => {
               <FormItem>
                 <FormLabel>Kata Sandi Lama</FormLabel>
                 <FormControl>
-                  <Input required type="password" {...field} />
+                  <Input required type="password" {...field} autoComplete="current-password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -120,7 +120,7 @@ const UpdatePasswordForm = () => {
               <FormItem>
                 <FormLabel>Kata Sandi Baru</FormLabel>
                 <FormControl>
-                  <Input required type="password" {...field} />
+                  <Input required type="password" {...field} autoComplete="new-password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -133,7 +133,7 @@ const UpdatePasswordForm = () => {
               <FormItem>
                 <FormLabel>Konfirmasi Kata Sandi</FormLabel>
                 <FormControl>
-                  <Input required type="password" {...field} />
+                  <Input required type="password" {...field} autoComplete="new-password" />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -176,7 +176,7 @@ export default function SupplierDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[525px]">
+      <DialogContent className="max-h-[100vh] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
         <DialogHeader className="space-y-2">
           <DialogTitle>{supplier ? 'Edit' : 'Tambah'} supplier</DialogTitle>
           <DialogDescription>
@@ -188,7 +188,7 @@ export default function SupplierDialog({
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="mt-4 flex flex-col gap-4"
+            className="flex flex-col gap-4"
           >
             <FormField
               control={form.control}
@@ -256,7 +256,7 @@ export default function SupplierDialog({
               )}
             />
 
-            <DialogFooter className="mt-8">
+            <DialogFooter className="mt-2">
               <Button className="w-full" type="submit">
                 {supplier ? 'Edit' : 'Tambah'} Supplier
               </Button>

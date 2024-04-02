@@ -139,8 +139,7 @@ const AppLayout = ({
 
           {/* Page Content */}
           <main
-            className={`sm:overflow-x-hidden" relative ml-0 flex h-screen flex-1 flex-col overflow-x-auto overflow-y-hidden bg-white dark:bg-zinc-950 sm:bg-zinc-100 sm:dark:bg-zinc-900
-                        ${!hidden && !expanded && isBelowSm && 'ml-[72px]'}`}
+            className={`sm:overflow-x-hidden ml-0 sm:ml-[68px] relative flex h-screen flex-1 flex-col overflow-x-auto overflow-y-hidden bg-white dark:bg-zinc-950 sm:bg-zinc-100 sm:dark:bg-zinc-900`}
           >
             {/* Navigation z-[2] */}
             <Navigation user={authUser} />

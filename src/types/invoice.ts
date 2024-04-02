@@ -8,12 +8,13 @@ export interface IInvoice {
   invoice_number: string
   date: Date
   customer_id: number
+  tax: number
+  discount: number
   total: number
+  description: string
   images: IImage[]
   customer: ICustomer
   invoice_items: IInvoiceItem[]
-  created_by: number | null
-  updated_by: number | null
   created_at: string
   updated_at: string
 }

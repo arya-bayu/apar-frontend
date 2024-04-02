@@ -5,6 +5,7 @@ export default function currencyFormatter(
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
+    minimumFractionDigits: 0,
     ...options,
   }).format(value)
 }

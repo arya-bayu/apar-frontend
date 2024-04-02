@@ -292,7 +292,7 @@ export default function CategoryDialog({
     setBannerImage(files[0]);
 
     if (!mutate) return;
-    form.setValue("image", files.length ? files[0] : undefined)
+    form.setValue("image", files.length > 0 ? files[0] : undefined)
     mutate()
   };
 
@@ -301,7 +301,7 @@ export default function CategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[100vh] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[80vw]">
+      <DialogContent className="max-h-[100vh] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
         <DialogHeader className="space-y-2 px-6">
           <DialogTitle>{category ? 'Edit' : 'Tambah'} kategori</DialogTitle>
           <DialogDescription>
@@ -310,23 +310,9 @@ export default function CategoryDialog({
             inventaris {process.env.NEXT_PUBLIC_APP_NAME}
           </DialogDescription>
         </DialogHeader>
-        <div className="mx-6 flex flex-col gap-6 md:flex-row">
-          <div className="md:w-[55%]">
-            <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
-              Header Preview
-            </h3>
-            <div className="flex h-full flex-col justify-between">
-              <div className="flex max-h-[calc(50vh)] justify-center overflow-y-scroll rounded-lg bg-[rgb(198,74,59)] ">
-                <div className="flex flex-row justify-center px-10 py-8">
-                  <div className="text-center">
-                    <h1 className="text-2xl font-bold">{watch('name')}</h1>
-                    <p className="text-sm">{watch('description')}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="md:w-[45%]">
+        <div className="mx-6 flex flex-col-reverse gap-6 md:flex-row">
+          {/* <div className="md:w-[45%]"> */}
+          <div className="w-full">
             <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
               Metadata
             </h3>
@@ -501,21 +487,23 @@ export default function CategoryDialog({
                       >
                         Hapus #{index + 1}
                       </Button>
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        className="text-sm"
-                        size="sm"
-                        onClick={() =>
-                          append({
-                            icon: 'Plus',
-                            name: '',
-                            description: '',
-                          })
-                        }
-                      >
-                        Tambah
-                      </Button>
+                      {index === fields.length - 1 &&
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className="text-sm"
+                          size="sm"
+                          onClick={() =>
+                            append({
+                              icon: 'Plus',
+                              name: '',
+                              description: '',
+                            })
+                          }
+                        >
+                          Tambah
+                        </Button>
+                      }
                     </div>
                   </div>
                 ))}
@@ -532,6 +520,21 @@ export default function CategoryDialog({
               </Button>
             </DialogFooter>
           </div>
+          {/* <div className="md:w-[55%]">
+            <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
+              Header Preview
+            </h3>
+            <div className="flex h-full flex-col justify-between">
+              <div className="flex max-h-[calc(50vh)] justify-center overflow-y-scroll rounded-lg bg-[rgb(198,74,59)] ">
+                <div className="flex flex-row justify-center px-10 py-8">
+                  <div className="text-center">
+                    <h1 className="text-2xl font-bold">{watch('name')}</h1>
+                    <p className="text-sm">{watch('description')}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div> */}
         </div>
       </DialogContent>
     </Dialog>

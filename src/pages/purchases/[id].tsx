@@ -35,7 +35,7 @@ import { IPurchase } from '@/types/purchase'
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
 import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
 import { IImage } from "@/types/image"
-import { ScannerDrawerDialog } from "@/components/Scanner"
+import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 import { CalendarIcon, Plus, Trash2 } from "lucide-react"
@@ -60,11 +60,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { EditText } from 'react-edit-text';
 import currencyFormatter from "@/lib/currency"
 import { Badge } from "@/components/ui/badge"
 import { DotFilledIcon, ListBulletIcon } from "@radix-ui/react-icons"
+import { Textarea } from "@/components/ui/textarea"
 
 const purchaseFormSchema = z.object({
     purchase_number: z.string(),
@@ -105,6 +106,7 @@ const PurchasePage = () => {
     const [purchaseItems, setPurchaseItems] = useState<IPurchaseItem[]>([])
     const [selectedProductId, setSelectedProductId] = useState<number | undefined>(undefined);
     const [selectedSupplierId, setSelectedSupplierId] = useState<number | undefined>(undefined);
+    const [description, setDescription] = useState<IPurchase["description"] | undefined>('')
     const [existingImages, setExistingImages] = useState<IImage[]>([])
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
@@ -148,6 +150,7 @@ const PurchasePage = () => {
         })
 
         setSelectedSupplierId(purchase?.supplier_id)
+        setDescription(purchase?.description)
         setPurchaseItems(purchase?.purchase_items ?? [])
         setExistingImages(purchase?.images ?? [])
     }, [purchase])
@@ -201,6 +204,9 @@ const PurchasePage = () => {
         formData.append('date', format(values.date, 'yyyy-MM-dd'));
         formData.append('purchase_number', values.purchase_number);
         formData.append('supplier_id', String(values.supplierId));
+        formData.append('discount', String(purchase?.discount));
+        formData.append('tax', String(purchase?.tax));
+        description && formData.append('description', String(description));
 
         // append existing image
         existingImages.forEach((image, index) => {
@@ -327,7 +333,16 @@ const PurchasePage = () => {
         <AppLayout
             title={title}
             headerAction={
-                <div className="flex flex-row space-x-2" >
+                <div className="flex flex-row space-x-2 ml-4" >
+                    {
+                        purchase?.status === 1 && (
+                            <Link href={`/purchases`}>
+                                <Button variant="outline" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
+                                    {isBelowXs ? <Save size={18} /> : 'Kembali'}
+                                </Button>
+                            </Link>
+                        )
+                    }
                     {
                         purchase?.status === 0 && (
                             <Button onClick={form.handleSubmit(onSubmit)} className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
@@ -335,23 +350,14 @@ const PurchasePage = () => {
                             </Button>
                         )
                     }
-                    {
-                        purchase?.status === 1 && (
-                            <Link href={`/purchases`}>
-                                <Button className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                                    {isBelowXs ? <Save size={18} /> : 'Kembali'}
-                                </Button>
-                            </Link>
-                        )
-                    }
                 </div>
             }
         >
-            <ContentLayout className="my-0 sm:my-12 px-6 py-8 sm:mx-6 lg:mx-8 overflow-hidden">
+            <ContentLayout className="my-0 sm:my-12 sm:mx-6 lg:mx-8 overflow-hidden">
                 <Form {...form}>
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
-                        className="flex flex-col gap-4 overflow-scroll">
+                        className="flex flex-col gap-4 overflow-scroll px-6 py-8">
                         <div className="flex flex-col md:flex-row  items-center gap-4">
                             <FormField
                                 control={form.control}
@@ -515,7 +521,7 @@ const PurchasePage = () => {
                                         <TableHead>Harga</TableHead>
                                         <TableHead className="text-right">Note</TableHead>
                                         <TableHead className="text-right">Total</TableHead>
-                                        {purchase.status == 0 && (<TableHead>Aksi</TableHead>)}
+                                        {purchase.status == 0 && (<TableHead></TableHead>)}
                                     </TableRow>
                                 </TableHeader>
                             )}
@@ -691,10 +697,7 @@ const PurchasePage = () => {
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium">{item.product?.name}</TableCell>
                                             <TableCell>{item.category?.name}</TableCell>
-                                            {purchase.status == 1 && (<TableCell>{item.quantity}</TableCell>)}
-                                            {purchase.status == 1 && (<TableCell>{currencyFormatter(item.total_price)}</TableCell>)}
-                                            {purchase.status == 1 && (<TableCell className="text-right">{item.description}</TableCell>)}
-                                            {purchase.status == 0 && (<TableCell>
+                                            <TableCell>
                                                 <FormField
                                                     name="quantity"
                                                     render={({ field }) => (
@@ -732,14 +735,16 @@ const PurchasePage = () => {
                                                                             setPurchaseItems(updatedItems);
                                                                         }
                                                                     }}
-                                                                    inline />
+                                                                    inline
+                                                                    readonly={purchase.status === 1}
+                                                                />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                            </TableCell>)}
-                                            {purchase.status == 0 && (<TableCell>
+                                            </TableCell>
+                                            <TableCell>
                                                 <FormField
                                                     name="unit_price"
                                                     render={({ field }) => (
@@ -760,14 +765,15 @@ const PurchasePage = () => {
                                                                         };
                                                                         setPurchaseItems(updatedItems);
                                                                     }}
+                                                                    readonly={purchase.status === 1}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                            </TableCell>)}
-                                            {purchase.status == 0 && (<TableCell className="text-right">
+                                            </TableCell>
+                                            <TableCell className="text-right">
                                                 <FormField
                                                     name="description"
                                                     render={({ field }) => (
@@ -788,16 +794,17 @@ const PurchasePage = () => {
                                                                         };
                                                                         setPurchaseItems(updatedItems);
                                                                     }}
+                                                                    readonly={purchase.status === 1}
                                                                 />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
-                                            </TableCell>)}
+                                            </TableCell>
                                             <TableCell className="text-right">{currencyFormatter(item.total_price)}</TableCell>
                                             {purchase.status == 0 && (
-                                                <TableCell>
+                                                <TableCell className="text-center w-0">
                                                     <Button
                                                         size="icon"
                                                         variant="outline"
@@ -815,30 +822,121 @@ const PurchasePage = () => {
                                 </TableBody>
                             )}
                             <TableFooter>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Subtotal</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    purchaseItems.reduce((acc, item) => acc + item.total_price, 0),
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Diskon</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            readonly={purchase.status === 1}
+                                            placeholder="0"
+                                            type="number"
+                                            value={String(purchase.discount)}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                const newValue = Number(e.target.value);
+                                                if (newValue >= 0)
+                                                    setPurchase(prevPurchase => {
+                                                        if (!prevPurchase) return prevPurchase;
+                                                        return { ...prevPurchase, discount: newValue };
+                                                    });
+                                            }}
+                                            formatDisplayText={(value) => `${currencyFormatter(Number(value))}`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak (%)</TableCell>
+                                    <TableCell className="text-right">
+                                        <EditText
+                                            readonly={purchase.status === 1 ? true : false}
+                                            placeholder="0"
+                                            type="number"
+                                            value={String(purchase.tax)}
+                                            inputClassName="flex h-9 w-full items-center justify-center rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
+                                            onChange={(e) => {
+                                                const newValue = Number(e.target.value);
+                                                if (newValue >= 0)
+                                                    setPurchase(prevPurchase => {
+                                                        if (!prevPurchase) return prevPurchase;
+                                                        return { ...prevPurchase, tax: newValue };
+                                                    });
+                                            }}
+                                            formatDisplayText={(value) => `${value}%`}
+                                        />
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
+                                <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
+                                    <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    (purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - purchase.discount) * Number(purchase.tax) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
+                                    {!isBelowSm && (<TableCell />)}
+                                </TableRow>
                                 <TableRow>
-                                    <TableCell colSpan={isBelowSm ? 1 : 5}>Total Pembelian</TableCell>
-                                    <TableCell className="text-right">{currencyFormatter(purchaseItems.reduce((acc, item) => acc + item.total_price, 0))}</TableCell>
+                                    <TableCell colSpan={isBelowSm ? 1 : 5}>Total</TableCell>
+                                    <TableCell className="text-right">
+                                        {
+                                            currencyFormatter(
+                                                Math.max(
+                                                    purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - purchase.discount
+                                                    + (purchaseItems.reduce((acc, item) => acc + item.total_price, 0) - purchase.discount) * Number(purchase.tax) / 100,
+                                                    0
+                                                )
+                                            )
+                                        }
+                                    </TableCell>
                                     {!isBelowSm && (<TableCell />)}
                                 </TableRow>
                             </TableFooter>
                         </Table>
 
-                        <div>
-                            {(purchase?.status === 0 || (purchase?.status === 1 && purchase.images.length > 0)) && (
-                                <h3 className="text-md mt-6 font-semibold md:mt-0">Lampiran</h3>
-                            )}
-                            <Dropzone
-                                disabled={purchase?.status === 1 ? true : false}
-                                allowMultiple
-                                multipleImages={existingImages}
-                                onImagesChange={(images) => {
-                                    setSelectedImages(images);
-                                }}
-                                onExistingImagesChange={(images) => {
-                                    setExistingImages(images);
-                                }}
-                                maxFiles={20 - existingImages.length - selectedImages.length}
-                            />
+                        <div className="space-y-4 mt-4">
+                            <div className="space-y-3">
+                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian</p>
+                                <Textarea placeholder="Catatan Pembelian"
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                {(purchase?.status === 0 || (purchase?.status === 1 && purchase.images.length > 0)) && (
+                                    <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Lampiran</p>
+                                )}
+                                <Dropzone
+                                    disabled={purchase?.status === 1 ? true : false}
+                                    allowMultiple
+                                    multipleImages={existingImages}
+                                    onImagesChange={(images) => {
+                                        setSelectedImages(images);
+                                    }}
+                                    onExistingImagesChange={(images) => {
+                                        setExistingImages(images);
+                                    }}
+                                    maxFiles={20 - existingImages.length - selectedImages.length}
+                                />
+                            </div>
                         </div>
                     </form>
                 </Form>

@@ -47,7 +47,7 @@ import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
 import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
 import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 import { IImage } from "@/types/image"
-import { ScannerDrawerDialog } from "@/components/Scanner"
+import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
 import { RefreshCcw } from "lucide-react"
 
@@ -218,7 +218,7 @@ export default function ProductDialog({
     formData.append('serial_number', values.serial_number);
     formData.append('description', values.description);
     formData.append('price', String(values.price));
-    formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period && values.expiry_period * 12));
+    { values.expiry_period && formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period && values.expiry_period * 12)) };
     formData.append('unit_id', String(values.unitId));
     formData.append('supplier_id', String(values.supplierId));
     formData.append('category_id', String(values.categoryId));
@@ -230,12 +230,9 @@ export default function ProductDialog({
 
     selectedImages && await uploadImages(selectedImages).then((images) => {
       images.forEach((image, index) => {
-        console.log(String(image.id))
         formData.append(`images[${index + existingImages.length}]`, String(image.id));
       })
     })
-
-    console.log(formData.get("price"))
 
     const url = product
       ? `/api/v1/products/${product?.id}` // update
@@ -343,7 +340,7 @@ export default function ProductDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[100vh] md:max-h-[80vh] overflow-y-scroll sm:max-w-[525px]">
+      <DialogContent className="max-h-[100vh] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
         <DialogHeader className="space-y-2">
           <DialogTitle>{product ? 'Edit' : 'Tambah'} produk</DialogTitle>
           <DialogDescription>
@@ -505,7 +502,7 @@ export default function ProductDialog({
                 control={form.control}
                 name="supplierId"
                 render={({ field }) => (
-                  <FormItem className="w-full md:mt-0">
+                  <FormItem className="w-full md:w-1/2 md:mt-0">
                     <FormLabel>Supplier</FormLabel>
                     <FormControl>
                       <SupplierCombobox
@@ -523,7 +520,7 @@ export default function ProductDialog({
                 control={form.control}
                 name="categoryId"
                 render={({ field }) => (
-                  <FormItem className="w-full md:mt-0">
+                  <FormItem className="w-full md:w-1/2 md:mt-0">
                     <FormLabel>Kategori</FormLabel>
                     <FormControl>
                       <CategoryCombobox
@@ -554,7 +551,6 @@ export default function ProductDialog({
                         step={1}
                         min={0}
                         placeholder={`Periode Kedaluwarsa (${selectedPeriod})`}
-                        required
                       />
                     </FormControl>
                     <Select
@@ -582,8 +578,7 @@ export default function ProductDialog({
                 </FormItem>
               )}
             />
-
-            <DialogFooter className="mt-4">
+            <DialogFooter className="mt-2">
               <Button className="w-full" type="submit">
                 {product ? 'Edit' : 'Tambah'} Produk
               </Button>

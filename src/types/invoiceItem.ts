@@ -12,8 +12,6 @@ export interface IInvoiceItem {
   category: ICategory
   product: IProduct
   expiry_date?: Date
-  created_by?: number | null
-  updated_by?: number | null
   created_at?: string
   updated_at?: string
 }

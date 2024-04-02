@@ -37,8 +37,17 @@ const UpdateProfilePhotoForm = () => {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      form.setValue('photo', e.target.files[0])
-      form.handleSubmit(onSubmit)()
+      const file = e.target.files[0];
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+        toast({
+          variant: 'destructive',
+          title: 'Format ',
+          description: 'Only JPEG and PNG files are allowed.',
+        });
+        return;
+      }
+      form.setValue('photo', file);
+      form.handleSubmit(onSubmit)();
     }
   }
 
@@ -78,7 +87,7 @@ const UpdateProfilePhotoForm = () => {
           toast({
             variant: 'destructive',
             title: 'Terjadi kesalahan',
-            description: error.response?.data.errors,
+            description: errors
           })
         }
       }
@@ -115,7 +124,7 @@ const UpdateProfilePhotoForm = () => {
         </div>
 
         <Image
-          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${authUser?.photo}`}
+          src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/${authUser?.photo?.path}`}
           alt={`Foto profil ${authUser?.name}`}
           width={0}
           height={0}
@@ -140,7 +149,7 @@ const UpdateProfilePhotoForm = () => {
                       <>
                         <Input
                           type="file"
-                          accept=".jpg, .jpeg, .png"
+                          accept="image/jpeg, image/jpg, image/png"
                           style={{ display: 'none' }}
                           ref={fileInputRef}
                           onChange={e => {
@@ -177,10 +186,6 @@ const UpdateProfilePhotoForm = () => {
           </Button>
         )}
       </div>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
-        Besar file: maksimum 10.000.000 bytes (10 Megabytes). Ekstensi file yang
-        diperbolehkan: .JPG .JPEG .PNG
-      </p>
     </div>
   )
 }

@@ -19,7 +19,11 @@ import { ToastAction } from "@/components/ui/toast"
 import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
-import CustomAlertDialog from "@/components/AlertDialog"
+import CustomAlertDialog from "@/components/CustomAlertDialog"
+import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
+import CustomExportDialog from "@/components/CustomExportDialog"
+import { StatusCombobox } from "@/components/Combobox/StatusCombobox"
+import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 
 const Products = () => {
   const {
@@ -45,6 +49,15 @@ const Products = () => {
   const [alertContinueAction, setAlertContinueAction] = useState(() => {
     return () => { };
   });
+
+  const [exportDialog, setExportDialog] = useState(false)
+  const [exportDialogDescription, setExportDialogDescription] = useState<string>("")
+  const [exportIds, setExportIds] = useState<IProduct['id'][] | undefined>(undefined);
+  const [exportFileType, setExportFileType] = useState<"XLSX" | "CSV">("XLSX");
+
+  const [selectedStatusId, setSelectedStatusId] = useState<number | null>(null);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<number | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
 
   useEffect(() => {
     const isTrashRoute = router.asPath.includes('/trash')
@@ -318,68 +331,12 @@ const Products = () => {
 
   const handleExportData = async (
     fileType: 'XLSX' | 'CSV',
-    id?: IProduct['id'][],
-    startDate?: string,
-    endDate?: string,
+    id?: IProduct['id'][]
   ) => {
-    const params = {
-      id: id,
-      startDate: startDate,
-      endDate: endDate,
-      fileType: fileType,
-    }
-
-    try {
-      const response = await axios.get(`api/v1/products/export`, {
-        responseType: 'blob',
-        params: _.pickBy(params, value => !!value),
-      })
-
-      const moment = require('moment')
-
-      const appName = process.env.NEXT_PUBLIC_APP_NAME
-
-      const date = moment().format('YYYY-MM-DD')
-      const time = moment().format('HHmmss')
-
-      let fileName = title
-
-      if (id && id.length > 0) {
-        fileName += ' (Custom Export)'
-      }
-
-      if (startDate && endDate) {
-        fileName += ` (Custom Range Export) ${startDate}-${endDate}`
-      }
-
-      fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`
-
-      const url = URL.createObjectURL(
-        new Blob([response.data], {
-          type:
-            fileType === 'XLSX'
-              ? 'application/vnd.ms-excel'
-              : fileType === 'CSV'
-                ? 'text/csv'
-                : 'application/octet-stream',
-        }),
-      )
-      const link = document.createElement('a')
-      link.href = url
-      link.setAttribute('download', fileName)
-      document.body.appendChild(link)
-      link.click()
-
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Gagal',
-        description:
-          error instanceof AxiosError
-            ? error.response?.data.errors
-            : 'Terjadi kesalahan',
-      })
-    }
+    setExportFileType(fileType)
+    setExportIds(id)
+    setExportDialogDescription(`Filter ${id?.length ?? products?.data?.totalRowCount} data yang akan di export`)
+    setExportDialog(true)
   }
 
   if (!can('access products')) {
@@ -405,7 +362,7 @@ const Products = () => {
             </Button>
           )
         ) : (
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row space-x-2 ml-4">
             {can('create products') && (
               <ProductDialog mutate={mutate}>
                 <Button size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
@@ -464,6 +421,120 @@ const Products = () => {
         description={alertDescription}
         onContinue={alertContinueAction}
       />
+      <CustomExportDialog
+        open={exportDialog}
+        onOpenChange={setExportDialog}
+        description={exportDialogDescription}
+        onContinue={async () => {
+          const params = {
+            id: exportIds,
+            categoryId: selectedCategoryId,
+            supplierId: selectedSupplierId,
+            fileType: exportFileType,
+          }
+          try {
+            const response = await axios.get(`api/v1/products/export`, {
+              responseType: 'blob',
+              params: {
+                ..._.pickBy(params, value => !!value),
+                status: selectedStatusId && selectedStatusId - 1,
+              }
+            })
+
+            const moment = require('moment')
+
+            const appName = process.env.NEXT_PUBLIC_APP_NAME
+
+            const date = moment().format('YYYY-MM-DD')
+            const time = moment().format('HHmmss')
+
+            let fileName = title
+
+            if (exportIds && exportIds.length > 0) {
+              fileName += ' (Custom Export)'
+            }
+
+            fileName += ` ${date} T${time} ${appName}.${exportFileType?.toLowerCase()}`
+
+            const url = URL.createObjectURL(
+              new Blob([response.data], {
+                type:
+                  exportFileType === 'XLSX'
+                    ? 'application/vnd.ms-excel'
+                    : exportFileType === 'CSV'
+                      ? 'text/csv'
+                      : 'application/octet-stream',
+              }),
+            )
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', fileName)
+            document.body.appendChild(link)
+            link.click()
+
+          } catch (error) {
+            toast({
+              variant: 'destructive',
+              title: 'Gagal',
+              description:
+                error instanceof AxiosError
+                  ? error.response?.data.errors
+                  : 'Terjadi kesalahan',
+            })
+          }
+        }
+        }
+        title="Export Data"
+      >
+        <div className="flex flex-col gap-4 py-4">
+          <div className="flex flex-col justify-start gap-1">
+            <label
+              className="text-sm font-bold text-start"
+            >
+              Status
+            </label>
+            <StatusCombobox
+              hasReset={selectedStatusId ? true : false}
+              value={selectedStatusId}
+              onSelect={(statusId) => {
+                setSelectedStatusId(statusId);
+              }}
+              statusData={[
+                { id: 1, name: "Nonaktif" },
+                { id: 2, name: "Aktif" },
+              ]}
+            />
+          </div>
+          <div className="flex flex-col justify-start gap-1">
+            <label
+              className="text-sm font-bold text-start"
+            >
+              Kategori
+            </label>
+            <CategoryCombobox
+              hasReset={selectedCategoryId ? true : false}
+              value={selectedCategoryId}
+              onSelect={(categoryId) => {
+                setSelectedCategoryId(categoryId);
+              }}
+            />
+          </div>
+          <div className="flex flex-col justify-start gap-1">
+            <label
+              className="text-sm font-bold text-start"
+            >
+              Supplier
+            </label>
+            <SupplierCombobox
+              hasReset={selectedSupplierId ? true : false}
+              value={selectedSupplierId}
+              onSelect={(supplierId) => {
+                setSelectedSupplierId(supplierId);
+              }}
+            />
+          </div>
+        </div>
+      </CustomExportDialog>
     </AppLayout>
   )
 }
