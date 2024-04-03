@@ -222,7 +222,7 @@ const Dashboard = () => {
                   </ToggleGroupItem>
                 </ToggleGroup>
               </div>
-              <div className="h-96 py-8 pl-2">
+              <div className="h-96 py-8 pl-0">
                 {revenueData && (
                   <RevenueChart data={revenueData} period={chartPeriod} />
                 )}

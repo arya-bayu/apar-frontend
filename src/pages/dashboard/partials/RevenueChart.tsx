@@ -34,7 +34,7 @@ const RevenueChart = ({ data, period }: RevenueChartProps) => {
                 height={300}
                 data={data}
                 margin={{
-                    left: 30,
+                    left: 0,
                     right: 30,
                 }}
             >

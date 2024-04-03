@@ -17,14 +17,13 @@ export interface ISidebarItem extends LinkProps {
 
 const Sidebar = ({ children }: PropsWithChildren) => {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
-  const [expanded, hidden, setExpanded, setHidden, toggleSidebar] =
+  const [expanded, hidden, setExpanded, setHidden] =
     useSidebarStore(
       state => [
         state.expanded,
         state.hidden,
         state.setExpanded,
         state.setHidden,
-        state.toggleSidebar,
       ],
       shallow,
     )
@@ -67,7 +66,7 @@ const Sidebar = ({ children }: PropsWithChildren) => {
         </div>
 
         <ul
-          className={`flex-1 px-3 h-full overflow-y-scroll overflow-x-hidden`}>
+          className={`flex-1 px-3 h-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-y-scroll overflow-x-hidden`}>
           <div>
             {children}
           </div>
