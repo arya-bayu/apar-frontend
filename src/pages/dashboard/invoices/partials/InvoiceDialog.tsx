@@ -77,7 +77,7 @@ export default function InvoiceDialog({
             } catch (error) {
                 if (error instanceof AxiosError) {
                     if (error.response?.data.code === 404) {
-                        router.push('/invoices')
+                        router.push('/dashboard/invoices')
                     } else {
                         toast({
                             variant: 'destructive',

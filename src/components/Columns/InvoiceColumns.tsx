@@ -116,7 +116,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
                       title: 'Gagal',
                       description: error.response?.data.errors,
                     })
-                    router.push('/invoices/' + invoice?.id)
+                    router.push('/dashboard/invoices/' + invoice?.id)
                   })
                 }}>
                   Setujui

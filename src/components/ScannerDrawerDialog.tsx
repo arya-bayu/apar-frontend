@@ -83,7 +83,6 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
         }
       })
       .catch(err => {
-        console.error(err)
         setCameraList([])
       })
   }
@@ -91,7 +90,6 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
   const onCameraChange = (e: any) => {
     if (e.target.selectedIndex) {
       let selectedCamera = e.target.options[e.target.selectedIndex]
-      console.info(selectedCamera)
       let cameraId = selectedCamera.dataset.key
       setActiveCamera(cameraList.find(cam => cam.id === cameraId))
     }

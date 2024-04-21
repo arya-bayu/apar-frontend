@@ -31,7 +31,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: IUseAuth) => {
       .then(res => res.data.data)
       .catch(error => {
         if (error.response.status !== 409) throw error
-        router.push('/verify-email')
+        router.push('/dashboard/verify-email')
       }),
   )
 
@@ -99,7 +99,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: IUseAuth) => {
     axios
       .post('/reset-password', { token: router.query.token, ...props })
       .then(response =>
-        router.push('/login?reset=' + btoa(response.data.status)),
+        router.push('/dashboard/login?reset=' + btoa(response.data.status)),
       )
       .catch(error => {
         if (error.response.status !== 422) throw error

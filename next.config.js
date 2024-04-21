@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'apar-backend-morning-surf-2097.fly.dev',
+        hostname: 'api.tisain.id',
         pathname: '/storage/**'
       }
     ],

@@ -191,7 +191,7 @@ const NewInvoicePage = () => {
                     title: 'Sukses',
                     description: `Data invoice ${values.invoice_number} telah berhasil disimpan.`,
                 })
-                router.push('/invoices')
+                router.push('/dashboard/invoices')
             }
         } catch (error) {
             if (error instanceof AxiosError) {

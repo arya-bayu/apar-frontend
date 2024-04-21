@@ -123,7 +123,7 @@ const InvoicePage = () => {
             } catch (error) {
                 if (error instanceof AxiosError) {
                     if (error.response?.data.code === 404) {
-                        router.push('/invoices')
+                        router.push('../invoices')
                     } else {
                         toast({
                             variant: 'destructive',
@@ -240,7 +240,7 @@ const InvoicePage = () => {
                     title: 'Sukses',
                     description: `Data penjualan ${values.invoice_number} telah berhasil diperbarui.`,
                 })
-                router.push('/invoices')
+                router.push('../invoices')
             }
         } catch (error) {
             if (error instanceof AxiosError) {

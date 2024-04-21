@@ -125,7 +125,7 @@ const PurchasePage = () => {
             } catch (error) {
                 if (error instanceof AxiosError) {
                     if (error.response?.data.code === 404) {
-                        router.push('/purchases')
+                        router.push('/dashboard/purchases')
                     } else {
                         toast({
                             variant: 'destructive',
@@ -243,7 +243,7 @@ const PurchasePage = () => {
                     title: 'Sukses',
                     description: `Data pembelian ${values.purchase_number} telah berhasil diperbarui.`,
                 })
-                router.push('/purchases')
+                router.push('/dashboard/purchases')
             }
         } catch (error) {
             if (error instanceof AxiosError) {

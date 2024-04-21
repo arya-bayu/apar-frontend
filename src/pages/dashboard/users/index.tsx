@@ -57,7 +57,7 @@ const Users = () => {
     let id = isUserArray(data) ? data.map(user => user.id) : data
 
     if (id.includes(String(authUser?.id)) || id.includes(authUser?.id)) {
-      router.push('/profile?deleteAccount')
+      router.push('dashboard/profile?deleteAccount')
 
       if (id.length > 1) {
         id = id.filter(id => id !== String(authUser?.id))
