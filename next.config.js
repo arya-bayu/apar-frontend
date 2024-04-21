@@ -11,9 +11,9 @@ const nextConfig = {
         pathname: '/storage/**'
       },
       {
-        protocol: process.env.REMOTE_PROTOCOL,
-        hostname: process.env,
-        pathname: process.env.REMOTE_PATH
+        protocol: 'https',
+        hostname: 'apar-backend-morning-surf-2097.fly.dev',
+        pathname: '/storage/**'
       }
     ],
   },
