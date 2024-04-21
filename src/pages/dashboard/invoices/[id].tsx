@@ -240,7 +240,7 @@ const InvoicePage = () => {
                     title: 'Sukses',
                     description: `Data penjualan ${values.invoice_number} telah berhasil diperbarui.`,
                 })
-                router.push('../invoices')
+                router.push('/dashboard/invoices')
             }
         } catch (error) {
             if (error instanceof AxiosError) {
