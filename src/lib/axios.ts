@@ -4,6 +4,7 @@ const baseURL = process.env.NEXT_PUBLIC_BACKEND_URL
 
 const axios = Axios.create({
   withCredentials: true,
+  withXSRFToken: true,
   headers: {
     'X-Requested-With': 'XMLHttpRequest',
   },
