@@ -110,7 +110,7 @@ const Register = () => {
           setIsSubmitted(true)
         }
       },
-      setStatus: status => {},
+      setStatus: status => { },
     })
   }
 
@@ -130,7 +130,7 @@ const Register = () => {
         })
         .catch(error => {
           if (error.response.status === 404) {
-            router.push('/login')
+            router.push('/dashboard/login')
           }
         })
     } else if (!isSubmitted) {
@@ -141,12 +141,12 @@ const Register = () => {
         })
         .catch(error => {
           error.response.status === 403
-            ? router.push('/login')
+            ? router.push('/dashboard/login')
             : toast({
-                variant: 'destructive',
-                title: 'Terjadi kesalahan',
-                description: error,
-              })
+              variant: 'destructive',
+              title: 'Terjadi kesalahan',
+              description: error,
+            })
         })
     }
   }, [router.isReady, router.query.invite, isSubmitted])

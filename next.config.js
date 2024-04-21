@@ -8,8 +8,13 @@ const nextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '8000',
-        pathname: '/storage/**',
+        pathname: '/storage/**'
       },
+      {
+        protocol: process.env.REMOTE_PROTOCOL,
+        hostname: process.env,
+        pathname: process.env.REMOTE_PATH
+      }
     ],
   },
 }

@@ -157,7 +157,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                     {maxImages === 1 && (singleImage || images.length > 0) && (
                         <Image
                             priority
-                            src={images.length > 0 ? images[0].preview : `http://localhost:8000/storage/` + singleImage?.path}
+                            src={images.length > 0 ? images[0].preview : `${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + singleImage?.path}
                             alt={images.length > 0 ? images[0].name : "Header Image"}
                             width={0}
                             height={0}
@@ -219,7 +219,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                                         <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
                                             <Image
                                                 priority
-                                                src={`http://localhost:8000/storage/` + image.path}
+                                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + image.path}
                                                 alt={`Gambar ${index}`}
                                                 width={100}
                                                 height={100}
