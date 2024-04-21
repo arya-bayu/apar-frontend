@@ -30,7 +30,7 @@ import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
 import { ChevronRightIcon } from "lucide-react";
-import CustomerDialog from "@/pages/customers/partials/CustomerDialog";
+import CustomerDialog from "@/pages/dashboard/customers/partials/CustomerDialog";
 
 interface CustomerComboboxProps {
     value: number | null;

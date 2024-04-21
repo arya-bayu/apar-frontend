@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router'
-import { PropsWithChildren, useEffect } from 'react'
+import { PropsWithChildren, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft, ChevronLast } from 'lucide-react'
 import Link, { LinkProps } from 'next/link'
@@ -7,6 +7,7 @@ import { shallow } from 'zustand/shallow'
 import useSidebarStore from '@/store/useSidebarStore'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import Image from "next/image"
+import dashboard from "@/pages/dashboard"
 
 export interface ISidebarItem extends LinkProps {
   icon: React.ReactNode
@@ -44,7 +45,7 @@ const Sidebar = ({ children }: PropsWithChildren) => {
     >
       <nav className="flex h-full flex-col">
         <div className="relative flex items-center justify-between px-4 py-6">
-          <Link href="/">
+          <Link href="/dashboard">
             <Image
               src="/logo.png"
               className={`overflow-hidden transition-all ease-in-out`}
@@ -97,9 +98,21 @@ export function SidebarItem({
   alert,
   ...props
 }: PropsWithChildren<ISidebarItem>) {
+  const router = useRouter();
   const [expanded] = useSidebarStore(state => [state.expanded])
-  const router = useRouter()
-  let active = router.pathname.startsWith(String(props.href))
+  const [active, setActive] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isActive = router.pathname.startsWith(props.href as string);
+    const pathSegments = router.pathname.split('/');
+    const pathDepth = pathSegments.length - 1;
+
+    if (pathDepth > 1 && router.pathname.includes('dashboard') && props.href === '/dashboard') {
+      isActive = false;
+    }
+
+    setActive(isActive);
+  }, [props.href, router.pathname]);
 
   return (
     <Link
@@ -133,21 +146,6 @@ export function SidebarItem({
       {active && (
         <div className="absolute -right-3 h-full w-1 rounded-l-md bg-red-400" />
       )}
-
-      {/* {Tooltip} */}
-      {/* {!expanded && !isBelowSm && (
-        <div
-          className={`
-                    invisible absolute left-full z-[10] ml-6 -translate-x-3 rounded-md
-                    bg-red-100 px-2 py-1
-                    text-sm text-red-800
-                    opacity-20 transition-all group-hover:visible group-hover:translate-x-0
-                    group-hover:opacity-100 dark:bg-zinc-800 dark:text-zinc-50
-                `}
-        >
-          {text}
-        </div>
-      )} */}
     </Link>
   )
 }

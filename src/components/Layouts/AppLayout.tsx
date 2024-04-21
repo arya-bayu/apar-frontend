@@ -8,17 +8,13 @@ import {
   Building2,
   Boxes,
   Settings,
-  LifeBuoy,
   Package,
   Ruler,
   Users2Icon,
-  ArrowUpSquareIcon,
-  ArrowDownSquareIcon,
   UserSquare2,
   ShoppingBag,
   FileBox,
 } from 'lucide-react'
-import { useBreakpoint } from '@/hooks/useBreakpoint'
 import useSidebarStore from '@/store/useSidebarStore'
 import { shallow } from 'zustand/shallow'
 import Head from 'next/head'
@@ -37,7 +33,6 @@ const AppLayout = ({
 }: PropsWithChildren<IAppLayout>) => {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
   const { authUser, can } = useAuth({ middleware: 'auth' })
-  const { isBelowSm } = useBreakpoint('sm')
   const [hidden, expanded, setHidden] = useSidebarStore(
     state => [
       state.hidden,
@@ -67,49 +62,49 @@ const AppLayout = ({
             />
             {can('access customers') && (
               <SidebarItem
-                href="/customers"
+                href="/dashboard/customers"
                 icon={<Users2Icon size={20} />}
                 text="Pelanggan"
               />
             )}
             {can('access suppliers') && (
               <SidebarItem
-                href="/suppliers"
+                href="/dashboard/suppliers"
                 icon={<Building2 size={20} />}
                 text="Supplier"
               />
             )}
             {can('access categories') && (
               <SidebarItem
-                href="/categories"
+                href="/dashboard/categories"
                 icon={<Boxes size={20} />}
                 text="Kategori"
               />
             )}
             {can('access units') && (
               <SidebarItem
-                href="/units"
+                href="/dashboard/units"
                 icon={<Ruler size={20} />}
                 text="Unit"
               />
             )}
             {can('access products') && (
               <SidebarItem
-                href="/products"
+                href="/dashboard/products"
                 icon={<Package size={20} />}
                 text="Produk"
               />
             )}
             {can('access purchases') && (
               <SidebarItem
-                href="/purchases"
+                href="/dashboard/purchases"
                 icon={<ShoppingBag size={20} />}
                 text="Pembelian"
               />
             )}
             {can('access invoices') && (
               <SidebarItem
-                href="/invoices"
+                href="/dashboard/invoices"
                 icon={<FileBox size={20} />}
                 text="Invoice"
               />
@@ -117,13 +112,13 @@ const AppLayout = ({
             <hr className="m-3 divide-y rounded-full border-zinc-600/10 dark:border-zinc-50/10" />
             {can('access users') && (
               <SidebarItem
-                href="/users"
+                href="/dashboard/users"
                 icon={<UserSquare2 size={20} />}
                 text="Pengguna"
               />
             )}
             <SidebarItem
-              href="/settings"
+              href="/dashboard/settings"
               icon={<Settings size={20} />}
               text="Pengaturan"
             />

@@ -10,7 +10,7 @@ const withProtected = (WrappedComponent: React.ComponentType<any>) => {
 
     useEffect(() => {
       if (!authUser && !authLoading) {
-        router.replace('/login')
+        router.replace('/dashboard/login')
       }
     }, [authUser, authLoading])
 

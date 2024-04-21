@@ -47,6 +47,19 @@ module.exports = {
         '2xl': '1536px',
       },
       colors: {
+        monza: {
+          '50': '#fef2f2',
+          '100': '#ffe1e1',
+          '200': '#ffc9c9',
+          '300': '#fea3a3',
+          '400': '#fb6e6e',
+          '500': '#f34040',
+          '600': '#e02222',
+          '700': '#be1919',
+          '800': '#9c1818',
+          '900': '#811b1b',
+          '950': '#460909',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -108,5 +121,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwindcss-radix")(),
+  ],
 }

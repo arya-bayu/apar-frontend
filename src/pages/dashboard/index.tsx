@@ -10,8 +10,7 @@ import Link from "next/link";
 import { CalendarDateRangePicker } from "@/components/DateRangePicker";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
-import { format, subMonths, subYears } from "date-fns";
-import { id as idLocale } from 'date-fns/locale';
+import { format, subMonths } from "date-fns";
 import axios from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
@@ -29,6 +28,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 interface CardProps {
   title: string;
@@ -88,6 +88,7 @@ const Dashboard = () => {
   const [revenueData, setRevenueData] = useState<IRevenueData[]>()
   const [invoices, setInvoices] = useState<IInvoice[]>()
   const [invoiceStatus, setInvoiceStatus] = useState('1')
+  const { isAboveXs } = useBreakpoint('xs')
 
   async function fetchDashboard() {
     try {
@@ -160,7 +161,7 @@ const Dashboard = () => {
         <CalendarDateRangePicker onChange={setDate} />
       }
     >
-      <ContentLayout className="my-12 sm:mx-6 lg:mx-8 py-8 px-6">
+      <ContentLayout className="sm:my-12 sm:mx-6 lg:mx-8 py-8 px-6">
         <div className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <DashboardCard
@@ -229,13 +230,13 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex flex-col w-full md:w-1/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
-              <div className="flex flex-row justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800">
+              <div className="flex flex-row gap-4 justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800">
                 <h2 className="text-md font-semibold">Penjualan</h2>
                 <Select
                   value={invoiceStatus}
                   onValueChange={(value) => setInvoiceStatus(value)}
                 >
-                  <SelectTrigger className="w-[180px]">
+                  <SelectTrigger className="w-[100px] truncate">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
                   <SelectContent ref={(ref) => {
