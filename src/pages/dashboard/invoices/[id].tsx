@@ -240,7 +240,7 @@ const InvoicePage = () => {
                     title: 'Sukses',
                     description: `Data penjualan ${values.invoice_number} telah berhasil diperbarui.`,
                 })
-                router.push('../invoices')
+                router.push('/dashboard/invoices')
             }
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -954,7 +954,7 @@ const InvoicePage = () => {
                                                     unoptimized
                                                     alt="Logo" />
                                             </div>
-                                            <h1 className="text-2xl font-bold">PT. INDOKA SURYA JAYA</h1>
+                                            <h1 className="text-2xl font-bold uppercase">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
                                             <p className="text-sm max-w-[80%]">Jl. Letda Reta No.19, Dangin Puri Klod, Kec. Denpasar Tim., Kota Denpasar, Bali 80232</p>
                                             <p className="text-sm">Telp: +6281000000 | Email: hello@indokasuryajaya.com</p>
                                         </div>
@@ -1065,7 +1065,7 @@ const InvoicePage = () => {
                                         <div className="flex flex-row justify-between mt-4 dark:text-zinc-50">
                                             <div>
                                                 <p className="text-sm">Pembayaran:</p>
-                                                <p className="text-sm">PT. Indoka Surya Jaya</p>
+                                                <p className="text-sm">{process.env.NEXT_PUBLIC_APP_NAME}</p>
                                                 <p className="text-sm">5748377838 (Bank Central Asia)</p>
                                                 <div className="space-y-3 mt-8">
                                                     <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian:</p>

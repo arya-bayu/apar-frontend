@@ -100,6 +100,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
 
+              {/* approve invoice */}
               {can('approve invoices') && (
                 <DropdownMenuItem onClick={() => {
                   axios.post(`/api/v1/invoices/${invoice?.id}/approve`).then(() => {
@@ -123,6 +124,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
                 </DropdownMenuItem>
               )}
 
+              {/* reject invoice */}
               {can('delete invoices') && (
                 <DropdownMenuItem onClick={() => {
                   setAlertTitle("Tolak Pembelian")
@@ -182,9 +184,9 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
 
       return (
         <div className="flex flex-row justify-end gap-2">
-          <Link href={`/invoices/${invoice.id}`}>
+          <Link href={`/dashboard/invoices/${invoice.id}`}>
             <Button size="icon" variant="outline" className="relative">
-              {invoice.status === 0 ? <EditIcon size={16} /> : <Eye size={16} />}
+              <Eye size={16} />
               <span className="sr-only">View</span>
             </Button>
           </Link>

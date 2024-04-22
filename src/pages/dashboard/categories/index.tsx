@@ -78,7 +78,6 @@ const Categories = () => {
       })
     }
   }
-
   const handleRestore = async (categories: ICategory[] | string[]) => {
     try {
       const id = isCategoriesArray(categories)

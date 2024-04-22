@@ -110,6 +110,7 @@ const Dashboard = () => {
 
       setCustomers(response.data.data.customers)
       setPrevCustomers(response.data.data.previous_customers)
+
       setRevenueData(response.data.data.sales_timeseries)
     } catch (error) {
       if (error instanceof AxiosError) {

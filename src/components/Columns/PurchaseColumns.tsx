@@ -96,6 +96,7 @@ export const purchaseColumns: ColumnDef<IPurchase>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
 
+              {/* approve purchase */}
               {can('approve purchases') && (
                 <DropdownMenuItem onClick={() => {
                   axios.post(`/api/v1/purchases/${purchase?.id}/approve`).then(() => {
@@ -112,6 +113,7 @@ export const purchaseColumns: ColumnDef<IPurchase>[] = [
                 </DropdownMenuItem>
               )}
 
+              {/* reject purchase */}
               {can('delete purchases') && (
                 <DropdownMenuItem onClick={() => {
                   setAlertTitle("Tolak Pembelian")
@@ -172,7 +174,7 @@ export const purchaseColumns: ColumnDef<IPurchase>[] = [
       return (
         <div className="flex flex-row justify-end gap-2">
           {!table.options.meta?.isTrash && can('access purchases') && (
-            <Link href={`/purchases/${purchase.id}`}>
+            <Link href={`/dashboard/purchases/${purchase.id}`}>
               <Button size="icon" variant="outline" className="relative">
                 {purchase.status === 0 ? <EditIcon size={16} /> : <Eye size={16} />}
                 <span className="sr-only">View</span>

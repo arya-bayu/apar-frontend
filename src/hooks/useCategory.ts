@@ -9,7 +9,7 @@ export const useCategory = (callback?: Function) => {
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: -1,
     pageSize: 10,
-  })
+  }) //
 
   const pagination = useMemo(
     () => ({
