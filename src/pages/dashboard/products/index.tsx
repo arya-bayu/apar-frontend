@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ToastAction } from "@/components/ui/toast"
-import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { ArrowLeft, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
@@ -348,6 +348,18 @@ const Products = () => {
 
   return (
     <AppLayout
+      actionBtn={isTrash ?
+        <Button
+          variant="secondary"
+          size="icon"
+          className="uppercase"
+          onClick={() => {
+            router.push('/dashboard/products/')
+          }}
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        : undefined}
       title={title}
       headerAction={
         isTrash ? (

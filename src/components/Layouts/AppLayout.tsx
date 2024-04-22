@@ -20,12 +20,14 @@ import { shallow } from 'zustand/shallow'
 import Head from 'next/head'
 
 interface IAppLayout {
+  actionBtn?: React.ReactNode;
   title: string
   customHeaderTitle?: ReactElement
   headerAction?: ReactElement | boolean
 }
 
 const AppLayout = ({
+  actionBtn,
   title,
   customHeaderTitle,
   headerAction,
@@ -142,9 +144,13 @@ const AppLayout = ({
             <header className="z-[1] bg-white shadow dark:bg-zinc-950">
               <div className="mx-auto max-w-7xl px-6 py-6 lg:px-8">
                 <div className="flex h-8 items-center justify-between">
-                  <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                    {customHeaderTitle ?? title}
-                  </h2>
+                  <div className="flex items-center space-x-2">
+                    {actionBtn && <span>{actionBtn}</span>}
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                      {customHeaderTitle ?? title}
+                    </h2>
+                  </div>
+
                   {headerAction && <>{headerAction}</>}
                 </div>
               </div>
