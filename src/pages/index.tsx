@@ -1,18 +1,11 @@
 import Head from 'next/head'
 import { LandingPageNavigation } from "../components/LandingPage/Navigation"
-import { useTheme } from "next-themes"
 import Image from "next/image"
 import { Menu } from "lucide-react"
 import Hero from "../components/LandingPage/Hero"
-import { useEffect } from "react"
 
 export default function Home() {
-  const { setTheme } = useTheme()
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
-
-  useEffect(() => {
-    setTheme('light')
-  }, [])
 
   return (
     <div>
