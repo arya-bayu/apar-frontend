@@ -4,7 +4,7 @@ import withProtected from '@/hoc/withProtected'
 import currencyFormatter from "@/lib/currency";
 import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { CreditCardIcon, ShoppingBagIcon, Users2Icon } from "lucide-react"
-import RevenueChart, { IRevenueData } from "./partials/RevenueChart";
+import RevenueChart, { IRevenueData } from "../../components/RevenueChart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { CalendarDateRangePicker } from "@/components/DateRangePicker";
