@@ -21,6 +21,7 @@ import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
 import { useRouter } from "next/router"
+import InvoiceDialog from "../../pages/dashboard/invoices/partials/InvoiceDialog"
 import InvoiceDownloader from "../../pages/dashboard/invoices/InvoiceDownloader"
 
 export const invoiceColumns: ColumnDef<IInvoice>[] = [

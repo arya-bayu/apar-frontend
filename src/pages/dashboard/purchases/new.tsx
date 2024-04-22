@@ -189,7 +189,7 @@ const NewPurchasePage = () => {
                     title: 'Sukses',
                     description: `Data pembelian ${values.purchase_number} telah berhasil disimpan.`,
                 })
-                router.push('/dashboard/purchases')
+                router.push('/purchases')
             }
         } catch (error) {
             if (error instanceof AxiosError) {
