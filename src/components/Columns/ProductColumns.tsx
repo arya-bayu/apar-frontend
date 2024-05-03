@@ -130,7 +130,7 @@ export const productColumns: ColumnDef<IProduct>[] = [
     header: '',
     enableHiding: false,
     cell: ({ row, table }) => {
-      const supplier = row.original
+      const product = row.original
 
       const can = table.options.meta?.can
 
@@ -138,10 +138,10 @@ export const productColumns: ColumnDef<IProduct>[] = [
 
       return (
         <div className="flex flex-row justify-end gap-2">
-          {!table.options.meta?.isTrash && can('update suppliers') && (
+          {!table.options.meta?.isTrash && can('update products') && (
             <ProductDialog
               key={row.original.id}
-              id={supplier.id}
+              id={product.id}
               mutate={table.options.meta?.mutate}
               setDisabledContextMenu={
                 table.options.meta?.setDisabledContextMenu
@@ -153,38 +153,38 @@ export const productColumns: ColumnDef<IProduct>[] = [
               </Button>
             </ProductDialog>
           )}
-          {table.options.meta?.isTrash && can('restore suppliers') && (
+          {table.options.meta?.isTrash && can('restore products') && (
             <Button
               size="icon"
               variant="outline"
               className="relative"
               onClick={() => {
-                supplier.id && table.options.meta?.handleRestore([supplier])
+                product.id && table.options.meta?.handleRestore([product])
               }}
             >
               <DatabaseBackup size={16} />
               <span className="sr-only">Pulihkan</span>
             </Button>
           )}
-          {can('delete suppliers') && (
+          {can('delete products') && (
             <Button
               size="icon"
               variant="outline"
               className="relative"
               onClick={() => {
-                table.options.meta?.handleDelete([supplier])
+                table.options.meta?.handleDelete([product])
 
                 if (
                   Object.keys(
                     Object.keys(table.getState().rowSelection).includes(
-                      String(supplier.id),
+                      String(product.id),
                     ),
                   )
                 ) {
                   let updatedRowSelection = {
                     ...table.getState().rowSelection,
                   }
-                  delete updatedRowSelection[String(supplier.id)]
+                  delete updatedRowSelection[String(product.id)]
                   table.setRowSelection(updatedRowSelection)
                 }
               }}

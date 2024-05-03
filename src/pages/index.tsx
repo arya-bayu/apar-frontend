@@ -3,6 +3,7 @@ import { LandingPageNavigation } from "../components/LandingPage/Navigation"
 import Image from "next/image"
 import { Menu } from "lucide-react"
 import Hero from "../components/LandingPage/Hero"
+import TrustedBy from "@/components/LandingPage/TrustedBy"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -28,6 +29,7 @@ export default function Home() {
         <Menu className="flex sm:hidden absolute right-4 lg:right-12" />
       </div>
       <Hero />
+      <TrustedBy />
 
 
     </div>

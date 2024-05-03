@@ -5,9 +5,8 @@ import Link from 'next/link'
 import { useAuth } from '@/hooks/useAuth'
 import { useState, useEffect } from 'react'
 import axios from '@/lib/axios'
-import { useRouter } from 'next/router'
+import { Router, useRouter } from 'next/router'
 import LoadingSpinner from '@/components/LoadingSpinner'
-import withPublic from '@/hoc/withPublic'
 import * as z from 'zod'
 import validator from 'validator'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -22,6 +21,7 @@ import {
 } from '@/components/ui/form'
 import { toast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
+import withForceLogout from "@/hoc/withForceLogout"
 
 const registerFormScheme = z
   .object({
@@ -45,7 +45,7 @@ const Register = () => {
   const router = useRouter()
   const { register } = useAuth({
     middleware: 'guest',
-    redirectIfAuthenticated: '/dashboard',
+    // redirectIfAuthenticated: '/dashboard',
   })
 
   const [isSubmitted, setIsSubmitted] = useState(false)
@@ -241,4 +241,5 @@ const Register = () => {
   )
 }
 
-export default withPublic(Register)
+// export default withForceLogout(Register, '/dashboard/register?invite=' + useRouter().query.invite)
+export default withForceLogout(Register)

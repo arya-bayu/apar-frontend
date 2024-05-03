@@ -12,7 +12,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'api.tisain.id',
+        hostname: 'api.cloudify.lol',
         pathname: '/storage/**'
       }
     ],

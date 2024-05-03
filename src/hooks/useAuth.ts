@@ -124,6 +124,12 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: IUseAuth) => {
     window.location.pathname = '/dashboard/login'
   }
 
+  const logoutWithoutRedirect = async () => {
+    if (!authError) {
+      await axios.post('/logout').then(() => mutate())
+    }
+  }
+
   useEffect(() => {
     if (middleware === 'guest' && redirectIfAuthenticated && authUser)
       router.push(redirectIfAuthenticated)
@@ -148,6 +154,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: IUseAuth) => {
     resetPassword,
     resendEmailVerification,
     logout,
+    logoutWithoutRedirect,
     mutate,
   }
 }
