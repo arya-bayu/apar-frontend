@@ -11,7 +11,7 @@ import { CalendarDateRangePicker } from "@/components/DateRangePicker";
 import { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { format, subMonths } from "date-fns";
-import axios from "@/lib/axios";
+import axios, { csrf } from "@/lib/axios";
 import { AxiosError } from "axios";
 import { toast } from "@/components/ui/use-toast";
 import { IInvoice } from "@/types/invoice";
@@ -92,6 +92,7 @@ const Dashboard = () => {
 
   async function fetchDashboard() {
     try {
+      await csrf()
       const response = await axios.get(`/api/v1/dashboard/`, {
         params: {
           from_date: date?.from ? format(date?.from, 'yyyy-MM-dd') : undefined,
@@ -124,6 +125,7 @@ const Dashboard = () => {
 
   async function fetchInvoices() {
     try {
+      await csrf()
       let params: InvoiceParams = {
         columns: 'id,customer,total',
         from_date: date?.from ? format(date?.from, 'yyyy-MM-dd') : undefined,

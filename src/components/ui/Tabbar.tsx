@@ -37,11 +37,10 @@ export function TabbarItem({
     <Link
       {...props}
       className={`relative flex justify-center px-4 py-6
-            ${
-              active
-                ? ' text-zinc-950 dark:text-zinc-50'
-                : 'text-zinc-950/60 dark:text-zinc-50/60'
-            }
+            ${active
+          ? ' text-zinc-950 dark:text-zinc-50'
+          : 'text-zinc-950/60 dark:text-zinc-50/60'
+        }
             `}
     >
       <span>{text}</span>
