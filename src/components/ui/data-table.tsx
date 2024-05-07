@@ -240,7 +240,7 @@ export function DataTable<TData, TValue>({
                   }`}
               >
                 {Object.keys(table.getState().rowSelection).length} /{' '}
-                {data?.totalRowCount} data dipilih
+                {data?.totalRowCount ?? 0} data dipilih
               </div>
               <div className="flex justify-end space-x-2">
                 {!isTrash &&

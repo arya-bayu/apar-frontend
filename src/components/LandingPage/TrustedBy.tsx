@@ -43,6 +43,7 @@ const TrustedBy = () => (
                                 alt={brand.name}
                                 height={30}
                                 width={60}
+                                priority
                             />
                         </div>
                     ))}
