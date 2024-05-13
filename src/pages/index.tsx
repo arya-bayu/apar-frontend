@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Menu } from "lucide-react"
 import Hero from "../components/LandingPage/Hero"
 import TrustedBy from "@/components/LandingPage/TrustedBy"
+import Services from "@/components/LandingPage/Services"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -30,7 +31,7 @@ export default function Home() {
       </div>
       <Hero />
       <TrustedBy />
-
+      <Services />
 
     </div>
   )

@@ -16,7 +16,7 @@ const Hero = () => (
                     Fire Protection<br />Specialist.
                 </h1>
                 <p className="text-center lg:text-left max-w-2xl lg:max-w-5xl mb-6 font-light text-zinc-700 lg:mb-8 md:text-lg lg:text-2xl">
-                    Layanan satu vendor dari perencanaan, instalasi, dan perawatan sistem proteksi Anda. Memudahkan kontrol dan menghemat biaya.
+                    Vendor penyedia layanan satu pintu untuk perencanaan, instalasi, dan perawatan sistem proteksi kebakaran perusahaan.
                 </p>
                 <div className="space-x-4 flex justify-center lg:justify-start ">
                     <Button variant="destructive" size={"lg"}>
