@@ -5,6 +5,7 @@ import { Menu } from "lucide-react"
 import Hero from "../components/LandingPage/Hero"
 import TrustedBy from "@/components/LandingPage/TrustedBy"
 import Services from "@/components/LandingPage/Services"
+import Advantages from "@/components/LandingPage/Advantages"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -16,9 +17,6 @@ export default function Home() {
       </Head>
 
       <div className="relative max-w-7xl mx-auto flex justify-center items-center border-b h-14">
-        <div className="flex-grow justify-center hidden sm:flex">
-          <LandingPageNavigation />
-        </div>
         <div className="absolute left-4 lg:left-12">
           <Image
             src="/logo.png"
@@ -27,11 +25,15 @@ export default function Home() {
             alt="Logo"
           />
         </div>
+        <div className="flex-grow justify-center hidden sm:flex">
+          <LandingPageNavigation />
+        </div>
         <Menu className="flex sm:hidden absolute right-4 lg:right-12" />
       </div>
       <Hero />
       <TrustedBy />
       <Services />
+      <Advantages />
 
     </div>
   )
