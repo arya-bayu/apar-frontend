@@ -15,7 +15,7 @@ const buttonVariants = cva(
         destructive:
           'bg-red-600 text-zinc-50 shadow-sm hover:bg-red-600/80',
         monza_destructive:
-          'bg-monza-500 text-zinc-50 shadow-sm hover:bg-monza-500/80',
+          'bg-monza-500 text-zinc-50 shadow-sm hover:bg-monza-500/80 border border-monza-500',
         success:
           'bg-green-600 text-zinc-50 shadow-sm hover:bg-green-600/80',
         outline:

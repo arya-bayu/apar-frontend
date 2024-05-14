@@ -1,4 +1,4 @@
-import { ArrowRight, BlocksIcon, FireExtinguisherIcon, UserSquare2 } from "lucide-react";
+import { ArrowRight, HeadsetIcon, TruckIcon } from "lucide-react";
 import Image from "next/image";
 
 const Marketplace = () => (
@@ -70,6 +70,26 @@ const Marketplace = () => (
                     </div>
                 </div>
 
+            </div>
+            <div className="flex flex-col items-center space-y-4 sm:flex-row sm:justify-between sm:space-x-8 sm:space-y-0 mt-8 mx-8">
+                <div className="group flex flex-row items-center text-start space-x-4 max-w-sm md:max-w-md lg:w-1/2">
+                    <div className="bg-monza-100 p-2 rounded-lg group-hover:bg-monza-200/75 group-hover:shadow-lg">
+                        <TruckIcon className="text-monza-500 group-hover:text-monza-500/80" size={48} />
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-lg">Gratis Ongkir</h3>
+                        <p>Untuk wilayah Badung, Denpasar, dan Gianyar</p>
+                    </div>
+                </div>
+                <div className="group flex flex-row items-center text-start space-x-4 max-w-sm md:max-w-md lg:w-1/2">
+                    <div className="bg-monza-100 p-2 rounded-lg group-hover:bg-monza-200/75 group-hover:shadow-lg">
+                        <HeadsetIcon className="text-monza-500 group-hover:text-monza-500/80" size={48} />
+                    </div>
+                    <div>
+                        <h3 className="font-bold text-lg">Konsultasi 24/7</h3>
+                        <p>Ahli selalu tersedia untuk menjawab kebutuhanmu.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

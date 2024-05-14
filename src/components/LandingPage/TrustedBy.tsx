@@ -11,9 +11,9 @@ const brands = [
     { name: "CAS Cargo & Logistic", logo: "/partner/cas.png" },
     { name: "Conato Bakery", logo: "/partner/conato.png" },
     { name: "PT. Duta Intika (Kawasaki)", logo: "/partner/duta-intika-kawasaki.png" },
-    { name: "Everyday Smart Hotel", logo: "/partner/everyday-smart-hotel.jpg" },
+    { name: "Everyday Smart Hotel", logo: "/partner/everyday-smart-hotel.png" },
     { name: "Hanamasa", logo: "/partner/hanamasa.jpg" },
-    { name: "PT. Wahana Indo Trada (Indomobil Nissan Datsun)", logo: "/partner/wahana-indo-trada-indomobil-nissan-datsun.jpg" },
+    { name: "PT. Wahana Indo Trada (Indomobil Nissan Datsun)", logo: "/partner/wahana-indo-trada-indomobil-nissan-datsun.png" },
     { name: "PT. Waja Motor Yamaha", logo: "/partner/waja-motor-yamaha.png" },
     { name: "PT. Warung Mina", logo: "/partner/warung-mina.jpg" }
 ];

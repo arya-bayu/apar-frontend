@@ -10,7 +10,7 @@ const FloatingChatButton = ({ message }: { message: string }) => {
             }}
             variant="whatsapp"
             size="xlarge"
-            className="fixed bottom-6 right-6 z-[19] w-15 md:w-auto h-16 md:h-auto rounded-full text-xl flex gap-2 justify-center items-center"
+            className="fixed bottom-6 right-6 z-[19] w-0 md:w-auto h-16 md:h-auto rounded-full text-xl flex gap-2 justify-center items-center"
             aria-label="Chat WhatsApp"
         >
             <span><BsWhatsapp size={22} aria-label="Whatsapp button" /></span>

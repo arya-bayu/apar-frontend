@@ -9,6 +9,8 @@ import Advantages from "@/components/LandingPage/Advantages"
 import Marketplace from "@/components/LandingPage/Marketplace"
 import FloatingWhatsappButton from "@/components/FloatingChatButton"
 import FloatingChatButton from "@/components/FloatingChatButton"
+import CTA from "@/components/LandingPage/CTA"
+import { Footer } from "@/components/LandingPage/Footer"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -40,8 +42,9 @@ export default function Home() {
         <Services />
         <Advantages />
         <Marketplace />
+        <CTA />
       </main>
-
+      <Footer />
       <FloatingChatButton message={`Halo, saya tertarik dengan layanan ${process.env.NEXT_PUBLIC_APP_NAME}`} />
     </div>
   )
