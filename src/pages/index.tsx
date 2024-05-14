@@ -7,6 +7,8 @@ import TrustedBy from "@/components/LandingPage/TrustedBy"
 import Services from "@/components/LandingPage/Services"
 import Advantages from "@/components/LandingPage/Advantages"
 import Marketplace from "@/components/LandingPage/Marketplace"
+import FloatingWhatsappButton from "@/components/FloatingChatButton"
+import FloatingChatButton from "@/components/FloatingChatButton"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -17,7 +19,7 @@ export default function Home() {
         <title>{title}</title>
       </Head>
 
-      <div className="relative max-w-7xl mx-auto flex justify-center items-center border-b h-14">
+      <header className="relative max-w-7xl mx-auto flex justify-center items-center border-b h-14">
         <div className="absolute left-4 lg:left-12">
           <Image
             src="/logo.png"
@@ -30,13 +32,17 @@ export default function Home() {
           <LandingPageNavigation />
         </div>
         <Menu className="flex sm:hidden absolute right-4 lg:right-12" />
-      </div>
-      <Hero />
-      <TrustedBy />
-      <Services />
-      <Advantages />
-      <Marketplace />
+      </header>
 
+      <main>
+        <Hero />
+        <TrustedBy />
+        <Services />
+        <Advantages />
+        <Marketplace />
+      </main>
+
+      <FloatingChatButton message={`Halo, saya tertarik dengan layanan ${process.env.NEXT_PUBLIC_APP_NAME}`} />
     </div>
   )
 }

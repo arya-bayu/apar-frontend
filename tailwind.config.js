@@ -119,6 +119,9 @@ module.exports = {
         "accordion-up": "accordion-up 0.2s ease-out",
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
+      backgroundImage: {
+        "whatsapp": "linear-gradient(180deg, #25D366 0%, #4fce5d 100%)",
+      },
     },
   },
   plugins: [

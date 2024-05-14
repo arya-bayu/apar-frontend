@@ -24,6 +24,7 @@ const buttonVariants = cva(
           'bg-zinc-200 text-zinc-900 shadow-sm hover:bg-zinc-100/80 dark:bg-zinc-800 dark:text-zinc-50 dark:hover:bg-zinc-800/80',
         ghost:
           'hover:bg-zinc-100 hover:text-zinc-800 dark:hover:bg-zinc-800 dark:hover:text-zinc-50',
+        whatsapp: "rounded-3xl bg-whatsapp drop-shadow-lg hover:drop-shadow-[0_0_4.8rem_rgba(37,211,102,.5)] hover:scale-[1.1] transition-all duration-100 ease-in-out text-white",
         warning:
           'bg-yellow-300 text-zinc-800 shadow-sm hover:bg-yellow-300/80',
         link: 'text-zinc-900 underline-offset-4 hover:underline dark:text-zinc-50',
@@ -35,6 +36,7 @@ const buttonVariants = cva(
         sm: 'h-8 rounded-md px-3 text-xs',
         lg: 'h-10 rounded-md px-8',
         icon: 'h-9 w-9',
+        xlarge: "text-lg py-4 px-8",
         smallIcon: 'h-6 w-6',
         expandableIcon: 'h-9 min-w-[2.25rem]',
       },
