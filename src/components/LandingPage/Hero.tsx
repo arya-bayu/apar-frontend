@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import Image from 'next/image';
+import { ArrowRight } from "lucide-react";
 
 const Hero = () => (
     <section className="flex justify-center pb-0 bg-monza-50 bg-gradient-to-b from-transparent via-transparent to-stone-50">
@@ -19,12 +19,17 @@ const Hero = () => (
                     Vendor penyedia layanan satu pintu untuk perencanaan, instalasi, dan perawatan sistem proteksi kebakaran perusahaan.
                 </p>
                 <div className="space-x-4 flex justify-center lg:justify-start ">
-                    <Button variant="destructive" size={"lg"}>
-                        Get started
-                        <svg className="w-4 h-4 ml-2 -mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd"></path></svg>
+                    <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                        <p>Hubungi Kami</p>
+                        <div className="bg-zinc-50 rounded-md p-1">
+                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                        </div>
                     </Button>
-                    <Button variant="outline" size={"lg"}>
-                        Hubungi Sales
+                    <Button variant="outline" className="group pl-3 pr-2 justify-between gap-4 bg-zinc-50" size={"lg"}>
+                        <p>Lihat produk</p>
+                        <div className="bg-white border rounded-md p-1">
+                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                        </div>
                     </Button>
                 </div>
             </div>
