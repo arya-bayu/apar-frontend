@@ -6,6 +6,7 @@ import Hero from "../components/LandingPage/Hero"
 import TrustedBy from "@/components/LandingPage/TrustedBy"
 import Services from "@/components/LandingPage/Services"
 import Advantages from "@/components/LandingPage/Advantages"
+import Marketplace from "@/components/LandingPage/Marketplace"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
@@ -34,6 +35,7 @@ export default function Home() {
       <TrustedBy />
       <Services />
       <Advantages />
+      <Marketplace />
 
     </div>
   )

@@ -14,7 +14,7 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'api.cloudify.lol',
         pathname: '/storage/**'
-      }
+      },
     ],
   },
 }
