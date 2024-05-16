@@ -31,7 +31,7 @@ const footerLinks = [
 export const Footer = () => {
     return (
         <footer className={`flex justify-center bg-white text-zinc-900 text-md`}>
-            <div className="max-w-7xl w-full py-12 px-12">
+            <div className="max-w-7xl w-full py-12 mx-12">
                 <div className="flex flex-col lg:flex-row justify-between gap-12">
                     <div className="flex flex-col justify-between">
                         <div className="flex flex-col justify-start">
@@ -56,7 +56,7 @@ export const Footer = () => {
                             </Link>
                         </div>
                     </div>
-                    <div className="flex justify-between gap-12 lg:gap-24">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-12 lg:gap-24">
                         {footerLinks.map((column, index) => (
                             <div key={index} className="flex flex-col text-md">
                                 <p className="font-bold mb-6">{column.title}</p>
