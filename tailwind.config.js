@@ -120,7 +120,7 @@ module.exports = {
         "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       backgroundImage: {
-        "whatsapp": "linear-gradient(180deg, #25D366 0%, #4fce5d 100%)",
+        "whatsapp": "linear-gradient(180deg, #25D366 0%, #43A966 100%)",
       },
     },
   },

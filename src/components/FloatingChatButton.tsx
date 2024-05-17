@@ -14,7 +14,7 @@ const FloatingChatButton = ({ message }: { message: string }) => {
             aria-label="Chat WhatsApp"
         >
             <span><BsWhatsapp size={22} aria-label="Whatsapp button" /></span>
-            <span className="font-bold text-lg hidden md:block">Chat</span>
+            <span className="font-bold text-lg hidden md:block">WhatsApp</span>
         </Button>
     );
 };

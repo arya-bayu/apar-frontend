@@ -1,20 +1,26 @@
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
 import React from "react";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem
+} from "@/components/ui/carousel"
+import Image from "next/image";
 
 type NavigationMenuProps = {};
 
 const LandingPageNavigation = (props: NavigationMenuProps) => {
+
     return (
         <NavigationMenuPrimitive.Root className="relative max-w-7xl">
-            <NavigationMenuPrimitive.List className="flex flex-row rounded-lg bg-white dark:bg-gray-800 space-x-2 py-2">
+            <NavigationMenuPrimitive.List className="flex flex-row rounded-lg bg-white dark:bg-zinc-800 space-x-2 py-2">
                 <NavigationMenuPrimitive.Item>
                     <NavigationMenuPrimitive.Trigger
                         className={clsx(
-                            "px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-900",
-                            "text-sm font-medium",
-                            "text-gray-700 dark:text-gray-100",
-                            "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75",
+                            "px-3 py-2 text-sm rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900",
+                            "text-sm font-medium text-zinc-700 dark:text-zinc-100",
+                            "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                         )}
                     >
                         Layanan
@@ -29,16 +35,43 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                             "radix-motion-to-end:animate-exit-to-right",
                         )}
                     >
-                        <div className="w-[21rem] lg:w-[23rem] p-3">
-                            <div className="grid grid-cols-10 gap-4">
-                                <div className="col-span-4 w-full bg-gray-100 dark:bg-gray-900 p-4 rounded-md"></div>
+                        <div className="w-[16rem] lg:w-[18rem] p-3">
+                            <div className="w-full flex flex-col space-y-1">
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Pelatihan
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
 
-                                <div className="col-span-6 w-full flex flex-col space-y-3 bg-gray-100 dark:bg-gray-900 p-4 rounded-md">
-                                    <div className="w-full bg-white dark:bg-gray-700 h-6 rounded-md"></div>
-                                    <div className="w-full bg-white dark:bg-gray-700 h-6 rounded-md"></div>
-                                    <div className="w-full bg-white dark:bg-gray-700 h-6 rounded-md"></div>
-                                    <div className="w-full bg-white dark:bg-gray-700 h-6 rounded-md"></div>
-                                </div>
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Maintenance
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
+
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Refill
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
                             </div>
                         </div>
                     </NavigationMenuPrimitive.Content>
@@ -47,9 +80,9 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                 <NavigationMenuPrimitive.Item>
                     <NavigationMenuPrimitive.Trigger
                         className={clsx(
-                            "px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-900",
-                            "text-sm font-medium text-gray-700 dark:text-gray-100",
-                            "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75",
+                            "px-3 py-2 text-sm rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900",
+                            "text-sm font-medium text-zinc-700 dark:text-zinc-100",
+                            "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                         )}
                     >
                         Store
@@ -64,37 +97,78 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                             "radix-motion-to-end:animate-exit-to-right",
                         )}
                     >
-                        <div className="w-[16rem] lg:w-[18rem] p-3">
-                            <div className="w-full flex flex-col space-y-2">
+                        <div className="w-[21rem] lg:w-[23rem] p-3">
+                            <div className="w-full flex flex-col space-y-1">
                                 <NavigationMenuPrimitive.Link
                                     className={clsx(
-                                        "w-full px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-md",
-                                        "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75",
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                                     )}
                                     href=""
                                 >
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        Kategori 1
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Alat Pemadam Api
                                     </span>
-
-                                    <div className="mt-1 text-sm text-gray-700 dark:text-gray-400">
-                                        Duis vestibulum massa eget magna laoreet cursus. Vivamus sit amet nibh dictum, bibendum nunc vitae, efficitur diam.
-                                    </div>
                                 </NavigationMenuPrimitive.Link>
 
                                 <NavigationMenuPrimitive.Link
                                     className={clsx(
-                                        "w-full px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-md",
-                                        "focus:outline-none focus-visible:ring focus-visible:ring-purple-500 focus-visible:ring-opacity-75",
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                                     )}
-                                    href="https://www.radix-ui.com"
+                                    href=""
                                 >
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                        Kategori 2
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Fire Alarm
                                     </span>
-                                    <div className="mt-1 text-sm text-gray-700 dark:text-gray-400">
-                                        Nulla eget tortor nec lectus consectetur iaculis. Pellentesque placerat eros nec arcu blandit iaculis. Suspendisse rhoncus ipsum id urna semper ornare.
-                                    </div>
+                                </NavigationMenuPrimitive.Link>
+
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Fire Pump
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
+
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Fire Box
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
+
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Hydrant Accesories
+                                    </span>
+                                </NavigationMenuPrimitive.Link>
+
+                                <NavigationMenuPrimitive.Link
+                                    className={clsx(
+                                        "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
+                                        "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
+                                    )}
+                                    href=""
+                                >
+                                    <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                        Alat Pelindung Diri
+                                    </span>
                                 </NavigationMenuPrimitive.Link>
                             </div>
                         </div>
@@ -105,8 +179,8 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                     <NavigationMenuPrimitive.Link
                         href=""
                         className={clsx(
-                            "px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-900",
-                            "text-sm font-medium text-gray-700 dark:text-gray-100",
+                            "px-3 py-2 text-sm rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900",
+                            "text-sm font-medium text-zinc-700 dark:text-zinc-100",
                         )}
                     >
                         Hubungi Kami
@@ -122,7 +196,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                         "transition-[width_transform] duration-[250ms] ease-[ease]",
                     )}
                 >
-                    <div className="top-1 relative bg-white dark:bg-gray-800 w-2 h-2 rotate-45" />
+                    <div className="top-1 relative bg-white dark:bg-zinc-800 w-2 h-2 rotate-45" />
                 </NavigationMenuPrimitive.Indicator>
             </NavigationMenuPrimitive.List>
 
@@ -137,7 +211,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
             >
                 <NavigationMenuPrimitive.Viewport
                     className={clsx(
-                        "relative mt-2 shadow-lg rounded-md bg-white dark:bg-gray-800 overflow-hidden",
+                        "relative mt-2 shadow-lg rounded-md bg-white dark:bg-zinc-800 overflow-hidden",
                         "w-radix-navigation-menu-viewport",
                         "h-radix-navigation-menu-viewport",
                         "radix-state-open:animate-scale-in-content",

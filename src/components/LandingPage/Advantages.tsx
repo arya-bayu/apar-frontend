@@ -6,9 +6,7 @@ import Image from "next/image";
 import {
     Carousel,
     CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
+    CarouselItem
 } from "@/components/ui/carousel"
 
 import React from "react";
@@ -31,7 +29,7 @@ const Advantages = () => {
 
     return (
         <section className="flex justify-center pb-0">
-            <div className="max-w-7xl py-12">
+            <div className="max-w-7xl py-6">
                 <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-8 mx-8 my-4">
                     <Carousel
                         opts={{
