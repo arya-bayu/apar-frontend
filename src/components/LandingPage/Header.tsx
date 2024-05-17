@@ -64,7 +64,7 @@ export const Header = () => {
                     <ul
                         className={`text-md font-medium text-zinc-600 space-y-5 duration-150 ease-in-out overflow-hidden ${isLayananOpen ? 'max-h-screen opacity-100 pt-5' : 'max-h-0 opacity-0'}`}>
                         <li>
-                            <Link href={""} className="space-y-1">
+                            <Link href={"/layanan/pelatihan"} className="space-y-1">
                                 <div className="flex items-center space-x-2">
                                     <HardHat size={20} />
                                     <p>Pelatihan</p>
@@ -73,16 +73,16 @@ export const Header = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link href={""} className="space-y-1">
+                            <Link href={"/layanan/maintenance"} className="space-y-1">
                                 <div className="flex items-center space-x-2">
                                     <Wrench size={20} />
                                     <p>Maintenance</p>
                                 </div>
-                                <p className="text-sm font-normal">Perawatan berkala untuk produk fire protection Indoka Surya Jaya</p>
+                                <p className="text-sm font-normal">Perawatan berkala untuk produk fire protection mitra Indoka Surya Jaya</p>
                             </Link>
                         </li>
                         <li>
-                            <Link href={""} className="space-y-1">
+                            <Link href={"/layanan/maintenance"} className="space-y-1">
                                 <div className="flex items-center space-x-2">
                                     <FireExtinguisher size={20} />
                                     <p>Refill</p>

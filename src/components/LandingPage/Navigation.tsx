@@ -42,7 +42,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                                         "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
                                         "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                                     )}
-                                    href=""
+                                    href={"/layanan/pelatihan"}
                                 >
                                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                         Pelatihan
@@ -54,7 +54,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                                         "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
                                         "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                                     )}
-                                    href=""
+                                    href={"/layanan/maintenance"}
                                 >
                                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                         Maintenance
@@ -66,7 +66,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                                         "w-full px-3 py-1 hover:bg-zinc-100 dark:hover:bg-zinc-900 rounded-md",
                                         "focus:outline-none focus-visible:ring focus-visible:ring-monza-500 focus-visible:ring-opacity-75",
                                     )}
-                                    href=""
+                                    href={"/layanan/refill"}
                                 >
                                     <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
                                         Refill
