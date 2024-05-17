@@ -8,12 +8,9 @@ import FloatingChatButton from "@/components/FloatingChatButton"
 import CTA from "@/components/LandingPage/CTA"
 import { Footer } from "@/components/LandingPage/Footer"
 import { Header } from "@/components/LandingPage/Header"
-import { useRef } from "react"
 
 export default function Home() {
   const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
-  const mainRef = useRef(null);
-
 
   return (
     <div>
@@ -22,7 +19,7 @@ export default function Home() {
       </Head>
 
       <Header />
-      <main ref={mainRef}>
+      <main>
         <Hero />
         <TrustedBy />
         <Services />

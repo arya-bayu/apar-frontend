@@ -3,12 +3,11 @@ import FloatingChatButton from "@/components/FloatingChatButton"
 import CTA from "@/components/LandingPage/CTA"
 import { Footer } from "@/components/LandingPage/Footer"
 import { Header } from "@/components/LandingPage/Header"
-import React, { useRef } from "react"
+import React from "react"
 import SimpleHero from "@/components/LandingPage/SimpleHero"
 import { FileCheck2Icon, ReplaceIcon, SparkleIcon, WrenchIcon } from "lucide-react"
 import { ArrowRight, FlagIcon, PercentSquareIcon, HeadsetIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Autoplay from "embla-carousel-autoplay"
 
 import Image from "next/image";
 import Marquee from "react-fast-marquee"
@@ -27,14 +26,8 @@ const brands = [
 ];
 
 
-export default function Home() {
+export default function Maintenance() {
     const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Maintenance Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
-    const mainRef = useRef(null);
-
-    const plugin = React.useRef(
-        Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })
-    )
-
 
     return (
         <div>
@@ -43,7 +36,7 @@ export default function Home() {
             </Head>
 
             <Header />
-            <main ref={mainRef}>
+            <main>
                 <SimpleHero
                     label="Layanan"
                     title="Maintenance."
