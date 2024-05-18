@@ -35,7 +35,7 @@ const brands = [
 
 
 export default function Pelatihan() {
-    const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Pelatihan Alat Pemadam Api, Fire Hydrant, dan Fire Alarm di Bali`
+    const title = process.env.NEXT_PUBLIC_APP_NAME + ` - Layanan Pelatihan Pemadam Kebakaran No. 1 di Bali`
 
     const photos = [
         { alt: "Foto Pelatihan Indoka Surya Jaya 1", path: "/training/training-1.png" },
