@@ -87,7 +87,7 @@ export default function Maintenance() {
                                     <p className="text-lg">Pastikan alat pemadam api Anda diinspeksi secara rutin setiap 6 atau 12 bulan sesuai Pasal 11 (1) Peraturan Menteri No: PER.04/MEN/1980. Kontak teknisi Indoka untuk layanan lebih lanjut.</p>
                                     <div className="space-x-4 flex justify-start ">
                                         <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                                            <p>Hubungi Kami</p>
+                                            <p>Konsultasi Gratis</p>
                                             <div className="bg-zinc-50 rounded-md p-1">
                                                 <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
                                             </div>

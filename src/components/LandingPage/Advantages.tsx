@@ -1,4 +1,4 @@
-import { ArrowRight, HeadphonesIcon, FlagIcon, PercentSquareIcon, SparkleIcon, HeadsetIcon } from "lucide-react";
+import { ArrowRight, FlagIcon, PercentSquareIcon, SparkleIcon, HeadsetIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import Autoplay from "embla-carousel-autoplay"
 
@@ -21,7 +21,6 @@ const Advantages = () => {
         { alt: "Agung Bali", path: "/highlights/highlight-5.jpg" },
         { alt: "PT. NU Prasada Nusa Dua Bali", path: "/highlights/highlight-6.jpg" },
     ];
-
 
     const plugin = React.useRef(
         Autoplay({ delay: 2000, stopOnInteraction: false, stopOnMouseEnter: true })

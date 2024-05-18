@@ -10,14 +10,11 @@ function App({ Component, pageProps }: AppProps) {
   // suppress useLayoutEffect warnings when running outside a browser
   if (!process.browser) React.useLayoutEffect = React.useEffect
   const pathname = usePathname();
-  const forcedThemeFromPathname = [
-    { path: "/", theme: "light" },
-    { path: "/layanan/maintenance", theme: "light" }
-  ].find(item => item.path === pathname)?.theme;
+  const isDashboardPage = pathname.startsWith('/dashboard');
 
 
   return (
-    <ThemeProvider forcedTheme={forcedThemeFromPathname} attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider forcedTheme={isDashboardPage ? undefined : 'light'} attribute="class" defaultTheme="system" enableSystem>
       <Component {...pageProps} />
     </ThemeProvider>
   )

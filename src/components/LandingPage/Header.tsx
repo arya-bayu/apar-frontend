@@ -67,7 +67,7 @@ export const Header = () => {
                         <ul
                             className={`text-md font-medium text-zinc-600 space-y-5 duration-150 ease-in-out overflow-hidden ${isLayananOpen ? 'max-h-screen opacity-100 pt-5' : 'max-h-0 opacity-0'}`}>
                             <li>
-                                <Link href={"/layanan/pelatihan"} className="space-y-1">
+                                <Link href={"/layanan/pelatihan"} className="space-y-1" onClick={toggleMenu}>
                                     <div className="flex items-center space-x-2">
                                         <HardHat size={20} />
                                         <p>Pelatihan</p>
@@ -76,7 +76,7 @@ export const Header = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/layanan/maintenance"} className="space-y-1">
+                                <Link href={"/layanan/maintenance"} className="space-y-1" onClick={toggleMenu}>
                                     <div className="flex items-center space-x-2">
                                         <Wrench size={20} />
                                         <p>Maintenance</p>
@@ -85,7 +85,7 @@ export const Header = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/layanan/maintenance"} className="space-y-1">
+                                <Link href={"/layanan/maintenance"} className="space-y-1" onClick={toggleMenu}>
                                     <div className="flex items-center space-x-2">
                                         <FireExtinguisher size={20} />
                                         <p>Refill</p>
@@ -97,12 +97,12 @@ export const Header = () => {
                     </div>
 
                     <div className="pt-5 text-md font-medium text-zinc-500 space-y-5">
-                        <Link href={""} className="flex items-center space-x-[2px]">
+                        <Link href={""} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
                             <p>Store</p>
                         </Link>
                     </div>
                     <div className="pt-5 text-md font-medium text-zinc-500 space-y-5">
-                        <Link href={""} className="flex items-center space-x-[2px]">
+                        <Link href={""} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
                             <p>Hubungi kami</p>
                         </Link>
                     </div>
