@@ -65,11 +65,11 @@ export default function ContactUs() {
                             Denpasar Office
                         </h1>
                         <p className="text-center mx-auto lg:mx-0 lg:text-left max-w-2xl lg:max-w-5xl font-light text-zinc-700 md:text-lg lg:text-2xl">
-                            {process.env.NEXT_PUBLIC_APP_NAME} berlokasi di Kota Denpasar Bali. Namun, cakupan area penjualan Indoka Surya Jaya berada di seluruh Bali.
+                            {process.env.NEXT_PUBLIC_APP_NAME} berlokasi di Kota Denpasar, Bali. Namun, cakupan area penjualan Indoka Surya Jaya berada di seluruh Bali.
                         </p>
                     </div>
                 </section>
-                <section className="flex justify-center mx-auto max-w-7xl my-8 px-12">
+                <section className="flex justify-center mx-auto max-w-7xl lg:my-8 lg:px-12">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1972.1614421934678!2d115.2201355253446!3d-8.660810479234744!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd240909596421f%3A0xaeeef8ac84006747!2sINDOKA%20SURYA%20JAYA!5e0!3m2!1sen!2sid!4v1716040582388!5m2!1sen!2sid"
                         height="600"
