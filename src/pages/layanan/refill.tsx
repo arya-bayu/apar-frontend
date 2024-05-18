@@ -5,11 +5,10 @@ import { Footer } from "@/components/LandingPage/Footer"
 import { Header } from "@/components/LandingPage/Header"
 import React from "react"
 import SimpleHero from "@/components/LandingPage/SimpleHero"
-import { FileCheck2Icon, ReplaceIcon, ArrowRight, WrenchIcon } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
-import Marquee from "react-fast-marquee"
 import TrustedBy from "@/components/LandingPage/TrustedBy"
 
 const brands = [

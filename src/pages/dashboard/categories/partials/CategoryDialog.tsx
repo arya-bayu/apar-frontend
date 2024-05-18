@@ -35,13 +35,7 @@ import { ICategory } from '@/types/category'
 import { KeyedMutator } from 'swr'
 import { DataTable } from '@/components/ui/data-table'
 import { IImage } from '@/types/image'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popoverDialog"
 import LucideIconPicker from "@/components/IconPicker/LucideIconPicker"
-import { ScrollArea } from "@radix-ui/react-scroll-area"
 import * as Lucide from 'lucide-react';
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
 
@@ -84,7 +78,7 @@ export default function CategoryDialog({
     resolver: zodResolver(categoryFormSchema),
   })
 
-  const { control, watch } = form
+  const { control } = form
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -296,8 +290,6 @@ export default function CategoryDialog({
     mutate()
   };
 
-  const [searchTerm, setSearchTerm] = useState<string>('');
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -383,58 +375,23 @@ export default function CategoryDialog({
                 {fields.map((field, index) => (
                   <div key={field.id} className="space-y-4">
                     <div className="flex flex-row space-x-4 align-middle">
-                      <Popover open={isPopoverOpen[index]}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant="circle"
-                            size="expandableIcon"
-                            className="my-auto"
-                            onClick={() => setPopoverOpen(prevState => {
-                              const newState = [...prevState];
-                              newState[index] = !newState[index];
-                              return newState;
-                            })}
-                          >
-                            {React.createElement((Lucide as any)[featureIcons[index] ?? category?.features?.[index]?.icon ?? 'Plus'], { size: 18 })}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80" side="top">
-                          <div className="grid gap-4">
-                            <div className="space-y-2">
-                              <h4 className="font-medium leading-none">Ikon</h4>
-                              <p className="text-sm text-muted-foreground">
-                                Pilih ikon untuk merepresentasikan fitur.
-                              </p>
-                            </div>
-                            <div className="grid gap-2">
-                              <Input
-                                className="h-8 mb-4"
-                                id="searchIcon"
-                                placeholder="Cari ikon"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                              />
-                              <ScrollArea className="h-48 overflow-y-auto">
-                                <LucideIconPicker
-                                  searchTerm={searchTerm}
-                                  onSelect={(icon) => {
-                                    setFeatureIcons(prevState => {
-                                      const newState = [...prevState];
-                                      newState[index] = icon;
-                                      return newState;
-                                    });
-                                    setPopoverOpen(prevState => {
-                                      const newState = [...prevState];
-                                      newState[index] = !newState[index];
-                                      return newState;
-                                    });
-                                  }}
-                                />
-                              </ScrollArea>
-                            </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
+                      <LucideIconPicker
+                        onSelect={(icon) => {
+                          setFeatureIcons(prevState => {
+                            const newState = [...prevState];
+                            newState[index] = icon;
+                            return newState;
+                          });
+                        }}
+                      >
+                        <Button
+                          variant="circle"
+                          size="expandableIcon"
+                          className="my-auto"
+                        >
+                          {React.createElement((Lucide as any)[featureIcons[index] ?? category?.features?.[index]?.icon ?? 'Plus'], { size: 18 })}
+                        </Button>
+                      </LucideIconPicker>
                       <div className="w-full space-y-2">
                         <FormField
                           control={control}
@@ -520,21 +477,6 @@ export default function CategoryDialog({
               </Button>
             </DialogFooter>
           </div>
-          {/* <div className="md:w-[55%]">
-            <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
-              Header Preview
-            </h3>
-            <div className="flex h-full flex-col justify-between">
-              <div className="flex max-h-[calc(50vh)] justify-center overflow-y-scroll rounded-lg bg-[rgb(198,74,59)] ">
-                <div className="flex flex-row justify-center px-10 py-8">
-                  <div className="text-center">
-                    <h1 className="text-2xl font-bold">{watch('name')}</h1>
-                    <p className="text-sm">{watch('description')}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> */}
         </div>
       </DialogContent>
     </Dialog>
