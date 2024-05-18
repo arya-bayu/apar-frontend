@@ -18,10 +18,10 @@ const SimpleHero: React.FC<SimpleHeroProps> = ({ label, title, subtitle }) => (
                     </p>
                 </div>
             </div>
-            <h1 className="text-center lg:text-left max-w-2xl lg:max-w-5xl mb-4 text-5xl lg:text-6xl font-extrabold tracking-tight leading-none dark:text-white">
+            <h1 className="text-center mx-auto lg:mx-0 lg:text-left max-w-2xl lg:max-w-5xl mb-4 text-5xl lg:text-6xl font-extrabold tracking-tight leading-none dark:text-white">
                 {title}
             </h1>
-            <p className="text-center lg:text-left max-w-2xl lg:max-w-5xl mb-6 font-light text-zinc-700 lg:mb-8 md:text-lg lg:text-2xl">
+            <p className="text-center mx-auto lg:mx-0 lg:text-left max-w-2xl lg:max-w-5xl mb-6 font-light text-zinc-700 lg:mb-8 md:text-lg lg:text-2xl">
                 {subtitle}
             </p>
             <div className="space-x-4 flex justify-center lg:justify-start">

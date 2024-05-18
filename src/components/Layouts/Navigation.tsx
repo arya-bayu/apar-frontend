@@ -9,7 +9,7 @@ import {
 import { useAuth } from '@/hooks/useAuth'
 import { IUser } from '@/types/user'
 import { ModeToggle } from '../ModeToggle'
-import { ChevronDown, ChevronLast, Search } from 'lucide-react'
+import { ChevronDown, ChevronLast } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import useSidebarStore from '@/store/useSidebarStore'
 import { shallow } from 'zustand/shallow'

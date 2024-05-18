@@ -85,7 +85,7 @@ export const Header = () => {
                                 </Link>
                             </li>
                             <li>
-                                <Link href={"/layanan/maintenance"} className="space-y-1" onClick={toggleMenu}>
+                                <Link href={"/layanan/refill"} className="space-y-1" onClick={toggleMenu}>
                                     <div className="flex items-center space-x-2">
                                         <FireExtinguisher size={20} />
                                         <p>Refill</p>
@@ -97,12 +97,12 @@ export const Header = () => {
                     </div>
 
                     <div className="pt-5 text-md font-medium text-zinc-500 space-y-5">
-                        <Link href={""} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
+                        <Link href={"/store"} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
                             <p>Store</p>
                         </Link>
                     </div>
                     <div className="pt-5 text-md font-medium text-zinc-500 space-y-5">
-                        <Link href={""} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
+                        <Link href={"/contact-us"} className="flex items-center space-x-[2px]" onClick={toggleMenu}>
                             <p>Hubungi kami</p>
                         </Link>
                     </div>

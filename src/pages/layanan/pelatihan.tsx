@@ -127,7 +127,7 @@ export default function Pelatihan() {
                                 <div className="space-y-3">
                                     <div>
                                         <Link href={"/layanan/pelatihan"} className="space-y-1">
-                                            <div className="group space-x-4 flex flex-row justify-start items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
+                                            <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <BookOpenCheckIcon size={30} className="text-monza-500" />
                                                 </div>
@@ -140,7 +140,7 @@ export default function Pelatihan() {
                                     </div>
                                     <div>
                                         <Link href={"/layanan/pelatihan"} className="space-y-1">
-                                            <div className="group space-x-4 flex flex-row justify-start items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
+                                            <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <FireExtinguisherIcon size={30} className="text-monza-500" />
                                                 </div>
@@ -153,7 +153,7 @@ export default function Pelatihan() {
                                     </div>
                                     <div>
                                         <Link href={"/layanan/pelatihan"} className="space-y-1">
-                                            <div className="group space-x-4 flex flex-row justify-start items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
+                                            <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <AlertTriangleIcon size={30} className="text-monza-500" />
                                                 </div>

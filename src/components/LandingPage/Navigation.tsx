@@ -1,12 +1,6 @@
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
 import React from "react";
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem
-} from "@/components/ui/carousel"
-import Image from "next/image";
 
 type NavigationMenuProps = {};
 
@@ -177,7 +171,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
 
                 <NavigationMenuPrimitive.Item asChild>
                     <NavigationMenuPrimitive.Link
-                        href=""
+                        href="/contact-us"
                         className={clsx(
                             "px-3 py-2 text-sm rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-900",
                             "text-sm font-medium text-zinc-700 dark:text-zinc-100",

@@ -45,29 +45,29 @@ export default function Maintenance() {
                 <section className="flex justify-center">
                     <div className="max-w-7xl pt-12 pb-6">
                         <div className="flex flex-col lg:flex-row gap-12 mx-8 my-4">
-                            <div className="border shadow-md border-zinc-200 px-4 py-6 rounded-lg lg:border-0 lg:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-sm md:max-w-md lg:w-1/3">
+                            <div className="border shadow-sm border-zinc-200 px-12 md:px-4 py-6 rounded-lg md:border-0 md:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-7xl lg:w-1/3">
                                 <div className="bg-monza-100 p-2 rounded-lg group-hover:bg-monza-200/75 group-hover:shadow-lg">
                                     <FileCheck2Icon className="text-monza-500 group-hover:text-monza-500/80" size={48} />
                                 </div>
-                                <div>
+                                <div className="md:max-w-md">
                                     <h3 className="font-bold text-lg">Pengecekan Berkala</h3>
                                     <p>Pengecekan berkala dilakukan setiap 6 hingga 12 bulan sekali.</p>
                                 </div>
                             </div>
-                            <div className="border shadow-md border-zinc-200 px-4 py-6 rounded-lg lg:border-0 lg:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-sm md:max-w-md lg:w-1/3">
+                            <div className="border shadow-sm border-zinc-200 px-12 md:px-4 py-6 rounded-lg md:border-0 md:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-7xl lg:w-1/3">
                                 <div className="bg-monza-100 p-2 rounded-lg group-hover:bg-monza-200/75 group-hover:shadow-lg">
                                     <WrenchIcon className="text-monza-500 group-hover:text-monza-500/80" size={48} />
                                 </div>
-                                <div>
+                                <div className="md:max-w-md">
                                     <h3 className="font-bold text-lg">Servis Kerusakan</h3>
                                     <p>Perbaikan terhadap alat pemadam kebakaran yang mengalami rusak minor atau berat.</p>
                                 </div>
                             </div>
-                            <div className="border shadow-md border-zinc-200 px-4 py-6 rounded-lg lg:border-0 lg:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-sm md:max-w-md lg:w-1/3">
+                            <div className="border shadow-sm border-zinc-200 px-12 md:px-4 py-6 rounded-lg md:border-0 md:shadow-none lg:px-0 lg:py-0 lg:rounded-none group flex flex-col items-center text-center space-y-4 max-w-7xl lg:w-1/3">
                                 <div className="bg-monza-100 p-2 rounded-lg group-hover:bg-monza-200/75 group-hover:shadow-lg">
                                     <ReplaceIcon className="text-monza-500 group-hover:text-monza-500/80" size={48} />
                                 </div>
-                                <div>
+                                <div className="md:max-w-md">
                                     <h3 className="font-bold text-lg">Penggantian Alat</h3>
                                     <p>Peralatan memiliki masa kedaluwarsa sehingga perlu dilakukan penggantian.</p>
                                 </div>
