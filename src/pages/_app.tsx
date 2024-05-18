@@ -10,8 +10,7 @@ function App({ Component, pageProps }: AppProps) {
   // suppress useLayoutEffect warnings when running outside a browser
   if (!process.browser) React.useLayoutEffect = React.useEffect
   const pathname = usePathname();
-  const isDashboardPage = pathname.startsWith('/dashboard');
-
+  const isDashboardPage = pathname ? pathname.startsWith('/dashboard') : false;
 
   return (
     <ThemeProvider forcedTheme={isDashboardPage ? undefined : 'light'} attribute="class" defaultTheme="system" enableSystem>
