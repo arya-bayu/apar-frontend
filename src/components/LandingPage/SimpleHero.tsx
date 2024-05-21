@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface SimpleHeroProps {
     label: string;
@@ -25,12 +26,14 @@ const SimpleHero: React.FC<SimpleHeroProps> = ({ label, title, subtitle }) => (
                 {subtitle}
             </p>
             <div className="space-x-4 flex justify-center lg:justify-start">
-                <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                    <p>Hubungi Kami</p>
-                    <div className="bg-zinc-50 rounded-md p-1">
-                        <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                    </div>
-                </Button>
+                <Link target="_blank" href="/contact-us">
+                    <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                        <p>Hubungi Kami</p>
+                        <div className="bg-zinc-50 rounded-md p-1">
+                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                        </div>
+                    </Button>
+                </Link>
             </div>
         </div>
     </section>

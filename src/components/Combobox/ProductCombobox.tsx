@@ -45,11 +45,7 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
 
     useEffect(() => {
         async function fetchProducts() {
-            // if (supplierId === undefined) {
-            //     return
-            // }
-
-            const columns = ['id', 'name'];
+            const columns = ['id', 'name', 'serial_number'];
             if (supplierId) columns.push('supplier_id');
             if (categoryId) columns.push('category_id');
             const columnsParam = columns.join(',');
@@ -153,13 +149,13 @@ function ProductList({
                             {products.map((product) => (
                                 <CommandItem
                                     key={product.id}
-                                    value={product.name}
+                                    value={`[${product.serial_number}] ${product.name}`}
                                     onSelect={() => {
                                         onSelect(product.id, product.supplier_id)
                                         setOpen(false)
                                     }}
                                 >
-                                    {product.name}
+                                    {`[${product.serial_number}] ${product.name}`}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

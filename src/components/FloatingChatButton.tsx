@@ -6,7 +6,7 @@ const FloatingChatButton = ({ message }: { message: string }) => {
     return (
         <Button
             onClick={() => {
-                window.open(`https://wa.me/+6281234567890?text=${message}`, '_blank');
+                window.open(`https://wa.me/+6285100665789?text=${message}`, '_blank');
             }}
             variant="whatsapp"
             size="xlarge"

@@ -3,17 +3,13 @@ import Link, { LinkProps } from 'next/link'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
 
-interface ITabbar {
-  user: IUser
-}
-
 export interface ITabbarItem extends LinkProps {
   text: string
   alert?: boolean
   active?: boolean
 }
 
-const Tabbar = ({ user, children }: PropsWithChildren<ITabbar>) => {
+const Tabbar = ({ children }: PropsWithChildren) => {
   const appName = process.env.NEXT_PUBLIC_APP_NAME
 
   return (

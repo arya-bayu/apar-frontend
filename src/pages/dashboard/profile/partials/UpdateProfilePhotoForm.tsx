@@ -11,20 +11,9 @@ import { Input } from '@/components/ui/input'
 import { useRef } from 'react'
 import Image from 'next/image'
 
-const MAX_FILE_SIZE = 10000000
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png']
-
 const updateProfilePhotoSchema = z.object({
   photo: z
     .any()
-    .refine(
-      file => file?.size <= MAX_FILE_SIZE,
-      'Ukuran maksimal foto adalah 10MB.',
-    )
-    .refine(
-      file => ACCEPTED_IMAGE_TYPES.includes(file?.type),
-      'Ekstensi file yang diperbolehkan: .JPG .JPEG .PNG',
-    ),
 })
 
 const UpdateProfilePhotoForm = () => {
@@ -38,14 +27,6 @@ const UpdateProfilePhotoForm = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        toast({
-          variant: 'destructive',
-          title: 'Format ',
-          description: 'Only JPEG and PNG files are allowed.',
-        });
-        return;
-      }
       form.setValue('photo', file);
       form.handleSubmit(onSubmit)();
     }

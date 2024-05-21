@@ -18,6 +18,9 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { useState } from "react"
+import password from "./profile/password"
 
 const loginSchema = z.object({
   email: z.string().refine(validator.isEmail, {
@@ -28,6 +31,8 @@ const loginSchema = z.object({
 })
 
 const Login = () => {
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+
   const { login } = useAuth({
     middleware: 'guest',
     redirectIfAuthenticated: '/dashboard',
@@ -96,12 +101,16 @@ const Login = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      required
-                      type="password"
-                      autoComplete="current-password"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input type={showPassword ? 'text' : 'password'} {...field} />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
+                        {showPassword ? (
+                          <EyeOffIcon className="h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
+                        ) : (
+                          <EyeIcon className=" h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

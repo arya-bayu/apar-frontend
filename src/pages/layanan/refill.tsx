@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
 import TrustedBy from "@/components/LandingPage/TrustedBy"
+import Link from "next/link"
 
 const brands = [
     { name: "Jaya Fried Chicken (JFC)", logo: "/partner/jaya-fried-chicken.png" },
@@ -52,12 +53,14 @@ export default function Refill() {
                                     <h2 className="font-bold text-monza-500 text-4xl">On-site Refill Service untuk Berbagai Jenis Media Tabung Pemadam Kebakaran</h2>
                                     <p className="text-lg">Mulai dari <strong>Foam</strong> hingga <strong>CO₂</strong>, Indoka Surya Jaya menyediakan berbagai jenis media pengisian yang cocok untuk tabung pemadam kebakaran di tempat Anda.</p>
                                     <div className="space-x-4 flex justify-start ">
-                                        <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                                            <p>Reservasi Pengisian</p>
-                                            <div className="bg-zinc-50 rounded-md p-1">
-                                                <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                                            </div>
-                                        </Button>
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya ingin melakukan reservasi pengisian ulang APAR " + process.env.NEXT_PUBLIC_APP_NAME}>
+                                            <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                                                <p>Reservasi Pengisian</p>
+                                                <div className="bg-zinc-50 rounded-md p-1">
+                                                    <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                                                </div>
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

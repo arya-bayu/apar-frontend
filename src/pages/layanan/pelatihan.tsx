@@ -116,17 +116,19 @@ export default function Pelatihan() {
                                     <h2 className="font-bold text-monza-500 text-4xl">Edukasi Organisasi Perusahaan Anda bersama Indoka Surya Jaya</h2>
                                     <p className="text-lg">Mulai dari mitigasi hingga penanganan darurat, pelatih profesional kami menyediakan program pelatihan komprehensif yang menjamin kesiapsiagaan pekerja dalam mencegah risiko kebakaran.</p>
                                     <div className="space-x-4 flex justify-start ">
-                                        <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                                            <p>Reservasi Pelatihan</p>
-                                            <div className="bg-zinc-50 rounded-md p-1">
-                                                <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                                            </div>
-                                        </Button>
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya tertarik untuk melakukan reservasi pelatihan penanganan kebakaran " + process.env.NEXT_PUBLIC_APP_NAME}>
+                                            <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                                                <p>Reservasi Pelatihan</p>
+                                                <div className="bg-zinc-50 rounded-md p-1">
+                                                    <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                                                </div>
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="space-y-3">
                                     <div>
-                                        <Link href={"/layanan/pelatihan"} className="space-y-1">
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya tertarik untuk melakukan reservasi pelatihan Basic Fire Protection Training " + process.env.NEXT_PUBLIC_APP_NAME} className="space-y-1">
                                             <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <BookOpenCheckIcon size={30} className="text-monza-500" />
@@ -139,7 +141,7 @@ export default function Pelatihan() {
                                         </Link>
                                     </div>
                                     <div>
-                                        <Link href={"/layanan/pelatihan"} className="space-y-1">
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya tertarik untuk melakukan reservasi pelatihan Comprehensive Training Pemadam Kebakaran " + process.env.NEXT_PUBLIC_APP_NAME} className="space-y-1">
                                             <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <FireExtinguisherIcon size={30} className="text-monza-500" />
@@ -152,7 +154,7 @@ export default function Pelatihan() {
                                         </Link>
                                     </div>
                                     <div>
-                                        <Link href={"/layanan/pelatihan"} className="space-y-1">
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya tertarik untuk melakukan reservasi pelatihan Intensive Fire Evacuation Drill " + process.env.NEXT_PUBLIC_APP_NAME} className="space-y-1">
                                             <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center p-6 border rounded-lg bg-zinc-50 hover:bg-zinc-50/80 hover:drop-shadow-md">
                                                 <div className="border border-zinc-200 bg-zinc-100 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">
                                                     <AlertTriangleIcon size={30} className="text-monza-500" />

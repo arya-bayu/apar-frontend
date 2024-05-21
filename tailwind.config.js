@@ -122,6 +122,10 @@ module.exports = {
       backgroundImage: {
         "whatsapp": "linear-gradient(180deg, #25D366 0%, #43A966 100%)",
       },
+      textColor: {
+        "whatsapp": "#43A966",
+
+      }
     },
   },
   plugins: [

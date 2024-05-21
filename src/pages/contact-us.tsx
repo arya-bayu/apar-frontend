@@ -4,22 +4,12 @@ import CTA from "@/components/LandingPage/CTA"
 import { Footer } from "@/components/LandingPage/Footer"
 import { Header } from "@/components/LandingPage/Header"
 import React from "react"
-import SimpleHero from "@/components/LandingPage/SimpleHero"
-import { AlertTriangleIcon, BookOpenCheckIcon, CalendarClock, FireExtinguisherIcon, Map, MapIcon, Phone } from "lucide-react"
+import { CalendarClock, Map, Phone } from "lucide-react"
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-import {
-    Carousel,
-    CarouselContent,
-    CarouselItem
-} from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
-
-import Image from "next/image";
-import Marquee from "react-fast-marquee"
 import Link from "next/link"
-import TrustedBy from "@/components/LandingPage/TrustedBy"
 
 const brands = [
     { name: "Jaya Fried Chicken (JFC)", logo: "/partner/jaya-fried-chicken.png" },
@@ -81,7 +71,7 @@ export default function ContactUs() {
                     </iframe>
                 </section>
 
-                <section className="flex flex-col lg:flex-row items-start max-w-7xl mx-auto my-8 pb-0 px-12 gap-6">
+                <section className="flex flex-col lg:flex-row items-start max-w-7xl mx-auto my-8 pb-0 px-6 lg:px-12 gap-6">
                     <div className="lg:w-1/4 gap-4 flex flex-col md:flex-row items-start justify-start md:items-center">
                         <div className="flex flex-col justify-center">
                             <div className="space-y-1">
@@ -90,7 +80,7 @@ export default function ContactUs() {
                                     <h3 className="font-bold">Telepon</h3>
                                 </div>
                                 <p className="text-sm font-normal">(0361) 4456865</p>
-                                <p className="text-sm font-normal">+62 812 3456 7890</p>
+                                <p className="text-sm font-normal">+62 851 0066 5789</p>
                             </div>
                         </div>
                     </div>

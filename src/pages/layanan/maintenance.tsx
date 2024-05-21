@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
 import Marquee from "react-fast-marquee"
+import Link from "next/link"
 
 const brands = [
     { name: "Jaya Fried Chicken (JFC)", logo: "/partner/jaya-fried-chicken.png" },
@@ -85,12 +86,14 @@ export default function Maintenance() {
                                     <h2 className="font-bold text-monza-500 text-4xl">Rawat Alat Pemadam Secara Rutin melalui Teknisi Profesional</h2>
                                     <p className="text-lg">Pastikan alat pemadam api Anda diinspeksi secara rutin setiap 6 atau 12 bulan sesuai Pasal 11 (1) Peraturan Menteri No: PER.04/MEN/1980. Kontak teknisi Indoka untuk layanan lebih lanjut.</p>
                                     <div className="space-x-4 flex justify-start ">
-                                        <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                                            <p>Konsultasi Gratis</p>
-                                            <div className="bg-zinc-50 rounded-md p-1">
-                                                <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                                            </div>
-                                        </Button>
+                                        <Link target="_blank" href={"https://wa.me/+6285100665789?text=Halo, saya ingin melakukan konsultasi mengenai layanan maintenance " + process.env.NEXT_PUBLIC_APP_NAME}>
+                                            <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                                                <p>Konsultasi Gratis</p>
+                                                <div className="bg-zinc-50 rounded-md p-1">
+                                                    <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                                                </div>
+                                            </Button>
+                                        </Link>
                                     </div>
                                 </div>
                                 <div className="space-y-3">

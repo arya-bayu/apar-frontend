@@ -20,7 +20,7 @@ const ProfileTabLayout = ({
     <ContentLayout
       className={`flex flex-col sm:mx-6 sm:my-12 lg:mx-8 ${className}`}
     >
-      <Tabbar user={authUser}>
+      <Tabbar>
         <TabbarItem href="/dashboard/profile" text="Informasi Akun" />
         <TabbarItem href="/dashboard/profile/password" text="Ubah Kata Sandi" />
       </Tabbar>

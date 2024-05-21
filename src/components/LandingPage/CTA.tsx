@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
 import Marquee from "react-fast-marquee";
+import Link from "next/link";
 
 const brands = [
     { name: "Jaya Fried Chicken (JFC)", logo: "/partner/jaya-fried-chicken.png" },
@@ -30,18 +31,22 @@ const CTA = () => (
             <h2 className="text-4xl md:text-5xl mb-3 md:mb-4 font-bold text-monza-500 text-center">Ready to Protect?</h2>
             <p className="text-sm md:text-lg max-w-2xl text-center">Jadilah bagian dari ratusan pelanggan Indoka Surya Jaya untuk memastikan usaha Anda terproteksi dari risiko kebakaran.</p>
             <div className="mt-8 space-x-4 flex justify-center">
-                <Button variant="monza_destructive" className="group pl-3 lg:pl-4 pr-2 lg:pr-3 lg:py-6 justify-between gap-4" size={"lg"}>
-                    <p className="lg:text-lg">Hubungi Kami</p>
-                    <div className="bg-zinc-50 rounded-md p-1">
-                        <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                    </div>
-                </Button>
-                <Button variant="outline" className="group pl-3 lg:pl-4 pr-2 lg:pr-3 lg:py-6 justify-between gap-4 bg-zinc-50" size={"lg"}>
-                    <p className="lg:text-lg">Lihat produk</p>
-                    <div className="bg-white border rounded-md p-1">
-                        <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                    </div>
-                </Button>
+                <Link target="_blank" href="/contact-us">
+                    <Button variant="monza_destructive" className="group pl-3 lg:pl-4 pr-2 lg:pr-3 lg:py-6 justify-between gap-4" size={"lg"}>
+                        <p className="lg:text-lg">Hubungi Kami</p>
+                        <div className="bg-zinc-50 rounded-md p-1">
+                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                        </div>
+                    </Button>
+                </Link>
+                <Link href="/store">
+                    <Button variant="outline" className="group pl-3 lg:pl-4 pr-2 lg:pr-3 lg:py-6 justify-between gap-4 bg-zinc-50" size={"lg"}>
+                        <p className="lg:text-lg">Lihat produk</p>
+                        <div className="bg-white border rounded-md p-1">
+                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                        </div>
+                    </Button>
+                </Link>
             </div>
         </div>
         <div className="hidden lg:block mt-10 mb-12 space-y-12 max-w-7xl w-full px-12  bg-transparent">

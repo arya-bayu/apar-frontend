@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/carousel"
 
 import React from "react";
+import Link from "next/link";
 
 const Advantages = () => {
 
@@ -53,18 +54,22 @@ const Advantages = () => {
                             <h2 className="font-bold text-monza-500 text-4xl">Mengapa Anda harus mempercayai Indoka Surya Jaya?</h2>
                             <p className="text-lg">Pelajari alasan utama mengapa Indoka Surya Jaya merupakan pilihan terbaik untuk kebutuhan proteksi kebakaran bisnis Anda.</p>
                             <div className="space-x-4 flex justify-start ">
-                                <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                                    <p>Hubungi Kami</p>
-                                    <div className="bg-zinc-50 rounded-md p-1">
-                                        <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                                    </div>
-                                </Button>
-                                <Button variant="outline" className="group pl-3 pr-2 justify-between gap-4 bg-zinc-50" size={"lg"}>
-                                    <p>Lihat produk</p>
-                                    <div className="bg-white border rounded-md p-1">
-                                        <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                                    </div>
-                                </Button>
+                                <Link target="_blank" href="/contact-us">
+                                    <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                                        <p>Hubungi Kami</p>
+                                        <div className="bg-zinc-50 rounded-md p-1">
+                                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                                        </div>
+                                    </Button>
+                                </Link>
+                                <Link href="/store">
+                                    <Button variant="outline" className="group pl-3 pr-2 justify-between gap-4 bg-zinc-50" size={"lg"}>
+                                        <p>Lihat produk</p>
+                                        <div className="bg-white border rounded-md p-1">
+                                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                                        </div>
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

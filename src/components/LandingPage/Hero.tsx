@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const Hero = () => (
     <section className="flex justify-center pb-0 bg-monza-50 bg-gradient-to-b from-transparent via-transparent to-stone-50">
@@ -19,18 +20,22 @@ const Hero = () => (
                     Vendor penyedia layanan satu pintu untuk perencanaan, instalasi, dan perawatan sistem proteksi kebakaran perusahaan.
                 </p>
                 <div className="space-x-4 flex justify-center lg:justify-start ">
-                    <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
-                        <p>Hubungi Kami</p>
-                        <div className="bg-zinc-50 rounded-md p-1">
-                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                        </div>
-                    </Button>
-                    <Button variant="outline" className="group pl-3 pr-2 justify-between gap-4 bg-zinc-50" size={"lg"}>
-                        <p>Lihat produk</p>
-                        <div className="bg-white border rounded-md p-1">
-                            <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
-                        </div>
-                    </Button>
+                    <Link target="_blank" href="/contact-us">
+                        <Button variant="monza_destructive" className="group pl-3 pr-2 justify-between gap-4" size={"lg"}>
+                            <p>Hubungi Kami</p>
+                            <div className="bg-zinc-50 rounded-md p-1">
+                                <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                            </div>
+                        </Button>
+                    </Link>
+                    <Link href="/store">
+                        <Button variant="outline" className="group pl-3 pr-2 justify-between gap-4 bg-zinc-50" size={"lg"}>
+                            <p>Lihat produk</p>
+                            <div className="bg-white border rounded-md p-1">
+                                <ArrowRight size={16} className="text-monza-500 -rotate-45 group-hover:rotate-0 transition-all" />
+                            </div>
+                        </Button>
+                    </Link>
                 </div>
             </div>
             <div className="mx-auto mt-16 lg:mt-0 overflow-hidden flex justify-center lg:justify-normal max-w-2xl lg:ml-10 lg:mr-0 lg:max-w-none lg:flex-none xl:ml-24">

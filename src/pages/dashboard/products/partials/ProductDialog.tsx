@@ -50,6 +50,7 @@ import { IImage } from "@/types/image"
 import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
 import { RefreshCcw } from "lucide-react"
+import RichTextEditor from "@/components/TextEditor"
 
 interface IProductDialog<TData> {
   data?: DataTable<TData>
@@ -175,6 +176,13 @@ export default function ProductDialog({
 
   }, [product])
 
+
+  useEffect(() => {
+    if (form.formState.isSubmitSuccessful) {
+      form.reset()
+    }
+  }, [form.formState, form.reset])
+
   const uploadImages = async (selectedImages: CustomFile[]) => {
     const images = [];
 
@@ -195,6 +203,7 @@ export default function ProductDialog({
         images.push(response.data.data);
       } catch (error) {
         if (error instanceof AxiosError) {
+          console.log(error)
           toast({
             variant: 'destructive',
             title: 'Terjadi kesalahan',
@@ -244,20 +253,11 @@ export default function ProductDialog({
         url: url,
         data: formData,
       })
+
       mutate()
 
       if (response) {
         setOpen(false)
-        form.reset({
-          name: '',
-          serial_number: '',
-          description: '',
-          price: null,
-          expiry_period: null,
-          unitId: null,
-          supplierId: null,
-          categoryId: null,
-        })
         toast({
           variant: 'success',
           title: 'Sukses',
@@ -486,12 +486,13 @@ export default function ProductDialog({
                 <FormItem>
                   <FormLabel>Deskripsi</FormLabel>
                   <FormControl>
-                    <Textarea
+                    {/* <Textarea
                       rows={5}
                       placeholder="Deskripsi Produk"
                       {...field}
                       required
-                    />
+                    /> */}
+                    <RichTextEditor {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
