@@ -293,7 +293,7 @@ export default function CategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[100vh] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
+      <DialogContent className="max-h-[calc(100dvh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
         <DialogHeader className="space-y-2 px-6">
           <DialogTitle>{category ? 'Edit' : 'Tambah'} kategori</DialogTitle>
           <DialogDescription>

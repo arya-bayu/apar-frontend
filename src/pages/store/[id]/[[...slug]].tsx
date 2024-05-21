@@ -141,7 +141,7 @@ export default function CategoryPage() {
                         )}>
                             {category?.data?.image && (
                                 <div className={`${category?.data?.features.length > 0 && 'lg:w-1/2'} flex justify-center items-end`}>
-                                    <Image src={process.env.NEXT_PUBLIC_BACKEND_URL + `/storage/` + category?.data?.image?.path} height={1920} width={1080} alt="mockup" className="object-contain object-bottom h-[25rem]" />
+                                    <Image src={process.env.NEXT_PUBLIC_BACKEND_URL + `/storage/` + category?.data?.image?.path} height={1000} width={1000} alt={"Foto " + category?.data?.name} className="object-contain object-bottom h-[25rem]" />
                                 </div>
                             )}
 

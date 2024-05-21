@@ -96,7 +96,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                     </NavigationMenuPrimitive.Trigger>
 
                     <NavigationMenuPrimitive.Content
-                        hidden={categories?.data?.length < 1}
+                        hidden={!categories || categories?.data?.length < 1}
                         className={clsx(
                             "absolute w-auto top-0 left-0 rounded-lg",
                             "radix-motion-from-start:animate-enter-from-left",
@@ -106,7 +106,7 @@ const LandingPageNavigation = (props: NavigationMenuProps) => {
                         )}
                     >
                         <div className="w-[21rem] lg:w-[23rem] p-3">
-                            <ScrollArea className="max-h-44 w-full flex flex-col space-y-1 overflow-y-auto">
+                            <ScrollArea className="max-h-56 w-full flex flex-col space-y-1 overflow-y-auto">
                                 {categories?.data?.map((category: ICategory) => (
                                     <NavigationMenuPrimitive.Link
                                         key={category.id}

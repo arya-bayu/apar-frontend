@@ -26,6 +26,11 @@ export default function CategoryPage() {
     const router = useRouter();
     const { id, slug } = router.query;
     const [redirected, setRedirected] = useState(false);
+    const [activeTab, setActiveTab] = useState(0);
+
+    const handleTabClick = (index: number) => {
+        setActiveTab(index);
+    };
 
     const productUrl = `api/v1/products/${id}`;
     const { data: product, error: productError, isValidating: isProductValidating } = useSWR(productUrl, fetcher, { keepPreviousData: true });
@@ -60,33 +65,79 @@ export default function CategoryPage() {
             <Header />
             <main>
                 <section className="flex justify-center pb-0">
-                    <div className="max-w-7xl py-6">
+                    <div className="w-full md:max-w-7xl py-6">
                         <div className="flex flex-col lg:flex-row items-start gap-8 mx-8 lg:mx-12 my-6">
-                            <div className="lg:w-1/3 space-y-6">
+                            <div className="w-full lg:w-1/4">
                                 <EmblaCarousel images={product?.data?.images} options={OPTIONS} />
-                                <div>
+                            </div>
+
+                            <div className="w-full lg:w-2/4 space-y-4">
+                                <div className="space-y-1">
+                                    <h1 className="font-bold text-2xl">{product?.data?.name}</h1>
+                                    <p className="font-medium text-xl">{currencyFormatter(product?.data?.price)}</p>
+                                </div>
+                                <div className="lg:hidden">
                                     <Link
                                         target="_blank"
-                                        href={"https://wa.me/+6285100665789?text=Halo " + process.env.NEXT_PUBLIC_APP_NAME + ", saya ingin memesan barang sebagai berikut: %0aNama produk: " + product?.data?.name + " %0aNomor seri: " + product?.data?.serial_number + " %0aHarga produk: " + currencyFormatter(product?.data?.price) + " %0aTerima kasih."}>
-                                        <Button variant="default" className="w-full bg-whatsapp text-white group pl-3 pr-2 justify-between gap-4 rounded-md mt-0" size={"lg"}>
-                                            <p>Pesan Sekarang</p>
+                                        href={"https://wa.me/+6285100665789?text=Halo, saya tertarik dengan produk ini: " + window.location.href}>
+                                        <Button variant="default" className="w-full sm:w-auto bg-whatsapp text-white group pl-3 pr-2 justify-between gap-4 rounded-md mt-0" size={"lg"}>
+                                            <p>Tertarik? Hubungi Kami</p>
                                             <div className="bg-zinc-50 rounded-md p-1">
                                                 <ArrowRight size={16} className="text-whatsapp -rotate-45 group-hover:rotate-0 transition-all" />
                                             </div>
                                         </Button>
                                     </Link>
                                 </div>
-                            </div>
-
-                            <div className="lg:w-2/3 space-y-6">
                                 <div>
-                                    <h1 className="font-bold text-2xl">{product?.data?.name}</h1>
-                                    <p className="font-medium text-lg">{currencyFormatter(product?.data?.price)}</p>
+                                    <ul className="flex flex-wrap -mb-px text-sm font-medium text-center" role="tablist">
+                                        <li className="me-2" role="presentation">
+                                            <button
+                                                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 0 ? 'border-monza-500' : 'border-transparent'}`}
+                                                onClick={() => handleTabClick(0)}
+                                                role="tab"
+                                                aria-controls="description"
+                                                aria-selected={activeTab === 0}
+                                            >
+                                                Deskripsi
+                                            </button>
+                                        </li>
+                                        <li className="me-2" role="presentation">
+                                            <button
+                                                className={`inline-block p-4 border-b-2 rounded-t-lg ${activeTab === 1 ? 'border-monza-500' : 'border-transparent'}`}
+                                                onClick={() => handleTabClick(1)}
+                                                role="tab"
+                                                aria-controls="keterangan"
+                                                aria-selected={activeTab === 1}
+                                            >
+                                                Keterangan
+                                            </button>
+                                        </li>
+                                    </ul>
+                                    <div id="default-tab-content">
+                                        <div className={`p-4 rounded-lg ${activeTab === 0 ? 'bg-zinc-50' : 'hidden'}`} id="description" role="tabpanel" aria-labelledby="description-tab">
+                                            {/* Render content for Deskripsi tab */}
+                                            <RichTextViewer value={product?.data?.description} />
+                                        </div>
+                                        <div className={`p-4 rounded-lg ${activeTab === 1 ? 'bg-zinc-50' : 'hidden'}`} id="keterangan" role="tabpanel" aria-labelledby="keterangan-tab">
+                                            {/* Render content for Dashboard tab */}
+                                            <p>Nomor Seri: {product?.data?.serial_number}</p>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <RichTextViewer value={product?.data?.description} />
-
                             </div>
+                            <div className="hidden lg:block lg:w-1/4">
+                                <Link
+                                    target="_blank"
+                                    href={"https://wa.me/+6285100665789?text=Halo, saya tertarik dengan produk ini: " + window.location.href}>
+                                    <Button variant="default" className="w-full bg-whatsapp text-white group pl-3 pr-2 justify-between gap-4 rounded-md mt-0" size={"lg"}>
+                                        <p>Tertarik? Hubungi Kami</p>
+                                        <div className="bg-zinc-50 rounded-md p-1">
+                                            <ArrowRight size={16} className="text-whatsapp -rotate-45 group-hover:rotate-0 transition-all" />
+                                        </div>
+                                    </Button>
+                                </Link>
+                            </div>
+
                         </div>
                     </div>
                 </section>

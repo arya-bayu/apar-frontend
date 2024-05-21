@@ -207,71 +207,65 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                             </Button>
                         </div>)}
 
-                        <div className="flex">
-                            <Carousel
-                                opts={{
-                                    align: "start",
-                                }}
-                                className="mt-6 w-full"
-                            >
-                                <CarouselContent>
-                                    {multipleImages.map((image, index) => (
-                                        <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
-                                            <Image
-                                                priority
-                                                src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + image.path}
-                                                alt={`Gambar ${index}`}
-                                                width={100}
-                                                height={100}
-                                                unoptimized
-                                                className='h-full w-full object-cover rounded-md'
-                                            />
-                                            {!disabled && onExistingImagesChange && (
-                                                <button
-                                                    type='button'
-                                                    className='w-7 h-7 border dark:border-zinc-950 border-zinc-300 dark:bg-zinc-800 bg-zinc-200 rounded-full flex justify-center items-center absolute top-1.5 right-1 hover:bg-white transition-colors'
-                                                    onClick={() => {
-                                                        const idToRemove = image.id;
-                                                        const updatedImages = multipleImages.filter(img => img.id !== idToRemove);
-                                                        onExistingImagesChange(updatedImages);
-                                                    }}>
-                                                    <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-200 hover:fill-zinc-400 transition-colors' />
-                                                </button>
-                                            )
-
-                                            }
-
-                                        </CarouselItem>
-                                    ))}
-                                    {images.map((file, index) => (
-                                        <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3 rounded-md shadow-lg">
-                                            <Image
-                                                priority
-                                                src={file.preview}
-                                                alt={file.name}
-                                                width={100}
-                                                height={100}
-                                                className='h-full w-full object-cover rounded-md'
-                                            />
+                        <Carousel
+                            opts={{
+                                align: "start",
+                            }}
+                            className="mt-6 w-full rounded-lg overflow-clip"
+                        >
+                            <CarouselContent>
+                                {multipleImages.map((image, index) => (
+                                    <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3">
+                                        <Image
+                                            priority
+                                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + image.path}
+                                            alt={`Gambar ${index}`}
+                                            width={100}
+                                            height={100}
+                                            unoptimized
+                                            className='h-full w-full object-contain rounded-lg aspect-square bg-white border'
+                                        />
+                                        {!disabled && onExistingImagesChange && (
                                             <button
                                                 type='button'
-                                                className='w-7 h-7 border dark:border-zinc-950 border-zinc-300 dark:bg-zinc-800 bg-zinc-200 rounded-full flex justify-center items-center absolute top-1.5 right-1 hover:bg-white transition-colors'
-                                                onClick={() => removeFile(index)}
-                                            >
-                                                <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-200 hover:fill-zinc-400 transition-colors' />
+                                                className='w-7 h-7 border dark:border-zinc-950 border-zinc-400 dark:bg-zinc-800 bg-zinc-100 rounded-full flex justify-center items-center absolute top-3 right-3 hover:bg-white transition-colors'
+                                                onClick={() => {
+                                                    const idToRemove = image.id;
+                                                    const updatedImages = multipleImages.filter(img => img.id !== idToRemove);
+                                                    onExistingImagesChange(updatedImages);
+                                                }}>
+                                                <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-100 hover:fill-zinc-400 transition-colors' />
                                             </button>
+                                        )
 
-                                        </CarouselItem>
-                                    ))}
-                                </CarouselContent>
-                                <div className="flex flex-row justify-between items-center">
-                                    <div className="flex flex-row gap-2">
-                                        <CarouselPrevious />
-                                        <CarouselNext />
-                                    </div>
-                                    {!disabled && (<p className="text-sm font-bold text-zinc-500 dark:text-zinc-50">{multipleImages.length + images.length}/{maxImages}</p>)}
-                                </div>
-                            </Carousel>
+                                        }
+
+                                    </CarouselItem>
+                                ))}
+                                {images.map((file, index) => (
+                                    <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3">
+                                        <Image
+                                            priority
+                                            src={file.preview}
+                                            alt={file.name}
+                                            width={100}
+                                            height={100}
+                                            className='h-full w-full object-contain rounded-lg aspect-square bg-white border'
+                                        />
+                                        <button
+                                            type='button'
+                                            className='w-7 h-7 border dark:border-zinc-950 border-zinc-400 dark:bg-zinc-800 bg-zinc-100 rounded-full flex justify-center items-center absolute top-3 right-3 hover:bg-white transition-colors'
+                                            onClick={() => removeFile(index)}
+                                        >
+                                            <XIcon className='w-5 h-5 text-zinc-500 dark:text-zinc-100 hover:fill-zinc-400 transition-colors' />
+                                        </button>
+
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                        </Carousel>
+                        <div className="flex justify-end mt-4">
+                            {!disabled && (<p className="text-sm font-bold text-zinc-500 dark:text-zinc-50">{multipleImages.length + images.length}/{maxImages}</p>)}
                         </div>
                     </section>
                 )

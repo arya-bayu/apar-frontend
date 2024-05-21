@@ -5,9 +5,12 @@ import { ICategory } from "@/types/category";
 import { ArrowRight, HeadsetIcon, TruckIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 const Marketplace = () => {
+    const [randomCategories, setRandomCategories] = useState<ICategory[]>()
+
     const {
         data: categories
     } = useSWR(
@@ -18,10 +21,13 @@ const Marketplace = () => {
 
     const filteredCategories = categories?.data?.filter((category: ICategory) => category.image !== null);
 
-    const generateCategoriesHighlight = () => {
+    useEffect(() => {
+        if (!categories) return;
+
         shuffleArray(filteredCategories)
-        return filteredCategories.slice(0, 4);
-    };
+        setRandomCategories(filteredCategories.slice(0, 4));
+
+    }, [categories])
 
     const { isAboveSm } = useBreakpoint('sm')
     const { isBelowLg, isAboveLg } = useBreakpoint('lg')
@@ -39,7 +45,7 @@ const Marketplace = () => {
                         gridTemplateColumns: `repeat(${isAboveSm && isBelowLg ? filteredCategories.length < 4 ? 1 : 2 : isAboveLg ? filteredCategories.length < 4 ? filteredCategories.length : 4 : 1}, minmax(0, 1fr))`,
                     }}
                     className={`grid gap-6 justify-items-center content-between mx-8`}>
-                    {categories?.data?.length > 0 && generateCategoriesHighlight().map((category: ICategory, index: number) => (
+                    {randomCategories && randomCategories.map((category, index) => (
                         <div key={index} className="group max-w-sm bg-white border border-zinc-200 rounded-lg shadow dark:bg-zinc-800 dark:border-zinc-700">
 
                             <Link target="_blank" href={`/store/${category.id}/${formatNameForSlug(category.name)}`}>

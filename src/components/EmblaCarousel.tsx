@@ -46,7 +46,7 @@ const EmblaCarousel: React.FC<PropType> = (props) => {
                 <div className="embla__container">
                     {images.map((image, index) => (
                         <div className="embla__slide" >
-                            <Image src={process.env.NEXT_PUBLIC_BACKEND_URL + `/storage/` + image.path} height={1000} width={1000} alt={'foto ' + index} priority className="w-full aspect-square border border-zinc-200 object-cover rounded-2xl" />
+                            <Image src={process.env.NEXT_PUBLIC_BACKEND_URL + `/storage/` + image.path} height={1000} width={1000} alt={'foto ' + index} priority className="w-full aspect-square border border-zinc-200 object-contain rounded-2xl" />
                         </div>
                     ))}
                 </div>
