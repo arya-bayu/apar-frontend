@@ -64,6 +64,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import LoadingSpinner from "../LoadingSpinner"
 
 type DataTablePermission = {
   delete?: boolean
@@ -404,7 +405,9 @@ export function DataTable<TData, TValue>({
                       colSpan={columns.length}
                       className="h-[52.5px] text-center"
                     >
-                      Tidak ada data.
+                      {isLoading ? (
+                        <LoadingSpinner />
+                      ) : "Tidak ada data."}
                     </TableCell>
                   </TableRow>
                 )}

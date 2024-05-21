@@ -16,10 +16,18 @@ import { ToastAction } from "@/components/ui/toast"
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const Units = () => {
   const {
@@ -376,18 +384,32 @@ const Units = () => {
 
   return (
     <AppLayout
-      actionBtn={isTrash ?
-        <Button
-          variant="secondary"
-          size="icon"
-          className="uppercase"
-          onClick={() => {
-            router.push('/dashboard/units/')
-          }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        : undefined}
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          {isTrash ? (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard/units">Unit</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-bold">Sampah</BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          ) : (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-bold">Unit</BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          )}
+        </BreadcrumbList>
+      </Breadcrumb>}
       title={title}
       headerAction={
         isTrash ? (

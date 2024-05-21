@@ -50,6 +50,7 @@ const Marketplace = () => {
 
                             <Link target="_blank" href={`/store/${category.id}/${formatNameForSlug(category.name)}`}>
                                 <Image
+                                    priority
                                     src={process.env.NEXT_PUBLIC_BACKEND_URL + `/storage/` + category.image?.path}
                                     alt={`Foto ` + category.name}
                                     width={1000} height={1000} className="rounded-t-lg aspect-[1/1] object-cover border border-zinc-200 border-t-0 border-l-0 border-r-0"

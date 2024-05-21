@@ -27,6 +27,14 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { CheckedState } from "@radix-ui/react-checkbox"
 import CustomExportDialog from "@/components/CustomExportDialog"
 import { StatusCombobox } from "@/components/Combobox/StatusCombobox"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const Invoices = () => {
   const {
@@ -91,6 +99,17 @@ const Invoices = () => {
 
   return (
     <AppLayout
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold">Invoice</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>}
       title={title}
       headerAction={
         <div className="flex flex-row space-x-2 ml-4">

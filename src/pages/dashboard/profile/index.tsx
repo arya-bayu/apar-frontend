@@ -10,6 +10,14 @@ import { IImage } from "@/types/image"
 import { toast } from "@/components/ui/use-toast"
 import axios, { csrf } from "@/lib/axios"
 import { AxiosError } from "axios"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const Profile = () => {
   const [openUserDeletionModal, setOpenUserDeletionModal] = useState(false)
@@ -91,7 +99,19 @@ const Profile = () => {
   };
 
   return (
-    <AppLayout title="Profil">
+    <AppLayout
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold">Profil</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>}
+      title={"Profil"}>
       <ProfileTabLayout>
         <div className="flex flex-col space-y-12 overflow-visible px-2 py-8 pb-12 shadow-none dark:border-none dark:bg-transparent sm:flex-row sm:space-x-8 sm:space-y-0 sm:px-8">
           <div className="sm:w-[40%] md:w-[30%]">

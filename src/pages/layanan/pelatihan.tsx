@@ -104,7 +104,6 @@ export default function Pelatihan() {
                                                 alt={brand.name}
                                                 height={31}
                                                 width={42}
-                                                priority
                                                 className="filter grayscale opacity-50 brightness-75 hover:filter-none hover:opacity-100 hover:brightness-100"
                                             />
                                         </div>

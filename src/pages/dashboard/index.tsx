@@ -28,6 +28,12 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from "@/components/ui/toggle-group"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbList,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb"
 
 interface CardProps {
   title: string;
@@ -155,6 +161,13 @@ const Dashboard = () => {
 
   return (
     <AppLayout
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold">Dashboard</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>}
       title={title}
       headerAction={
         <CalendarDateRangePicker onChange={setDate} />

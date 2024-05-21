@@ -16,6 +16,14 @@ import ContentLayout from '@/components/Layouts/ContentLayout'
 import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const Users = () => {
   const { toast } = useToast()
@@ -151,6 +159,17 @@ const Users = () => {
 
   return can('access users') ? (
     <AppLayout
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-bold">Pengguna</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>}
       title={title}
       headerAction={
         can('create invitations') && (

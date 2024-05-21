@@ -11,6 +11,7 @@ import currencyFormatter from "@/lib/currency"
 import { Switch } from "@/components/ui/switch"
 import axios from "@/lib/axios"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
 
 
 export const productColumns: ColumnDef<IProduct>[] = [
@@ -27,17 +28,24 @@ export const productColumns: ColumnDef<IProduct>[] = [
     cell: ({ row, table }) => {
       const product = row.original
       const pathname = usePathname()
+      const [isChecked, setIsChecked] = useState(product.status)
+
 
       if (pathname === '/products/trash') return <></>
       return (
         <Switch
           className="ml-2"
-          checked={product.status}
+          checked={isChecked}
           onCheckedChange={(checked) => {
+            setIsChecked(checked)
+
             axios.put(`/api/v1/products/update-status`, {
               'product_ids': [product.id],
               'active': checked
             }).then(() => table.options?.meta?.mutate?.())
+              .catch((error) => {
+                setIsChecked(!checked)
+              })
           }}
         />
       )

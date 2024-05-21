@@ -16,7 +16,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ToastAction } from "@/components/ui/toast"
-import { ArrowLeft, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
@@ -24,6 +24,14 @@ import { SupplierCombobox } from "@/components/Combobox/SupplierCombobox"
 import CustomExportDialog from "@/components/CustomExportDialog"
 import { StatusCombobox } from "@/components/Combobox/StatusCombobox"
 import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb"
 
 const Products = () => {
   const {
@@ -348,19 +356,33 @@ const Products = () => {
 
   return (
     <AppLayout
-      actionBtn={isTrash ?
-        <Button
-          variant="secondary"
-          size="icon"
-          className="uppercase"
-          onClick={() => {
-            router.push('/dashboard/products/')
-          }}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        : undefined}
       title={title}
+      customHeaderTitle={<Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          {isTrash ? (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/dashboard/products">Produk</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-bold">Sampah</BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          ) : (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="font-bold">Produk</BreadcrumbPage>
+              </BreadcrumbItem>
+            </>
+          )}
+        </BreadcrumbList>
+      </Breadcrumb>}
       headerAction={
         isTrash ? (
           products?.data.rows.length > 0 && (
