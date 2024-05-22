@@ -49,7 +49,7 @@ const Products = () => {
   const router = useRouter()
   const { authUser, can } = useAuth({ middleware: 'auth' })
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
-  const { isBelowXs } = useBreakpoint('xs')
+  const { isBelowSm } = useBreakpoint('sm')
 
   const [alert, setAlert] = useState(false)
   const [alertTitle, setAlertTitle] = useState<string>("")
@@ -384,38 +384,40 @@ const Products = () => {
         </BreadcrumbList>
       </Breadcrumb>}
       headerAction={
-        isTrash ? (
-          products?.data.rows.length > 0 && (
-            <Button
-              onClick={() => handleEmptyTrash()}
-              size="sm"
-              variant="destructive"
-              className="uppercase"
-            >
-              Kosongkan
-            </Button>
-          )
-        ) : (
-          <div className="flex flex-row space-x-2 ml-4">
-            {can('create products') && (
-              <ProductDialog mutate={mutate}>
-                <Button size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                  {isBelowXs ? <PlusIcon size={18} /> : 'Tambah produk'}
-                </Button>
-              </ProductDialog>
-            )}
-
-            {can('force delete products') && (
+        !isValidating && (
+          isTrash ? (
+            products?.data.rows.length > 0 && (
               <Button
-                variant="destructive"
+                onClick={() => handleEmptyTrash()}
                 size="sm"
+                variant="destructive"
                 className="uppercase"
-                asChild
               >
-                <Link href="products/trash">Sampah</Link>
+                Kosongkan
               </Button>
-            )}
-          </div>
+            )
+          ) : (
+            <div className="flex flex-row space-x-2 ml-4">
+              {can('create products') && (
+                <ProductDialog mutate={mutate}>
+                  <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                    {isBelowSm ? <PlusIcon size={18} /> : 'Tambah produk'}
+                  </Button>
+                </ProductDialog>
+              )}
+
+              {can('force delete products') && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="uppercase"
+                  asChild
+                >
+                  <Link href="products/trash">Sampah</Link>
+                </Button>
+              )}
+            </div>
+          )
         )
       }
     >

@@ -31,7 +31,7 @@ import {
 import { PaginationState } from "@tanstack/react-table"
 import * as Lucide from 'lucide-react';
 import { EditText } from "react-edit-text"
-import { cn, formatNameForSlug } from "@/lib/utils"
+import { cn, formatNameForSlug, shuffleArray } from "@/lib/utils"
 import { useRouter } from "next/router"
 import { IFeature } from "@/types/category"
 import LoadingSpinner from "@/components/LoadingSpinner"
@@ -53,8 +53,7 @@ export default function CategoryPage() {
         pageSize: 12,
     });
 
-    const categoryUrl = `api/v1/categories/${id}`;
-    const { data: category, error: categoriesError } = useSWR(categoryUrl, fetcher, { keepPreviousData: true });
+    const { data: category, error: categoriesError } = useSWR(`api/v1/categories/${id}`, fetcher, { keepPreviousData: true });
 
     if (categoriesError) {
         router.push('/404');
@@ -150,7 +149,7 @@ export default function CategoryPage() {
                                     category?.data?.image ? 'lg:w-1/2' : 'lg:w-full pb-12',
                                     `space-y-6 lg:space-y-0 mx-auto`
                                 )}>
-                                    {category?.data?.features?.map((feature: IFeature) => {
+                                    {shuffleArray([...category.data.features]).slice(0, 3).map((feature: IFeature) => {
                                         return (
                                             <div className="group gap-4 flex flex-col md:flex-row items-start justify-start md:items-center lg:p-6">
                                                 <div className="border border-zinc-200 bg-zinc-50 group-hover:bg-zinc-50/80 group-hover:drop-shadow-md rounded-lg p-3">

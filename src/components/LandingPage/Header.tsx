@@ -53,6 +53,7 @@ export const Header = () => {
                             width={'32'}
                             height={'32'}
                             alt="Logo"
+                            priority
                         />
                     </Link>
                 </div>
@@ -80,7 +81,7 @@ export const Header = () => {
 
                 </button>
 
-                <div className={`absolute top-14 left-0 right-0 sm:hidden transition-all duration-100 ease-in-out ${isMenuOpen ? 'opacity-100' : 'opacity-0'}`}>
+                <div className={`absolute top-14 left-0 right-0 sm:hidden transition-all duration-100 ease-in-out ${isMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
                     <ScrollArea className="max-h-[40vh] overflow-y-auto bg-white shadow-md px-4 py-5 space-y-4 ">
                         <div className="text-md font-medium text-zinc-600/80">
                             <div className={`flex items-center space-x-[2px] ${isLayananOpen ? 'text-zinc-950' : ''} transition-all duration-50`} onClick={toggleLayanan}>
@@ -130,7 +131,7 @@ export const Header = () => {
                                 className={`${categories?.data?.length < 1 ? 'hidden' : 'flex flex-col'} text-md font-medium text-zinc-600 space-y-5 duration-150 ease-in-out overflow-hidden ${isStoreOpen ? 'max-h-screen opacity-100 pt-5' : 'max-h-0 opacity-0'}`}>
                                 <li>
                                     <Link href={`/store/`} className="space-y-1" onClick={toggleMenu}>
-                                        <p>Semua Kategori</p>
+                                        <p>Semua Produk</p>
                                         <p className="text-sm font-normal line-clamp-2">Jelajahi seluruh produk {process.env.NEXT_PUBLIC_APP_NAME}</p>
                                     </Link>
                                 </li>
@@ -155,6 +156,6 @@ export const Header = () => {
                     </ScrollArea>
                 </div>
             </div>
-        </header>
+        </header >
     );
 };

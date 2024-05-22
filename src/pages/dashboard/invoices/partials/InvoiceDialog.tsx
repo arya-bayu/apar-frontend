@@ -119,7 +119,7 @@ export default function InvoiceDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="max-h-[calc(100dvh)] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
+            <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-[525px]">
                 <DialogHeader className="space-y-2">
                     <DialogTitle>Invoice</DialogTitle>
                 </DialogHeader>

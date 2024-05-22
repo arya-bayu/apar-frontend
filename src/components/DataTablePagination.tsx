@@ -19,7 +19,7 @@ interface DataTablePaginationProps<TData> {
 }
 
 export function DataTablePagination<TData>({
-  table,
+  table
 }: DataTablePaginationProps<TData>) {
   return (
     <div className="flex flex-col items-center justify-between space-y-4 px-2 md:flex-row md:space-y-0">
@@ -43,7 +43,7 @@ export function DataTablePagination<TData>({
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center space-x-6 lg:space-x-8">
+      <div className="flex items-center space-x-6 lg:space-x-4">
         <div className="flex w-[100px] items-center justify-center text-sm font-medium">
           Hal {table.getState().pagination.pageIndex + 1} dari{' '}
           {table.getPageCount()}

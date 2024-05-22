@@ -50,7 +50,7 @@ const Purchases = () => {
   const router = useRouter()
   const { authUser, can } = useAuth({ middleware: 'auth' })
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
-  const { isBelowXs } = useBreakpoint('xs')
+  const { isBelowSm } = useBreakpoint('sm')
 
   const [exportDialog, setExportDialog] = useState(false)
   const [exportDialogDescription, setExportDialogDescription] = useState<string>("")
@@ -115,8 +115,8 @@ const Purchases = () => {
         <div className="flex flex-row space-x-2 ml-4">
           {can('create purchases') && (
             <Link href="purchases/new">
-              <Button size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                {isBelowXs ? <PlusIcon size={18} /> : 'Tambah pembelian'}
+              <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                {isBelowSm ? <PlusIcon size={18} /> : 'Tambah pembelian'}
               </Button>
             </Link>
           )}

@@ -12,7 +12,6 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import { on } from "events";
 import { useInView } from "react-intersection-observer";
 
 export interface CustomFile extends File {
@@ -162,7 +161,6 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                             width={0}
                             height={0}
                             sizes="100vw"
-                            unoptimized
                             className="h-full w-full rounded-md object-cover"
                         />
                     )}

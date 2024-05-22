@@ -45,7 +45,7 @@ const Customers = () => {
   const router = useRouter()
   const { authUser, can } = useAuth({ middleware: 'auth' })
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
-  const { isBelowXs } = useBreakpoint('xs')
+  const { isBelowSm } = useBreakpoint('sm')
 
   const [alert, setAlert] = useState(false)
   const [alertTitle, setAlertTitle] = useState<string>("")
@@ -412,38 +412,40 @@ const Customers = () => {
       </Breadcrumb>}
       title={title}
       headerAction={
-        isTrash ? (
-          customers?.data.rows.length > 0 && (
-            <Button
-              onClick={() => handleEmptyTrash()}
-              size="sm"
-              variant="destructive"
-              className="uppercase"
-            >
-              Kosongkan
-            </Button>
-          )
-        ) : (
-          <div className="flex flex-row space-x-2 ml-4">
-            {can('create customers') && (
-              <CustomerDialog mutate={mutate}>
-                <Button size="sm" className={`uppercase truncate ${isBelowXs ? 'px-2' : ''}`}>
-                  {isBelowXs ? <PlusIcon size={18} /> : `Tambah pelanggan`}
-                </Button>
-              </CustomerDialog>
-            )}
-
-            {can('force delete customers') && (
+        !isValidating && (
+          isTrash ? (
+            customers?.data.rows.length > 0 && (
               <Button
-                variant="destructive"
+                onClick={() => handleEmptyTrash()}
                 size="sm"
+                variant="destructive"
                 className="uppercase"
-                asChild
               >
-                <Link href="customers/trash">Sampah</Link>
+                Kosongkan
               </Button>
-            )}
-          </div>
+            )
+          ) : (
+            <div className="flex flex-row space-x-2 ml-4">
+              {can('create customers') && (
+                <CustomerDialog mutate={mutate}>
+                  <Button size="sm" className={`uppercase truncate ${isBelowSm ? 'px-2' : ''}`}>
+                    {isBelowSm ? <PlusIcon size={18} /> : `Tambah pelanggan`}
+                  </Button>
+                </CustomerDialog>
+              )}
+
+              {can('force delete customers') && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="uppercase"
+                  asChild
+                >
+                  <Link href="customers/trash">Sampah</Link>
+                </Button>
+              )}
+            </div>
+          )
         )
       }
     >

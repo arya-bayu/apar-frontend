@@ -23,10 +23,7 @@ const Marketplace = () => {
 
     useEffect(() => {
         if (!categories) return;
-
-        shuffleArray(filteredCategories)
-        setRandomCategories(filteredCategories.slice(0, 4));
-
+        setRandomCategories(shuffleArray(filteredCategories).slice(0, 4));
     }, [categories])
 
     const { isAboveSm } = useBreakpoint('sm')

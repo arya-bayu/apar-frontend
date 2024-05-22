@@ -51,14 +51,12 @@ const categoryFormSchema = z.object({
   name: z.string(),
   description: z.string(),
   features: z.array(
-    z
-      .object({
-        icon: z.string(),
-        name: z.string(),
-        description: z.string(),
-      })
-      .optional(),
-  ),
+    z.object({
+      icon: z.string(),
+      name: z.string(),
+      description: z.string(),
+    })
+  ).optional()
 })
 
 export default function CategoryDialog({
@@ -67,9 +65,9 @@ export default function CategoryDialog({
   children,
   setDisabledContextMenu,
 }: PropsWithChildren<ICategoryDialog<ICategory>>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [category, setCategory] = useState<ICategory>()
-  const [isPopoverOpen, setPopoverOpen] = useState<boolean[]>([false]);
   const [featureIcons, setFeatureIcons] = useState<string[]>([]);
   const [featureNames, setFeatureNames] = useState<string[]>([])
   const [bannerImage, setBannerImage] = useState<CustomFile>();
@@ -203,11 +201,13 @@ export default function CategoryDialog({
       formData.append('image', String(uploadedImage.id))
     }
 
-    for (var i = 0; i < values.features.length; i++) {
-      const feature = values.features[i]
-      formData.append(`features[${i}][icon]`, featureIcons[i] ?? feature?.icon ?? 'Plus')
-      formData.append(`features[${i}][name]`, feature?.name ?? '')
-      formData.append(`features[${i}][description]`, feature?.description ?? '')
+    if (values.features) {
+      for (var i = 0; i < values.features.length; i++) {
+        const feature = values.features[i]
+        formData.append(`features[${i}][icon]`, featureIcons[i] ?? feature?.icon ?? 'Plus')
+        formData.append(`features[${i}][name]`, feature?.name ?? '')
+        formData.append(`features[${i}][description]`, feature?.description ?? '')
+      }
     }
 
     const url = category
@@ -293,7 +293,7 @@ export default function CategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
         <DialogHeader className="space-y-2 px-6">
           <DialogTitle>{category ? 'Edit' : 'Tambah'} kategori</DialogTitle>
           <DialogDescription>
@@ -469,11 +469,26 @@ export default function CategoryDialog({
 
             <DialogFooter className="mt-4 h-10">
               <Button
-                onClick={form.handleSubmit(onSubmit)}
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
                 className="w-full text-sm"
                 type="submit"
               >
-                Simpan
+                {isLoading ? (
+                  <>
+                    <Lucide.Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan"
+                )}
               </Button>
             </DialogFooter>
           </div>

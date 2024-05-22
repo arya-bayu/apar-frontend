@@ -36,6 +36,7 @@ import validator from 'validator'
 import { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from "lucide-react"
 
 const inviteUserFormSchema = z.object({
   email: z.string().refine(validator.isEmail, {
@@ -52,6 +53,7 @@ const inviteUserFormSchema = z.object({
 })
 
 export default function InviteUserDialog({ children }: PropsWithChildren) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const { roles } = useUserRoles()
   const { toast } = useToast()
@@ -119,7 +121,7 @@ export default function InviteUserDialog({ children }: PropsWithChildren) {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="grid gap-4 py-4"
+            className="grid gap-4 py-2"
           >
             <FormField
               control={form.control}
@@ -177,8 +179,28 @@ export default function InviteUserDialog({ children }: PropsWithChildren) {
                 </FormItem>
               )}
             />
-            <DialogFooter>
-              <Button type="submit">Kirim Undangan</Button>
+            <DialogFooter className="mt-4">
+              <Button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                type="submit"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Mengundang...
+                  </>
+                ) : (
+                  "Kirim Undangan"
+                )}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

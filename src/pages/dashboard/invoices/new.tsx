@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { Save } from 'lucide-react'
+import { Loader2, Save } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -73,6 +73,7 @@ const invoiceFormSchema = z.object({
 })
 
 const NewInvoicePage = () => {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { can } = useAuth({ middleware: 'auth' })
     const router = useRouter()
 
@@ -82,7 +83,6 @@ const NewInvoicePage = () => {
     }
 
     const title = 'Invoice Baru'
-    const { isBelowXs } = useBreakpoint('xs')
     const { isBelowSm } = useBreakpoint('sm')
 
 
@@ -271,8 +271,31 @@ const NewInvoicePage = () => {
             title={title}
             headerAction={
                 <div className="flex flex-row space-x-2 ml-4">
-                    <Button onClick={form.handleSubmit(onSubmit)} size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                        {isBelowXs ? <Save size={18} /> : 'Simpan'}
+                    <Button
+                        disabled={isLoading}
+                        onClick={async () => {
+                            setIsLoading(true);
+                            try {
+                                await form.handleSubmit(onSubmit)();
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        size="sm"
+                        className={`uppercase ${isBelowSm ? 'px-2' : ''}`}
+                        type="submit">
+                        {isLoading ? (
+                            isBelowSm
+                                ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                : <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Menyimpan...
+                                </>
+                        ) : (
+                            isBelowSm
+                                ? <Save size={18} />
+                                : 'Simpan'
+                        )}
                     </Button>
                 </div>
             }

@@ -35,6 +35,7 @@ import { ICustomer } from '@/types/customer'
 import { KeyedMutator } from 'swr'
 import { DataTable } from '@/components/ui/data-table'
 import validator from 'validator'
+import { Loader2 } from "lucide-react"
 
 interface ICustomerDialog<TData> {
   data?: DataTable<TData>
@@ -63,6 +64,7 @@ export default function CustomerDialog({
   setDisabledContextMenu,
   onSuccess
 }: PropsWithChildren<ICustomerDialog<ICustomer>>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [customer, setCustomer] = useState<ICustomer>()
 
@@ -187,7 +189,7 @@ export default function CustomerDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-[525px]">
         <DialogHeader className="space-y-2">
           <DialogTitle>{customer ? 'Edit' : 'Tambah'} pelanggan</DialogTitle>
           <DialogDescription>
@@ -282,9 +284,28 @@ export default function CustomerDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-2">
-              <Button className="w-full" type="button" onClick={form.handleSubmit(onSubmit)}>
-                {customer ? 'Edit' : 'Tambah'} Pelanggan
+            <DialogFooter className="mt-4 h-10">
+              <Button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="w-full text-sm"
+                type="submit"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan"
+                )}
               </Button>
             </DialogFooter>
           </form>

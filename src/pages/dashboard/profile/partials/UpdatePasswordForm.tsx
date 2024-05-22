@@ -14,6 +14,8 @@ import {
 import { toast } from '@/components/ui/use-toast'
 import { AxiosError } from 'axios'
 import { Button } from '@/components/ui/button'
+import { useState } from "react"
+import { Loader2 } from "lucide-react"
 
 const updatePasswordSchema = z
   .object({
@@ -27,6 +29,7 @@ const updatePasswordSchema = z
   })
 
 const UpdatePasswordForm = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const form = useForm<z.infer<typeof updatePasswordSchema>>({
     resolver: zodResolver(updatePasswordSchema),
   })
@@ -140,7 +143,26 @@ const UpdatePasswordForm = () => {
             )}
           />
           <div className="flex items-center gap-4">
-            <Button>Simpan</Button>
+            <Button
+              disabled={isLoading}
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  await form.handleSubmit(onSubmit)();
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                "Simpan"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

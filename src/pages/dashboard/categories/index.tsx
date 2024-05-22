@@ -45,7 +45,7 @@ const Categories = () => {
   const router = useRouter()
   const { authUser, can } = useAuth({ middleware: 'auth' })
   const [disabledContextMenu, setDisabledContextMenu] = useState(false)
-  const { isBelowXs } = useBreakpoint('xs')
+  const { isBelowSm } = useBreakpoint('sm')
 
   const [alert, setAlert] = useState(false)
   const [alertTitle, setAlertTitle] = useState<string>("")
@@ -411,38 +411,40 @@ const Categories = () => {
       </Breadcrumb>}
       title={title}
       headerAction={
-        isTrash ? (
-          categories?.data.rows.length > 0 && (
-            <Button
-              onClick={() => handleEmptyTrash()}
-              size="sm"
-              variant="destructive"
-              className="uppercase"
-            >
-              Kosongkan
-            </Button>
-          )
-        ) : (
-          <div className="flex flex-row space-x-2 ml-4">
-            {can('create categories') && (
-              <CategoryDialog mutate={mutate}>
-                <Button size="sm" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                  {isBelowXs ? <PlusIcon size={18} /> : 'Tambah kategori'}
-                </Button>
-              </CategoryDialog>
-            )}
-
-            {can('force delete categories') && (
+        !isValidating && (
+          isTrash ? (
+            categories?.data.rows.length > 0 && (
               <Button
-                variant="destructive"
+                onClick={() => handleEmptyTrash()}
                 size="sm"
+                variant="destructive"
                 className="uppercase"
-                asChild
               >
-                <Link href="categories/trash">Sampah</Link>
+                Kosongkan
               </Button>
-            )}
-          </div>
+            )
+          ) : (
+            <div className="flex flex-row space-x-2 ml-4">
+              {can('create categories') && (
+                <CategoryDialog mutate={mutate}>
+                  <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                    {isBelowSm ? <PlusIcon size={18} /> : 'Tambah kategori'}
+                  </Button>
+                </CategoryDialog>
+              )}
+
+              {can('force delete categories') && (
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="uppercase"
+                  asChild
+                >
+                  <Link href="categories/trash">Sampah</Link>
+                </Button>
+              )}
+            </div>
+          )
         )
       }
     >

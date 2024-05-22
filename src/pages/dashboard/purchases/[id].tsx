@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { Check, Dot, Save, X } from 'lucide-react'
+import { ArrowLeft, Check, Dot, Loader2, Save, X } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -81,6 +81,7 @@ const purchaseFormSchema = z.object({
 })
 
 const PurchasePage = () => {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { can } = useAuth({ middleware: 'auth' })
     const router = useRouter()
     const { id } = router.query
@@ -90,7 +91,6 @@ const PurchasePage = () => {
         return <></>
     }
 
-    const { isBelowXs } = useBreakpoint('xs')
     const { isBelowSm } = useBreakpoint('sm')
 
 
@@ -337,16 +337,39 @@ const PurchasePage = () => {
                     {
                         purchase?.status === 1 && (
                             <Link href={`/purchases`}>
-                                <Button variant="outline" className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                                    {isBelowXs ? <Save size={18} /> : 'Kembali'}
+                                <Button variant="outline" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                                    {isBelowSm ? <ArrowLeft size={18} /> : 'Kembali'}
                                 </Button>
                             </Link>
                         )
                     }
                     {
                         purchase?.status === 0 && (
-                            <Button onClick={form.handleSubmit(onSubmit)} className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                                {isBelowXs ? <Save size={18} /> : 'Simpan'}
+                            <Button
+                                disabled={isLoading}
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    try {
+                                        await form.handleSubmit(onSubmit)();
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                size="sm"
+                                className={`uppercase ${isBelowSm ? 'px-2' : ''}`}
+                                type="submit">
+                                {isLoading ? (
+                                    isBelowSm
+                                        ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        : <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Menyimpan...
+                                        </>
+                                ) : (
+                                    isBelowSm
+                                        ? <Save size={18} />
+                                        : 'Simpan'
+                                )}
                             </Button>
                         )
                     }

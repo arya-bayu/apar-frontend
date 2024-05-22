@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { DownloadIcon, Save } from 'lucide-react'
+import { DownloadIcon, Loader2, Save } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -77,6 +77,7 @@ const invoiceFormSchema = z.object({
 })
 
 const InvoicePage = () => {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { can } = useAuth({ middleware: 'auth' })
     const router = useRouter()
     const { id } = router.query
@@ -320,8 +321,31 @@ const InvoicePage = () => {
                     </Button>
                     {
                         invoice?.status === 0 && (
-                            <Button size={isBelowSm ? 'icon' : 'default'} onClick={form.handleSubmit(onSubmit)} className={`uppercase ${isBelowXs ? 'px-2' : ''}`}>
-                                {isBelowSm ? <Save size={18} /> : 'Simpan'}
+                            <Button
+                                disabled={isLoading}
+                                onClick={async () => {
+                                    setIsLoading(true);
+                                    try {
+                                        await form.handleSubmit(onSubmit)();
+                                    } finally {
+                                        setIsLoading(false);
+                                    }
+                                }}
+                                size="sm"
+                                className={`uppercase ${isBelowSm ? 'px-2' : ''}`}
+                                type="submit">
+                                {isLoading ? (
+                                    isBelowSm
+                                        ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        : <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Menyimpan...
+                                        </>
+                                ) : (
+                                    isBelowSm
+                                        ? <Save size={18} />
+                                        : 'Simpan'
+                                )}
                             </Button>
                         )
                     }

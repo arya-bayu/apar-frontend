@@ -33,6 +33,7 @@ import { AxiosError } from 'axios'
 import { IUnit } from '@/types/unit'
 import { KeyedMutator } from 'swr'
 import { DataTable } from '@/components/ui/data-table'
+import { Loader2 } from "lucide-react"
 
 interface IUnitDialog<TData> {
   data?: DataTable<TData>
@@ -51,6 +52,7 @@ export default function UnitDialog({
   children,
   setDisabledContextMenu,
 }: PropsWithChildren<IUnitDialog<IUnit>>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [unit, setUnit] = useState<IUnit>()
 
@@ -143,7 +145,7 @@ export default function UnitDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] md:max-h-[90vh] overflow-y-scroll sm:max-w-[525px]">
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-[525px]">
         <DialogHeader className="space-y-2">
           <DialogTitle>{unit ? 'Edit' : 'Tambah'} unit</DialogTitle>
           <DialogDescription>
@@ -174,10 +176,28 @@ export default function UnitDialog({
                 </FormItem>
               )}
             />
-
-            <DialogFooter className="mt-2">
-              <Button className="w-full" type="submit">
-                {unit ? 'Edit' : 'Tambah'} Unit
+            <DialogFooter className="mt-4 h-10">
+              <Button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="w-full text-sm"
+                type="submit"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan"
+                )}
               </Button>
             </DialogFooter>
           </form>

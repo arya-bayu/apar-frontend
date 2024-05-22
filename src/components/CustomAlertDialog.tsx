@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react';
+import React, { PropsWithChildren, useState } from 'react';
 
 import {
     AlertDialog,
@@ -10,6 +10,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { Loader2 } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ICustomAlertDialog {
     open: boolean;
@@ -20,6 +22,7 @@ interface ICustomAlertDialog {
 }
 
 const CustomAlertDialog = ({ open, onOpenChange, title, description, onContinue }: ICustomAlertDialog) => {
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -30,7 +33,27 @@ const CustomAlertDialog = ({ open, onOpenChange, title, description, onContinue 
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel onClick={() => onOpenChange(false)}>Batal</AlertDialogCancel>
-                    <AlertDialogAction onClick={onContinue}>Lanjutkan</AlertDialogAction>
+                    <Button
+                        disabled={isLoading}
+                        onClick={async () => {
+                            setIsLoading(true);
+                            try {
+                                await onContinue();
+                            } finally {
+                                setIsLoading(false);
+                                onOpenChange(false);
+                            }
+                        }}
+                    >
+                        {isLoading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Memproses...
+                            </>
+                        ) : (
+                            "Lanjutkan"
+                        )}
+                    </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>
         </AlertDialog>

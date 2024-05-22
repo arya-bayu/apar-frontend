@@ -8,8 +8,9 @@ import axios, { csrf } from '@/lib/axios'
 import { AxiosError } from 'axios'
 import { toast } from '@/components/ui/use-toast'
 import { Input } from '@/components/ui/input'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
+import { Loader2 } from "lucide-react"
 
 const updateProfilePhotoSchema = z.object({
   photo: z
@@ -17,6 +18,8 @@ const updateProfilePhotoSchema = z.object({
 })
 
 const UpdateProfilePhotoForm = () => {
+  const [isUploading, setisUploading] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const { authUser, mutate } = useAuth({ middleware: 'auth' })
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -98,7 +101,7 @@ const UpdateProfilePhotoForm = () => {
 
   return (
     <div className="flex flex-col justify-center space-y-6 bg-white px-4 dark:bg-transparent sm:rounded-lg sm:border-[1.5px] sm:border-solid sm:border-zinc-50 sm:pb-6 sm:pt-4 sm:shadow-lg sm:dark:border-[0.1px] sm:dark:border-zinc-700">
-      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-red-500 text-[8rem] uppercase text-zinc-50 sm:text-[4rem] lg:text-[6rem] xl:text-[8rem]">
+      <div className="flex aspect-square w-full items-center justify-center rounded-lg bg-monza-500 text-[8rem] uppercase text-zinc-50 sm:text-[4rem] lg:text-[6rem] xl:text-[8rem]">
         <div className={`${authUser?.photo && 'hidden'}`}>
           {authUser?.name && authUser?.name.charAt(0)}
           <span className="sr-only">User Profile</span>
@@ -130,7 +133,7 @@ const UpdateProfilePhotoForm = () => {
                       <>
                         <Input
                           type="file"
-                          accept="image/jpeg, image/jpg, image/png"
+                          accept="image/*"
                           style={{ display: 'none' }}
                           ref={fileInputRef}
                           onChange={e => {
@@ -140,12 +143,28 @@ const UpdateProfilePhotoForm = () => {
                           {...restFieldProps}
                         />
                         <Button
+                          disabled={isUploading}
                           variant="outline"
                           type="button"
                           className="w-full"
-                          onClick={handleButtonClick}
+                          onClick={async () => {
+                            setisUploading(true);
+                            try {
+                              await handleButtonClick();
+                            } finally {
+                              setisUploading(false);
+                            }
+                          }}
                         >
-                          {authUser?.photo ? 'Ubah' : 'Pilih'} Foto
+                          {isUploading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Mengunggah...
+                            </>
+                          ) : authUser?.photo ? (
+                            "Ganti Foto"
+                          ) : "Pilih Foto"
+                          }
                         </Button>
                       </>
                     </FormControl>
@@ -158,12 +177,28 @@ const UpdateProfilePhotoForm = () => {
         </Form>
         {authUser?.photo && (
           <Button
+            disabled={isDeleting}
             variant="destructive"
             type="button"
             className="w-full"
-            onClick={handleDeletePhoto}
+            onClick={async () => {
+              setIsDeleting(true);
+              try {
+                await handleDeletePhoto();
+              } finally {
+                setIsDeleting(false);
+              }
+            }}
           >
-            Hapus Foto
+            {isDeleting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Menghapus...
+              </>
+            ) : (
+
+              "Hapus Foto"
+            )}
           </Button>
         )}
       </div>

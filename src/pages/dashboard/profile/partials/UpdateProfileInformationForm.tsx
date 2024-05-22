@@ -16,6 +16,8 @@ import {
 } from '@/components/ui/form'
 import validator from 'validator'
 import { Button } from '@/components/ui/button'
+import { Loader2 } from "lucide-react"
+import { useState } from "react"
 
 const updateProfileFormSchema = z.object({
   name: z.string(),
@@ -28,6 +30,8 @@ const updateProfileFormSchema = z.object({
 })
 
 const UpdateProfileInformationForm = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+
   const { authUser, mutate, resendEmailVerification } = useAuth({
     middleware: 'auth',
   })
@@ -166,7 +170,7 @@ const UpdateProfileInformationForm = () => {
                             </div>
                           )
                         },
-                        setErrors: () => {},
+                        setErrors: () => { },
                       })
                     }
                   >
@@ -177,7 +181,26 @@ const UpdateProfileInformationForm = () => {
             )}
 
           <div className="flex items-center gap-4">
-            <Button className="mt-2 uppercase tracking-widest">Simpan</Button>
+            <Button
+              disabled={isLoading}
+              onClick={async () => {
+                setIsLoading(true);
+                try {
+                  await form.handleSubmit(onSubmit)();
+                } finally {
+                  setIsLoading(false);
+                }
+              }}
+              className="mt-2 uppercase tracking-widest">
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Menyimpan...
+                </>
+              ) : (
+                "Simpan"
+              )}
+            </Button>
           </div>
         </form>
       </Form>

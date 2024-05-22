@@ -18,9 +18,8 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import { EyeIcon, EyeOffIcon } from "lucide-react"
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
 import { useState } from "react"
-import password from "./profile/password"
 
 const loginSchema = z.object({
   email: z.string().refine(validator.isEmail, {
@@ -31,6 +30,7 @@ const loginSchema = z.object({
 })
 
 const Login = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const { login } = useAuth({
@@ -48,6 +48,7 @@ const Login = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof loginSchema>) => {
+    setIsLoading(true)
     const data = {
       email: values.email,
       password: values.password,
@@ -74,6 +75,8 @@ const Login = () => {
       },
       setStatus: () => { },
     })
+
+    setIsLoading(false)
   }
 
   return (
@@ -150,7 +153,24 @@ const Login = () => {
               >
                 Lupa kata sandi?
               </Link>
-              <Button className="ml-4">Login</Button>
+              <Button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }} className="ml-4">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Login"
+                )}</Button>
             </div>
           </form>
         </Form>

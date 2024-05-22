@@ -49,7 +49,7 @@ import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 import { IImage } from "@/types/image"
 import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
-import { RefreshCcw } from "lucide-react"
+import { Loader2, RefreshCcw } from "lucide-react"
 import RichTextEditor from "@/components/TextEditor"
 
 interface IProductDialog<TData> {
@@ -103,6 +103,7 @@ export default function ProductDialog({
   children,
   setDisabledContextMenu,
 }: PropsWithChildren<IProductDialog<IProduct>>) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [open, setOpen] = useState(false)
   const [product, setProduct] = useState<IProduct>()
   const [selectedPeriod, setSelectedPeriod] = useState<"Bulan" | "Tahun">("Bulan")
@@ -340,7 +341,7 @@ export default function ProductDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] md:max-h-[90vh] overflow-y-scroll sm:max-w-3xl">
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-3xl">
         <DialogHeader className="space-y-2">
           <DialogTitle>{product ? 'Edit' : 'Tambah'} produk</DialogTitle>
           <DialogDescription>
@@ -579,9 +580,28 @@ export default function ProductDialog({
                 </FormItem>
               )}
             />
-            <DialogFooter className="mt-2">
-              <Button className="w-full" type="submit">
-                {product ? 'Edit' : 'Tambah'} Produk
+            <DialogFooter className="mt-4 h-10">
+              <Button
+                disabled={isLoading}
+                onClick={async () => {
+                  setIsLoading(true);
+                  try {
+                    await form.handleSubmit(onSubmit)();
+                  } finally {
+                    setIsLoading(false);
+                  }
+                }}
+                className="w-full text-sm"
+                type="submit"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  "Simpan"
+                )}
               </Button>
             </DialogFooter>
           </form>
