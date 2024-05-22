@@ -33,8 +33,8 @@ import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { ScanLine } from 'lucide-react'
 import { CameraDevice } from "html5-qrcode/esm/camera/core"
 
-const qrConfig = { fps: 10, qrbox: { width: 300, height: 300 } }
-const barConfig = { fps: 10, qrbox: { width: 300, height: 150 } }
+const qrConfig = { fps: 10, qrbox: { width: 300, height: 300 }, focusMode: "continous" }
+const barConfig = { fps: 10, qrbox: { width: 300, height: 150 }, focusMode: "continous" }
 let html5QrCode: Html5Qrcode | null = null;
 
 interface ScannerProps {
