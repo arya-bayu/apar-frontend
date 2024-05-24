@@ -111,13 +111,11 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     }
   }
 
-
-  if (!activeCamera) return <></>
   return (
     <div className="sn:px-0 flex flex-col space-y-4">
-      {cameraList.length > 0 && (
+      {activeCamera && cameraList.length > 0 && (
         <Select
-          value={activeCamera.id}
+          value={activeCamera?.id}
           onValueChange={value => {
             setActiveCamera(cameraList.find(cam => cam.id === value))
           }}

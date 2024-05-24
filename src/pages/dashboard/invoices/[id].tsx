@@ -516,7 +516,7 @@ const InvoicePage = () => {
                                         onClick={async () => {
                                             setIsFetchingProduct(true)
                                             try {
-                                                selectedProductId && addInvoiceItem(selectedProductId)
+                                                selectedProductId && await addInvoiceItem(selectedProductId)
                                             } finally {
                                                 setIsFetchingProduct(false)
                                             }
