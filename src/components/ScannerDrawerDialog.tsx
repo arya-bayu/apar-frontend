@@ -38,6 +38,7 @@ const qrConfig = {
   qrbox: { width: 300, height: 300 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
+  focusMode: "continuous",
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
@@ -50,6 +51,7 @@ const barConfig = {
   qrbox: { width: 300, height: 150 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
+  focusMode: "continuous",
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
@@ -83,31 +85,18 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     handleStartCamera()
   }, [])
 
+  const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
+    onResult(decodedText)
+    handleStop()
+  }
+
   const handleStartCamera = () => {
-    const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
-      onResult(decodedText)
-      handleStop()
-    }
     html5QrCode?.start(
       { facingMode: 'environment' },
       type === 'QR' ? qrConfig : barConfig,
       qrCodeSuccessCallback,
       () => { }
-    ).then(async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000))
-
-      const scannerCapabilities = html5QrCode?.getRunningTrackCapabilities();
-
-      const constraints = {
-        width: { ideal: 1000 },
-        height: { ideal: 1000 },
-
-        frameRate: { ideal: scannerCapabilities?.frameRate?.max || 30 },
-        focusMode: "continuous",
-      };
-
-      await html5QrCode?.applyVideoConstraints(constraints)
-    })
+    )
   }
 
   const getCameras = () => {
@@ -142,7 +131,14 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
           value={activeCamera?.id}
           onValueChange={(value) => {
             setActiveCamera(cameraList.find(cam => cam.id === value))
-            handleStartCamera()
+            const oldRegion = document.getElementById('qr-shaded-region')
+            oldRegion && oldRegion.remove()
+            html5QrCode?.start(
+              activeCamera.id,
+              type === 'QR' ? qrConfig : barConfig,
+              qrCodeSuccessCallback,
+              () => { }
+            )
           }}
         >
           <SelectTrigger className="col-span-4">
