@@ -55,28 +55,31 @@ const Login = () => {
       shouldRemember: values.shouldRemember,
     }
 
-    login({
-      ...data,
-      setErrors: (errors: any) => {
-        if (errors) {
-          if (errors.email) {
-            form.setError('email', {
-              type: 'server',
-              message: errors.email,
-            })
+    try {
+      await login({
+        ...data,
+        setErrors: (errors: any) => {
+          if (errors) {
+            if (errors.email) {
+              form.setError('email', {
+                type: 'server',
+                message: errors.email,
+              })
+            }
+            if (errors.password) {
+              form.setError('password', {
+                type: 'server',
+                message: errors.password,
+              })
+            }
           }
-          if (errors.password) {
-            form.setError('password', {
-              type: 'server',
-              message: errors.password,
-            })
-          }
-        }
-      },
-      setStatus: () => { },
-    })
+        },
+        setStatus: () => { },
+      })
+    } finally {
+      setIsLoading(false)
+    }
 
-    setIsLoading(false)
   }
 
   return (
@@ -105,7 +108,7 @@ const Login = () => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input type={showPassword ? 'text' : 'password'} {...field} />
+                      <Input autoComplete="current-password" type={showPassword ? 'text' : 'password'} {...field} />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
                         {showPassword ? (
                           <EyeOffIcon className="h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
@@ -155,14 +158,7 @@ const Login = () => {
               </Link>
               <Button
                 disabled={isLoading}
-                onClick={async () => {
-                  setIsLoading(true);
-                  try {
-                    await form.handleSubmit(onSubmit)();
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }} className="ml-4">
+                className="ml-4">
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

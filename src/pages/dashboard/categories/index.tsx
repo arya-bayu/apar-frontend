@@ -16,7 +16,7 @@ import { ToastAction } from '@/components/ui/toast'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { Loader2, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
@@ -39,6 +39,7 @@ const Categories = () => {
     pagination,
     setPagination,
     setFilter,
+    isLoading
   } = useCategory()
   const { toast } = useToast()
   const title = isTrash ? 'Kategori / Sampah' : 'Kategori'
@@ -215,8 +216,30 @@ const Categories = () => {
               action:
                 !isTrash && can('restore categories') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -239,8 +262,30 @@ const Categories = () => {
               action:
                 !isTrash && can('restore categories') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -411,40 +456,38 @@ const Categories = () => {
       </Breadcrumb>}
       title={title}
       headerAction={
-        !isValidating && (
-          isTrash ? (
-            categories?.data.rows.length > 0 && (
-              <Button
-                onClick={() => handleEmptyTrash()}
-                size="sm"
-                variant="destructive"
-                className="uppercase"
-              >
-                Kosongkan
-              </Button>
-            )
-          ) : (
-            <div className="flex flex-row space-x-2 ml-4">
-              {can('create categories') && (
-                <CategoryDialog mutate={mutate}>
-                  <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
-                    {isBelowSm ? <PlusIcon size={18} /> : 'Tambah kategori'}
-                  </Button>
-                </CategoryDialog>
-              )}
-
-              {can('force delete categories') && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="uppercase"
-                  asChild
-                >
-                  <Link href="categories/trash">Sampah</Link>
-                </Button>
-              )}
-            </div>
+        isTrash && !isValidating && !isLoading ? (
+          categories?.data.rows.length > 0 && (
+            <Button
+              onClick={() => handleEmptyTrash()}
+              size="sm"
+              variant="destructive"
+              className="uppercase"
+            >
+              Kosongkan
+            </Button>
           )
+        ) : !isTrash && (
+          <div className="flex flex-row space-x-2 ml-4">
+            {can('create categories') && (
+              <CategoryDialog mutate={mutate}>
+                <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                  {isBelowSm ? <PlusIcon size={18} /> : 'Tambah kategori'}
+                </Button>
+              </CategoryDialog>
+            )}
+
+            {can('force delete categories') && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="uppercase"
+                asChild
+              >
+                <Link href="categories/trash">Sampah</Link>
+              </Button>
+            )}
+          </div>
         )
       }
     >

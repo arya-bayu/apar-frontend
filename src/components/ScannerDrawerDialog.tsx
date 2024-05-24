@@ -33,8 +33,29 @@ import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { ScanLine } from 'lucide-react'
 import { CameraDevice } from "html5-qrcode/esm/camera/core"
 
-const qrConfig = { fps: 10, qrbox: { width: 300, height: 300 }, focusMode: "continous" }
-const barConfig = { fps: 10, qrbox: { width: 300, height: 150 }, focusMode: "continous" }
+const qrConfig = {
+  fps: 10,
+  qrbox: { width: 300, height: 300 },
+  focusMode: "continous",
+  advanced: [{ zoom: 2.0 }],
+  rememberLastUsedCamera: true,
+  experimentalFeatures: {
+    useBarCodeDetectorIfSupported: true,
+  },
+  willReadFrequently: true
+}
+const barConfig = {
+  fps: 10,
+  qrbox: { width: 300, height: 150 },
+  focusMode: "continous",
+  advanced: [{ zoom: 2.0 }],
+  rememberLastUsedCamera: true,
+  experimentalFeatures: {
+    useBarCodeDetectorIfSupported: true,
+  },
+  willReadFrequently: true
+}
+
 let html5QrCode: Html5Qrcode | null = null;
 
 interface ScannerProps {
@@ -58,20 +79,22 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     getCameras()
     const oldRegion = document.getElementById('qr-shaded-region')
     oldRegion && oldRegion.remove()
-    handleClickAdvanced()
+    handleStartCamera()
   }, [])
 
-  const handleClickAdvanced = () => {
-    const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
-      onResult(decodedText)
-      handleStop()
+  const handleStartCamera = () => {
+    if (activeCamera) {
+      const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
+        onResult(decodedText)
+        handleStop()
+      }
+      html5QrCode?.start(
+        { facingMode: 'environment', deviceId: activeCamera?.id },
+        type === 'QR' ? qrConfig : barConfig,
+        qrCodeSuccessCallback,
+        () => { }
+      )
     }
-    html5QrCode?.start(
-      { facingMode: 'environment' },
-      type === 'QR' ? qrConfig : barConfig,
-      qrCodeSuccessCallback,
-      () => { }
-    )
   }
 
   const getCameras = () => {
@@ -87,14 +110,6 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
       })
   }
 
-  const onCameraChange = (e: any) => {
-    if (e.target.selectedIndex) {
-      let selectedCamera = e.target.options[e.target.selectedIndex]
-      let cameraId = selectedCamera.dataset.key
-      setActiveCamera(cameraList.find(cam => cam.id === cameraId))
-    }
-  }
-
   const handleStop = () => {
     try {
       html5QrCode?.stop()
@@ -107,10 +122,19 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     }
   }
 
+  useEffect(() => {
+    handleStartCamera()
+  }, [activeCamera]);
+
   return (
     <div className="sn:px-0 flex flex-col space-y-4">
       {cameraList.length > 0 && (
-        <Select value={activeCamera?.id} onValueChange={onCameraChange}>
+        <Select
+          value={activeCamera?.id}
+          onValueChange={value => {
+            setActiveCamera(cameraList.find(cam => cam.id === value))
+          }}
+        >
           <SelectTrigger id="camera" className="col-span-4">
             <SelectValue placeholder="Pilih Kamera" />
           </SelectTrigger>

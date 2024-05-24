@@ -36,6 +36,7 @@ import { KeyedMutator } from 'swr'
 import { DataTable } from '@/components/ui/data-table'
 import validator from 'validator'
 import { Loader2 } from "lucide-react"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 interface ICustomerDialog<TData> {
   data?: DataTable<TData>
@@ -189,127 +190,132 @@ export default function CustomerDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-[525px]">
-        <DialogHeader className="space-y-2">
-          <DialogTitle>{customer ? 'Edit' : 'Tambah'} pelanggan</DialogTitle>
-          <DialogDescription>
-            {customer ? 'Edit' : 'Tambah'} data pelanggan{' '}
-            {customer ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            className="mt-4 flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="companyName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Perusahaan</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Villa Indoka"
-                      {...field}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="picName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama Person in Contact</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Arya"
-                      {...field}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Telepon</FormLabel>
-                  <FormControl>
-                    <Input placeholder="+6281000000" {...field} required />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="hello@indokavilla.com"
-                      {...field}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Alamat</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      rows={5}
-                      placeholder="Jl. Tukad Badung No.135, Renon, Denpasar Selatan, Kota Denpasar, Bali 80226"
-                      {...field}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter className="mt-4 h-10">
-              <Button
-                disabled={isLoading}
-                onClick={async () => {
-                  setIsLoading(true);
-                  try {
-                    await form.handleSubmit(onSubmit)();
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                className="w-full text-sm"
-                type="submit"
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-[525px]">
+        {id && !customer ? (
+          <LoadingSpinner size={36} />
+        )
+          : (<>
+            <DialogHeader className="space-y-2">
+              <DialogTitle>{customer ? 'Edit' : 'Tambah'} pelanggan</DialogTitle>
+              <DialogDescription>
+                {customer ? 'Edit' : 'Tambah'} data pelanggan{' '}
+                {customer ? 'yang sudah tersimpan di' : 'ke'} database sistem
+                inventaris {process.env.NEXT_PUBLIC_APP_NAME}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                className="mt-4 flex flex-col gap-4"
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  "Simpan"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="companyName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nama Perusahaan</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Villa Indoka"
+                          {...field}
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="picName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nama Person in Contact</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Arya"
+                          {...field}
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Telepon</FormLabel>
+                      <FormControl>
+                        <Input placeholder="+6281000000" {...field} required />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="hello@indokavilla.com"
+                          {...field}
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="address"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Alamat</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          rows={5}
+                          placeholder="Jl. Tukad Badung No.135, Renon, Denpasar Selatan, Kota Denpasar, Bali 80226"
+                          {...field}
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter className="mt-4 h-10">
+                  <Button
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await form.handleSubmit(onSubmit)();
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    className="w-full text-sm"
+                    type="submit"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Menyimpan...
+                      </>
+                    ) : (
+                      "Simpan"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </>)}
       </DialogContent>
     </Dialog>
   )

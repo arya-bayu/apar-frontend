@@ -62,6 +62,8 @@ import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
 import { Separator } from "@radix-ui/react-dropdown-menu"
 import InvoiceDownloader from "./InvoiceDownloader"
+import { overflowWrap } from "html2canvas/dist/types/css/property-descriptors/overflow-wrap"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 const invoiceFormSchema = z.object({
     invoice_number: z.string(),
@@ -87,9 +89,7 @@ const InvoicePage = () => {
         return <></>
     }
 
-    const { isBelowXs } = useBreakpoint('xs')
     const { isBelowSm } = useBreakpoint('sm')
-
 
     const [alert, setAlert] = useState(false)
     const [alertTitle, setAlertTitle] = useState<string>("")
@@ -309,7 +309,7 @@ const InvoicePage = () => {
         })
     }
 
-    if (!invoice) return <></>
+    if (!invoice) return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
 
     return (
         <AppLayout
@@ -320,7 +320,7 @@ const InvoicePage = () => {
                         Kembali
                     </Button>
                     {
-                        invoice?.status === 0 && (
+                        invoice.status === 0 && (
                             <Button
                                 disabled={isLoading}
                                 onClick={async () => {
@@ -336,7 +336,7 @@ const InvoicePage = () => {
                                 type="submit">
                                 {isLoading ? (
                                     isBelowSm
-                                        ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ? <Loader2 className="h-4 w-4 animate-spin" />
                                         : <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                             Menyimpan...
@@ -353,7 +353,7 @@ const InvoicePage = () => {
             }
         >
             <ContentLayout className="my-0 sm:my-12 sm:mx-6 lg:mx-8 overflow-hidden z-10">
-                {(invoice.status = 0) ?
+                {(invoice.status === 0) ?
                     (<Form {...form}>
                         <form
                             onSubmit={form.handleSubmit(onSubmit)}
@@ -441,7 +441,7 @@ const InvoicePage = () => {
                                 />
                             </div>
                             {invoice?.status === 0 && (
-                                <div className="w-full flex flex-row items-center gap-4">
+                                <div className="w-full flex flex-row items-end gap-4">
                                     <FormField
                                         name="categoryId"
                                         render={() => (
@@ -460,12 +460,12 @@ const InvoicePage = () => {
                                             </FormItem>
                                         )}
                                     />
-                                    <FormField
-                                        name="productId"
-                                        render={() => (
-                                            <FormItem className="w-full md:mt-0">
-                                                <FormLabel>Produk</FormLabel>
-                                                <div className="w-full flex flex-row justify-between space-x-4">
+                                    <div className="flex-1 min-w-0">
+                                        <FormField
+                                            name="productId"
+                                            render={() => (
+                                                <FormItem>
+                                                    <FormLabel>Produk</FormLabel>
 
                                                     <FormControl>
                                                         <ProductCombobox
@@ -476,46 +476,46 @@ const InvoicePage = () => {
                                                             }}
                                                         />
                                                     </FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
 
-                                                    <ScannerDrawerDialog
-                                                        scannerType={scannerType}
-                                                        onScanResult={(res: string) => {
-                                                            if (res) {
-                                                                axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
-                                                                    if (res.data.code === 200) {
-                                                                        addInvoiceItem(res.data.data.id)
-                                                                    }
-                                                                }).catch((error) => {
-                                                                    let errTitle;
-                                                                    let errDescription;
+                                    <ScannerDrawerDialog
+                                        scannerType={scannerType}
+                                        onScanResult={(res: string) => {
+                                            if (res) {
+                                                axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
+                                                    if (res.data.code === 200) {
+                                                        addInvoiceItem(res.data.data.id)
+                                                    }
+                                                }).catch((error) => {
+                                                    let errTitle;
+                                                    let errDescription;
 
-                                                                    if (error.response.data.code === 404) {
-                                                                        errTitle = "Barang tidak ditemukan"
-                                                                        errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
-                                                                    }
+                                                    if (error.response.data.code === 404) {
+                                                        errTitle = "Barang tidak ditemukan"
+                                                        errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
+                                                    }
 
-                                                                    toast({
-                                                                        variant: 'destructive',
-                                                                        title: errTitle ?? 'Terjadi kesalahan',
-                                                                        description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
-                                                                    })
-                                                                })
-                                                            }
-                                                        }} />
+                                                    toast({
+                                                        variant: 'destructive',
+                                                        title: errTitle ?? 'Terjadi kesalahan',
+                                                        description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
+                                                    })
+                                                })
+                                            }
+                                        }} />
 
-                                                    <Button
-                                                        onClick={() =>
-                                                            selectedProductId && addInvoiceItem(selectedProductId)
-                                                        }
-                                                        type="button"
-                                                        className="aspect-square px-2 py-0">
-                                                        <Plus size={20} />
-                                                    </Button>
-                                                </div>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                                    <Button
+                                        onClick={() =>
+                                            selectedProductId && addInvoiceItem(selectedProductId)
+                                        }
+                                        type="button"
+                                        className="aspect-square px-2 py-0">
+                                        <Plus size={20} />
+                                    </Button>
                                 </div>
                             )}
 
@@ -531,13 +531,12 @@ const InvoicePage = () => {
                                             <TableHead>Harga</TableHead>
                                             <TableHead className="text-right">Note</TableHead>
                                             <TableHead className="text-right">Total</TableHead>
-                                            {invoice.status == 0 && (<TableHead className="text-right"></TableHead>)}
+                                            {invoice.status === 0 && (<TableHead className="text-right"></TableHead>)}
                                         </TableRow>
                                     </TableHeader>
                                 )}
                                 {isBelowSm ? (
                                     <>
-
                                         {invoiceItems.map((item, index) => (
                                             <TableBody key={item.id} className="my-2 border">
                                                 <TableRow>
@@ -550,21 +549,21 @@ const InvoicePage = () => {
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableHead>Nama</TableHead>
-                                                    <TableCell className="font-medium whitespace-nowrap">{item.product.name}</TableCell>
+                                                    <TableCell className="font-medium"><p className="line-clamp-2">{item.product.name}</p></TableCell>
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableHead>Kategori</TableHead>
-                                                    <TableCell className="whitespace-nowrap">{item.category.name}</TableCell>
+                                                    <TableCell className="font-medium">{item.category.name}</TableCell>
                                                 </TableRow>
                                                 {invoice.status === 0 && (
                                                     <TableRow>
                                                         <TableHead className="gap-2">Stok </TableHead>
-                                                        <TableCell className="whitespace-nowrap">{item.product.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
+                                                        <TableCell>{item.product.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
                                                     </TableRow>
                                                 )}
                                                 <TableRow>
                                                     <TableHead>Qty</TableHead>
-                                                    <TableCell className="whitespace-nowrap">
+                                                    <TableCell>
                                                         <FormField
                                                             name="quantity"
                                                             render={({ field }) => (
@@ -576,12 +575,16 @@ const InvoicePage = () => {
                                                                             type="number"
                                                                             step={1}
                                                                             min={1}
+                                                                            max={9999999999}
                                                                             placeholder="Kuantitas"
                                                                             width={80}
                                                                             value={(item.quantity).toString()}
-                                                                            className={invoice.status === 0 && item.quantity > item.product.stock ? `text-zinc-800 border-yellow-300 bg-yellow-100` : ''}
                                                                             onChange={(event) => {
+                                                                                const maxValue = 9999999999 // 10 digit
                                                                                 let newValue = Number(event.target.value);
+                                                                                if (newValue > maxValue) {
+                                                                                    newValue = maxValue
+                                                                                }
                                                                                 const updatedItems = [...invoiceItems];
                                                                                 updatedItems[index] = {
                                                                                     ...updatedItems[index],
@@ -611,7 +614,7 @@ const InvoicePage = () => {
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableHead>Harga</TableHead>
-                                                    <TableCell className="whitespace-nowrap">
+                                                    <TableCell>
                                                         <FormField
                                                             name="unit_price"
                                                             render={({ field }) => (
@@ -624,10 +627,15 @@ const InvoicePage = () => {
                                                                             type="number"
                                                                             step="any"
                                                                             min={1}
+                                                                            max={9999999999}
                                                                             placeholder="Harga/Unit"
                                                                             value={(item.unit_price).toString()}
                                                                             onChange={(event) => {
-                                                                                const newValue = Number(event.target.value);
+                                                                                const maxValue = 9999999999 // 10 digit
+                                                                                let newValue = Number(event.target.value);
+                                                                                if (newValue > maxValue) {
+                                                                                    newValue = maxValue
+                                                                                }
                                                                                 const updatedItems = [...invoiceItems];
                                                                                 updatedItems[index] = {
                                                                                     ...updatedItems[index],
@@ -649,7 +657,7 @@ const InvoicePage = () => {
                                                         Note
                                                     </TableHead>
 
-                                                    <TableCell className="whitespace-nowrap">
+                                                    <TableCell>
                                                         <FormField
                                                             name="description"
                                                             render={({ field }) => (
@@ -680,11 +688,10 @@ const InvoicePage = () => {
                                                 </TableRow>
                                                 <TableRow>
                                                     <TableHead>Total</TableHead>
-                                                    <TableCell className="text-right whitespace-nowrap">{currencyFormatter(item.total_price)}</TableCell>
-
+                                                    <TableCell className="font-medium text-end"><p className="break-all">{currencyFormatter(item.total_price)}</p></TableCell>
                                                 </TableRow>
                                                 {
-                                                    invoice.status == 0 && (
+                                                    invoice.status === 0 && (
                                                         <TableRow className="">
                                                             <TableCell colSpan={2} className="text-right">
                                                                 <Button
@@ -694,8 +701,7 @@ const InvoicePage = () => {
                                                                         const updatedItems = invoiceItems.filter((product) => product.id !== item.id);
                                                                         setInvoiceItems(updatedItems);
                                                                     }}>
-                                                                    Hapus {item.product.name}
-                                                                    <span className="sr-only">Hapus</span>
+                                                                    <p className="line-clamp-2">Hapus {item.product.name}</p>
                                                                 </Button>
                                                             </TableCell>
                                                         </TableRow>
@@ -708,7 +714,7 @@ const InvoicePage = () => {
                                     <TableBody>
                                         {invoiceItems.map((item, index) => (
                                             <TableRow key={item.id}>
-                                                <TableCell className="font-medium">{item.product?.name}</TableCell>
+                                                <TableCell className="font-medium"><p className="line-clamp-2">{item.product?.name}</p></TableCell>
                                                 <TableCell>{item.category?.name}</TableCell>
                                                 {invoice.status === 0 && (<TableCell className="gap-2">{item.product?.stock} {invoice.status === 0 && item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>)}
                                                 <TableCell>
@@ -723,7 +729,11 @@ const InvoicePage = () => {
                                                                         value={(item.quantity).toString()}
                                                                         inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
                                                                         onChange={(event) => {
+                                                                            const maxValue = 9999999999 // 10 digit
                                                                             let newValue = Number(event.target.value);
+                                                                            if (newValue > maxValue) {
+                                                                                newValue = maxValue
+                                                                            }
                                                                             const updatedItems = [...invoiceItems];
                                                                             updatedItems[index] = {
                                                                                 ...updatedItems[index],
@@ -764,7 +774,11 @@ const InvoicePage = () => {
                                                                         value={(item.unit_price).toString()}
                                                                         inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                                         onChange={(event) => {
-                                                                            const newValue = Number(event.target.value);
+                                                                            const maxValue = 9999999999 // 10 digit
+                                                                            let newValue = Number(event.target.value);
+                                                                            if (newValue > maxValue) {
+                                                                                newValue = maxValue
+                                                                            }
                                                                             const updatedItems = [...invoiceItems];
                                                                             updatedItems[index] = {
                                                                                 ...updatedItems[index],
@@ -811,7 +825,7 @@ const InvoicePage = () => {
                                                     />
                                                 </TableCell>
                                                 <TableCell className="text-right">{currencyFormatter(item.total_price)}</TableCell>
-                                                {invoice.status == 0 && (
+                                                {invoice.status === 0 && (
                                                     <TableCell className="text-center w-0">
                                                         <Button
                                                             size="icon"
@@ -848,7 +862,7 @@ const InvoicePage = () => {
                                         <TableCell colSpan={isBelowSm ? 1 : invoice.status === 0 ? 6 : 5} className="sm:text-right">Diskon</TableCell>
                                         <TableCell className="text-right">
                                             <EditText
-                                                readonly={invoice.status === 1 ? true : false}
+                                                readonly={invoice.status !== 0 ? true : false}
                                                 placeholder="0"
                                                 type="number"
                                                 value={String(invoice.discount)}
@@ -870,7 +884,7 @@ const InvoicePage = () => {
                                         <TableCell colSpan={isBelowSm ? 1 : invoice.status === 0 ? 6 : 5} className="sm:text-right">Pajak (%)</TableCell>
                                         <TableCell className="text-right">
                                             <EditText
-                                                readonly={invoice.status === 1 ? true : false}
+                                                readonly={invoice.status !== 0 ? true : false}
                                                 placeholder="0"
                                                 type="number"
                                                 value={String(invoice.tax)}
@@ -924,7 +938,7 @@ const InvoicePage = () => {
                                 <div className="space-y-3">
                                     <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian</p>
                                     <Textarea placeholder="Catatan Pembelian"
-                                        readOnly={invoice.status === 1}
+                                        readOnly={invoice.status !== 0}
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                     />
@@ -934,7 +948,7 @@ const InvoicePage = () => {
                                         <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Lampiran</p>
                                     )}
                                     <Dropzone
-                                        disabled={invoice?.status === 1 ? true : false}
+                                        disabled={invoice.status !== 0 ? true : false}
                                         allowMultiple
                                         multipleImages={existingImages}
                                         onImagesChange={(images) => {
@@ -949,11 +963,11 @@ const InvoicePage = () => {
                             </div>
                         </form>
                     </Form>) : null}
-                {(invoice.status = 1) ?
+                {(invoice.status === 1) ?
                     (<div>
                         {
                             invoice?.status === 1 && (
-                                <div className="flex justify-end">
+                                <div className="m-6 sm:m-0 flex justify-end">
                                     <InvoiceDownloader id={invoice?.id}>
                                         <Button size='icon'>
                                             {<DownloadIcon size={18} />}
@@ -978,8 +992,8 @@ const InvoicePage = () => {
                                                     alt="Logo" />
                                             </div>
                                             <h1 className="text-2xl font-bold uppercase">{process.env.NEXT_PUBLIC_APP_NAME}</h1>
-                                            <p className="text-sm max-w-[80%]">Jl. Letda Reta No.19, Dangin Puri Klod, Kec. Denpasar Tim., Kota Denpasar, Bali 80232</p>
-                                            <p className="text-sm">Telp: +6281000000 | Email: hello@indokasuryajaya.com</p>
+                                            <p className="text-sm max-w-[80%]">Jl. Letda Made Putra No.4, Dangin Puri Klod, Denpasar, Bali</p>
+                                            <p className="text-sm">Telp: +6285100665789</p>
                                         </div>
                                         <div className="relative w-20 h-20 hidden sm:block">
                                             <Image
@@ -1087,9 +1101,6 @@ const InvoicePage = () => {
                                         </Table>
                                         <div className="flex flex-row justify-between mt-4 dark:text-zinc-50">
                                             <div>
-                                                <p className="text-sm">Pembayaran:</p>
-                                                <p className="text-sm">{process.env.NEXT_PUBLIC_APP_NAME}</p>
-                                                <p className="text-sm">5748377838 (Bank Central Asia)</p>
                                                 <div className="space-y-3 mt-8">
                                                     <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian:</p>
                                                     <p className="text-sm font-normal">{invoice.description}</p>

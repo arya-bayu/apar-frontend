@@ -65,7 +65,7 @@ export const Footer = () => {
                                 <p className="font-medium">© 2024</p>
                             </div>
                             <p className="mt-4 font-bold text-monza-500">{process.env.NEXT_PUBLIC_APP_NAME}</p>
-                            <p className="max-w-sm">Jl. Letda Reta No.19, Dangin Puri Klod, Kec. Denpasar Tim., Kota Denpasar, Bali 80232</p>
+                            <p className="max-w-sm">Jl. Letda Made Putra No.4, Dangin Puri Klod, Denpasar, Bali</p>
                         </div>
                         <div className="flex flex-row text-lg gap-4 -ml-[0.1rem] mt-4 text-zinc-500 [&_a:hover]:text-zinc-400 [&_a:hover]:transition-colors">
                             <Link href="https://instagram.com/garin_surya" target="_blank" aria-label="Instagram">

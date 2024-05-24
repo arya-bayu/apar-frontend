@@ -55,7 +55,7 @@ import { DataTableViewOptions } from '../DataTableViewOptions'
 import '@tanstack/react-table'
 import useDebounce from '@/hooks/useDebounce'
 import { Button } from './button'
-import { DatabaseBackup, FileDown, RefreshCwIcon, Trash2 } from 'lucide-react'
+import { DatabaseBackup, FileDown, Trash2 } from 'lucide-react'
 import { useRouter } from 'next/router'
 import { KeyedMutator } from 'swr'
 import {
@@ -120,6 +120,7 @@ export function DataTable<TData, TValue>({
   meta,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [isRestoring, setIsRestoring] = useState<boolean>(false)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const [inputValue, setInputValue] = useState('')
@@ -159,6 +160,11 @@ export function DataTable<TData, TValue>({
     onPaginationChange: setPagination,
     pageCount: data?.pageCount ?? 0,
     manualPagination: true,
+    initialState: {
+      pagination: {
+        pageSize: 15,
+      },
+    },
     getRowId: useCallback((row: any) => {
       return row.id
     }, []),
@@ -288,6 +294,7 @@ export function DataTable<TData, TValue>({
                       ? permissions?.forceDelete
                       : permissions?.delete) && (
                         <Button
+                          disabled={isRestoring}
                           onClick={() => {
                             if (
                               table.options?.meta?.handleDelete(
@@ -310,9 +317,11 @@ export function DataTable<TData, TValue>({
                       )}
                     {isTrash && permissions?.restore && (
                       <Button
-                        onClick={() => {
-                          if (
-                            table.options?.meta?.handleRestore(
+                        disabled={isRestoring}
+                        onClick={async () => {
+                          setIsRestoring(true)
+                          try {
+                            await table.options?.meta?.handleRestore(
                               Object.keys(rowSelection).length === 1
                                 ? [
                                   table.getRow(Object.keys(rowSelection)[0])
@@ -320,15 +329,26 @@ export function DataTable<TData, TValue>({
                                 ]
                                 : Object.keys(rowSelection),
                             )
-                          )
+                          } finally {
                             table.resetRowSelection()
+                            setIsRestoring(false)
+                          }
                         }}
                         variant="secondary"
                         size="expandableIcon"
                         className="ml-auto md:gap-2 md:px-4"
                       >
-                        <DatabaseBackup size={16} />
-                        <span className="hidden md:block">Pulihkan Data</span>
+                        {isRestoring ? (
+                          <>
+                            <LoadingSpinner size={16} />
+                            <span className="hidden md:block">Memulihkan</span>
+                          </>
+                        ) : (
+                          <>
+                            <DatabaseBackup size={16} />
+                            <span className="hidden md:block">Pulihkan Data</span>
+                          </>
+                        )}
                       </Button>
                     )}
                   </>
@@ -391,6 +411,7 @@ export function DataTable<TData, TValue>({
             {Object.keys(rowSelection).length > 0 &&
               (isTrash ? permissions?.forceDelete : permissions?.delete) && (
                 <ContextMenuItem
+                  disabled={isRestoring}
                   onClick={() => {
                     if (
                       table?.options?.meta?.handleDelete(
@@ -413,20 +434,31 @@ export function DataTable<TData, TValue>({
                     } Data ke Sampah`}
                 </ContextMenuItem>
               )}
-            {Object.keys(rowSelection).length > 0 && isTrash && (
+            {Object.keys(rowSelection).length > 0 && isTrash && permissions?.restore && (
               <ContextMenuItem
-                onClick={() => {
-                  if (
-                    table.options?.meta?.handleRestore(
+                disabled={isRestoring}
+                onClick={async () => {
+                  setIsRestoring(true)
+                  try {
+                    await table.options?.meta?.handleRestore(
                       Object.keys(rowSelection).length === 1
-                        ? [table.getRow(Object.keys(rowSelection)[0]).original]
+                        ? [
+                          table.getRow(Object.keys(rowSelection)[0])
+                            .original,
+                        ]
                         : Object.keys(rowSelection),
                     )
-                  )
+                  } finally {
                     table.resetRowSelection()
+                    setIsRestoring(false)
+                  }
                 }}
               >
-                Pulihkan {Object.keys(rowSelection).length} Data
+                {isRestoring ? (
+                  "Memulihkan data..."
+                ) : (
+                  "Pulihkan " + Object.keys(rowSelection).length + " Data"
+                )}
               </ContextMenuItem>
             )}
             {!table.getIsAllPageRowsSelected() && (

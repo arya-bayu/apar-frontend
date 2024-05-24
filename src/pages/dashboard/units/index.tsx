@@ -16,7 +16,7 @@ import { ToastAction } from "@/components/ui/toast"
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { Loader2, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
@@ -39,6 +39,7 @@ const Units = () => {
     pagination,
     setPagination,
     setFilter,
+    isLoading
   } = useUnit()
   const { toast } = useToast()
   const title = isTrash ? 'Unit / Sampah' : 'Unit'
@@ -216,8 +217,30 @@ const Units = () => {
               action:
                 !isTrash && can('restore units') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -240,8 +263,30 @@ const Units = () => {
               action:
                 !isTrash && can('restore units') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -412,40 +457,38 @@ const Units = () => {
       </Breadcrumb>}
       title={title}
       headerAction={
-        !isValidating && (
-          isTrash ? (
-            units?.data.rows.length > 0 && (
-              <Button
-                onClick={() => handleEmptyTrash()}
-                size="sm"
-                variant="destructive"
-                className="uppercase"
-              >
-                Kosongkan
-              </Button>
-            )
-          ) : (
-            <div className="flex flex-row space-x-2 ml-4">
-              {can('create units') && (
-                <UnitDialog mutate={mutate}>
-                  <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
-                    {isBelowSm ? <PlusIcon size={18} /> : 'Tambah Unit'}
-                  </Button>
-                </UnitDialog>
-              )}
-
-              {can('force delete units') && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="uppercase"
-                  asChild
-                >
-                  <Link href="units/trash">Sampah</Link>
-                </Button>
-              )}
-            </div>
+        isTrash && !isValidating && !isLoading ? (
+          units?.data.rows.length > 0 && (
+            <Button
+              onClick={() => handleEmptyTrash()}
+              size="sm"
+              variant="destructive"
+              className="uppercase"
+            >
+              Kosongkan
+            </Button>
           )
+        ) : !isTrash && (
+          <div className="flex flex-row space-x-2 ml-4">
+            {can('create units') && (
+              <UnitDialog mutate={mutate}>
+                <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                  {isBelowSm ? <PlusIcon size={18} /> : 'Tambah Unit'}
+                </Button>
+              </UnitDialog>
+            )}
+
+            {can('force delete units') && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="uppercase"
+                asChild
+              >
+                <Link href="units/trash">Sampah</Link>
+              </Button>
+            )}
+          </div>
         )
       }
     >

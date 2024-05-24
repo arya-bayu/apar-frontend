@@ -66,6 +66,7 @@ import currencyFormatter from "@/lib/currency"
 import { Badge } from "@/components/ui/badge"
 import { DotFilledIcon, ListBulletIcon } from "@radix-ui/react-icons"
 import { Textarea } from "@/components/ui/textarea"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 const purchaseFormSchema = z.object({
     purchase_number: z.string(),
@@ -327,7 +328,7 @@ const PurchasePage = () => {
         }
     }
 
-    if (!purchase) return <></>
+    if (!purchase) return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
 
     return (
         <AppLayout
@@ -336,7 +337,7 @@ const PurchasePage = () => {
                 <div className="flex flex-row space-x-2 ml-4" >
                     {
                         purchase?.status === 1 && (
-                            <Link href={`/purchases`}>
+                            <Link href={`/dashboard/purchases`}>
                                 <Button variant="outline" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
                                     {isBelowSm ? <ArrowLeft size={18} /> : 'Kembali'}
                                 </Button>
@@ -360,7 +361,7 @@ const PurchasePage = () => {
                                 type="submit">
                                 {isLoading ? (
                                     isBelowSm
-                                        ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        ? <Loader2 className="h-4 w-4 animate-spin" />
                                         : <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                             Menyimpan...
@@ -487,14 +488,13 @@ const PurchasePage = () => {
                             />
                         </div>
                         {purchase?.status === 0 && (
-                            <div className="w-full flex flex-row items-center gap-4">
-                                <FormField
-                                    name="productId"
-                                    render={() => (
-                                        <FormItem className="w-full md:mt-0">
-                                            <FormLabel>Produk</FormLabel>
-                                            <div className="w-full flex flex-row justify-between space-x-4">
-
+                            <div className="w-full flex flex-row items-end gap-4">
+                                <div className="w-full min-w-0">
+                                    <FormField
+                                        name="productId"
+                                        render={() => (
+                                            <FormItem>
+                                                <FormLabel>Produk</FormLabel>
                                                 <FormControl>
                                                     <ProductCombobox
                                                         supplierId={selectedSupplierId ?? undefined}
@@ -504,32 +504,31 @@ const PurchasePage = () => {
                                                         }}
                                                     />
                                                 </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                </div>
+                                <ScannerDrawerDialog
+                                    scannerType={scannerType}
+                                    onScanResult={(res: string) => {
+                                        if (res) {
+                                            axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
+                                                if (res.data.code === 200) {
+                                                    addPurchaseItem(res.data.data.id)
+                                                }
+                                            })
+                                        }
+                                    }} />
 
-                                                <ScannerDrawerDialog
-                                                    scannerType={scannerType}
-                                                    onScanResult={(res: string) => {
-                                                        if (res) {
-                                                            axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
-                                                                if (res.data.code === 200) {
-                                                                    addPurchaseItem(res.data.data.id)
-                                                                }
-                                                            })
-                                                        }
-                                                    }} />
-
-                                                <Button
-                                                    onClick={() =>
-                                                        selectedProductId && addPurchaseItem(selectedProductId)
-                                                    }
-                                                    type="button"
-                                                    className="aspect-square px-2 py-0">
-                                                    <Plus size={20} />
-                                                </Button>
-                                            </div>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <Button
+                                    onClick={() =>
+                                        selectedProductId && addPurchaseItem(selectedProductId)
+                                    }
+                                    type="button"
+                                    className="aspect-square px-2 py-0">
+                                    <Plus size={20} />
+                                </Button>
                             </div>
                         )}
 
@@ -563,15 +562,15 @@ const PurchasePage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Nama</TableHead>
-                                                <TableCell className="font-medium whitespace-nowrap">{item.product.name}</TableCell>
+                                                <TableCell className="font-medium"><p className="line-clamp-2">{item.product.name}</p></TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Kategori</TableHead>
-                                                <TableCell className="whitespace-nowrap">{item.category.name}</TableCell>
+                                                <TableCell className="font-medium">{item.category.name}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Qty</TableHead>
-                                                <TableCell className="whitespace-nowrap">
+                                                <TableCell>
                                                     <FormField
                                                         name="quantity"
                                                         render={({ field }) => (
@@ -587,7 +586,11 @@ const PurchasePage = () => {
                                                                         width={80}
                                                                         value={(item.quantity).toString()}
                                                                         onChange={(event) => {
+                                                                            const maxValue = 9999999999 // 10 digit
                                                                             let newValue = Number(event.target.value);
+                                                                            if (newValue > maxValue) {
+                                                                                newValue = maxValue
+                                                                            }
                                                                             const updatedItems = [...purchaseItems];
                                                                             updatedItems[index] = {
                                                                                 ...updatedItems[index],
@@ -623,7 +626,7 @@ const PurchasePage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Harga</TableHead>
-                                                <TableCell className="whitespace-nowrap">
+                                                <TableCell>
                                                     <FormField
                                                         name="unit_price"
                                                         render={({ field }) => (
@@ -636,10 +639,15 @@ const PurchasePage = () => {
                                                                         type="number"
                                                                         step="any"
                                                                         min={1}
+                                                                        max={9999999999}
                                                                         placeholder="Harga/Unit"
                                                                         value={(item.unit_price).toString()}
                                                                         onChange={(event) => {
-                                                                            const newValue = Number(event.target.value);
+                                                                            const maxValue = 9999999999 // 10 digit
+                                                                            let newValue = Number(event.target.value);
+                                                                            if (newValue > maxValue) {
+                                                                                newValue = maxValue
+                                                                            }
                                                                             const updatedItems = [...purchaseItems];
                                                                             updatedItems[index] = {
                                                                                 ...updatedItems[index],
@@ -661,7 +669,7 @@ const PurchasePage = () => {
                                                     Note
                                                 </TableHead>
 
-                                                <TableCell className="whitespace-nowrap">
+                                                <TableCell>
                                                     <FormField
                                                         name="description"
                                                         render={({ field }) => (
@@ -692,8 +700,7 @@ const PurchasePage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Total</TableHead>
-                                                <TableCell className="text-right whitespace-nowrap">{currencyFormatter(item.total_price)}</TableCell>
-
+                                                <TableCell className="font-medium text-end"><p className="break-all">{currencyFormatter(item.total_price)}</p></TableCell>
                                             </TableRow>
                                             {purchase.status == 0 && (
                                                 <TableRow className="">
@@ -705,8 +712,7 @@ const PurchasePage = () => {
                                                                 const updatedItems = purchaseItems.filter((product) => product.id !== item.id);
                                                                 setPurchaseItems(updatedItems);
                                                             }}>
-                                                            Hapus {item.product.name}
-                                                            <span className="sr-only">Hapus</span>
+                                                            <p className="line-clamp-2">Hapus {item.product.name}</p>
                                                         </Button>
                                                     </TableCell>
                                                 </TableRow>
@@ -718,7 +724,7 @@ const PurchasePage = () => {
                                 <TableBody>
                                     {purchaseItems.map((item, index) => (
                                         <TableRow key={item.id}>
-                                            <TableCell className="font-medium">{item.product?.name}</TableCell>
+                                            <TableCell className="font-medium"><p className="line-clamp-2">{item.product?.name}</p></TableCell>
                                             <TableCell>{item.category?.name}</TableCell>
                                             <TableCell>
                                                 <FormField
@@ -732,7 +738,11 @@ const PurchasePage = () => {
                                                                     value={(item.quantity).toString()}
                                                                     inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300"
                                                                     onChange={(event) => {
+                                                                        const maxValue = 9999999999 // 10 digit
                                                                         let newValue = Number(event.target.value);
+                                                                        if (newValue > maxValue) {
+                                                                            newValue = maxValue
+                                                                        }
                                                                         const updatedItems = [...purchaseItems];
                                                                         updatedItems[index] = {
                                                                             ...updatedItems[index],
@@ -779,7 +789,11 @@ const PurchasePage = () => {
                                                                     value={(item.unit_price).toString()}
                                                                     inputClassName="flex h-9 w-full rounded-md border border-zinc-200 bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:placeholder:text-zinc-400 dark:focus-visible:ring-zinc-300 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                                                     onChange={(event) => {
-                                                                        const newValue = Number(event.target.value);
+                                                                        const maxValue = 9999999999 // 10 digit
+                                                                        let newValue = Number(event.target.value);
+                                                                        if (newValue > maxValue) {
+                                                                            newValue = maxValue
+                                                                        }
                                                                         const updatedItems = [...purchaseItems];
                                                                         updatedItems[index] = {
                                                                             ...updatedItems[index],

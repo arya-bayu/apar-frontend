@@ -16,7 +16,7 @@ import { ToastAction } from "@/components/ui/toast"
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
+import { Loader2, PlusIcon, RotateCcw, Undo2 } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import CustomAlertDialog from "@/components/CustomAlertDialog"
@@ -39,6 +39,7 @@ const Suppliers = () => {
     pagination,
     setPagination,
     setFilter,
+    isLoading
   } = useSupplier()
   const { toast } = useToast()
   const title = isTrash ? 'Supplier / Sampah' : 'Supplier'
@@ -216,8 +217,30 @@ const Suppliers = () => {
               action:
                 !isTrash && can('restore suppliers') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -240,8 +263,30 @@ const Suppliers = () => {
               action:
                 !isTrash && can('restore suppliers') ? (
                   <ToastAction
-                    altText="Batal"
-                    onClick={() => handleRestore(data)}
+                    altText="Restore"
+                    onClick={async () => {
+                      const restoreToast = toast({
+                        title: 'Memulihkan...',
+                        action: <ToastAction
+                          disabled={true}
+                          altText="Memulihkan..."
+                          onClick={async (e) => {
+                            e.preventDefault()
+                          }}
+                          asChild
+                        >
+                          <Button variant="ghost" size="icon">
+                            <Loader2 className="animate-spin" />
+                          </Button>
+                        </ToastAction>
+                      })
+                      try {
+                        await handleRestore(data)
+                      } finally {
+                        restoreToast.dismiss()
+                      }
+
+                    }}
                     asChild
                   >
                     <Button variant="ghost" size="icon">
@@ -412,40 +457,38 @@ const Suppliers = () => {
       </Breadcrumb>}
       title={title}
       headerAction={
-        !isValidating && (
-          isTrash ? (
-            suppliers?.data.rows.length > 0 && (
-              <Button
-                onClick={() => handleEmptyTrash()}
-                size="sm"
-                variant="destructive"
-                className="uppercase"
-              >
-                Kosongkan
-              </Button>
-            )
-          ) : (
-            <div className="flex flex-row space-x-2 ml-4">
-              {can('create suppliers') && (
-                <SupplierDialog mutate={mutate}>
-                  <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
-                    {isBelowSm ? <PlusIcon size={18} /> : 'Tambah Supplier'}
-                  </Button>
-                </SupplierDialog>
-              )}
-
-              {can('force delete suppliers') && (
-                <Button
-                  variant="destructive"
-                  size="sm"
-                  className="uppercase"
-                  asChild
-                >
-                  <Link href="suppliers/trash">Sampah</Link>
-                </Button>
-              )}
-            </div>
+        isTrash && !isValidating && !isLoading ? (
+          suppliers?.data.rows.length > 0 && (
+            <Button
+              onClick={() => handleEmptyTrash()}
+              size="sm"
+              variant="destructive"
+              className="uppercase"
+            >
+              Kosongkan
+            </Button>
           )
+        ) : !isTrash && (
+          <div className="flex flex-row space-x-2 ml-4">
+            {can('create suppliers') && (
+              <SupplierDialog mutate={mutate}>
+                <Button size="sm" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                  {isBelowSm ? <PlusIcon size={18} /> : 'Tambah Supplier'}
+                </Button>
+              </SupplierDialog>
+            )}
+
+            {can('force delete suppliers') && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="uppercase"
+                asChild
+              >
+                <Link href="suppliers/trash">Sampah</Link>
+              </Button>
+            )}
+          </div>
         )
       }
     >

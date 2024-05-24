@@ -219,8 +219,8 @@ const Dashboard = () => {
               trend={prevCustomers ? ((customers - prevCustomers) / prevCustomers) * 100 : null}
             />
           </div>
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex flex-col w-full md:w-2/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+          <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col w-full lg:w-2/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
               <div className="flex flex-row justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800">
                 <h2 className="text-md font-semibold">Statistik Pendapatan</h2>
                 <ToggleGroup value={chartPeriod} type="single" size="default" onValueChange={(value: "daily" | "monthly" | "yearly") => setChartPeriod(value)}>
@@ -235,13 +235,13 @@ const Dashboard = () => {
                   </ToggleGroupItem>
                 </ToggleGroup>
               </div>
-              <div className="h-96 py-8 pl-0">
+              <div className="h-96 py-8 pl-6">
                 {revenueData && (
                   <RevenueChart data={revenueData} period={chartPeriod} />
                 )}
               </div>
             </div>
-            <div className="flex flex-col w-full md:w-1/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+            <div className="flex flex-col w-full lg:w-1/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
               <div className="flex flex-row gap-4 justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800">
                 <h2 className="text-md font-semibold">Penjualan</h2>
                 <Select
@@ -261,7 +261,6 @@ const Dashboard = () => {
                       <SelectLabel>Pilih Status</SelectLabel>
                       <SelectItem value="0">Pending</SelectItem>
                       <SelectItem value="1">Disetujui</SelectItem>
-                      <SelectItem value="2">Semua</SelectItem>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -270,7 +269,7 @@ const Dashboard = () => {
                 <ScrollArea className="h-96">
                   {invoices?.map((invoice, index) => (
                     <div key={index} className="grid grid-cols-1 divide-y dark:divide-zinc-800">
-                      <Link href={`/invoices/${invoice.id}`} className="flex flex-col xs:flex-row justify-center gap-2 xs:justify-between px-4 py-2 border-0 border-b-[1px] dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/80">
+                      <Link href={`/dashboard/invoices/${invoice.id}`} className="flex flex-col xs:flex-row justify-center gap-2 xs:justify-between px-4 py-2 border-0 border-b-[1px] dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/80">
                         <div>
                           <p className="text-xs font-semibold">{invoice.customer.company_name}</p>
                           <p className="text-xs">{invoice.customer.email}</p>

@@ -51,6 +51,7 @@ import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
 import { Loader2, RefreshCcw } from "lucide-react"
 import RichTextEditor from "@/components/TextEditor"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 interface IProductDialog<TData> {
   data?: DataTable<TData>
@@ -341,271 +342,287 @@ export default function ProductDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)]md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-3xl">
-        <DialogHeader className="space-y-2">
-          <DialogTitle>{product ? 'Edit' : 'Tambah'} produk</DialogTitle>
-          <DialogDescription>
-            {product ? 'Edit' : 'Tambah'} data produk{' '}
-            {product ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col gap-4">
-            <div className="space-y-3">
-              <Dropzone
-                required
-                allowMultiple
-                multipleImages={existingImages}
-                onImagesChange={(images) => {
-                  setSelectedImages(images);
-                }}
-                onExistingImagesChange={(images) => {
-                  setExistingImages(images);
-                }}
-                maxFiles={12 - existingImages.length - selectedImages.length}
-              />
-            </div>
-            <FormField
-              control={form.control}
-              name="serial_number"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Serial Number</FormLabel>
-                  <div className="flex flex-row justify-between space-x-4">
-                    <FormControl>
-                      <Input
-                        placeholder="Kode S/N Produk"
-                        {...field}
-                        required
-                      />
-                    </FormControl>
-                    <Button
-                      onClick={() => generateSerialNumber()}
-                      type="button"
-                      variant="secondary"
-                      className="aspect-square px-2 py-0">
-                      <RefreshCcw size={20} />
-                    </Button>
-                    <ScannerDrawerDialog
-                      scannerType={scannerType}
-                      onScanResult={(res: string) => {
-                        if (res) {
-                          form.setValue("serial_number", res);
-                        }
-                      }}
-                    />
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Nama</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Nama Produk"
-                      {...field}
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem className='w-full'>
-                  <FormLabel>Harga</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value ?? ""}
-                      className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                      min={0}
-                      placeholder="Harga Produk"
-                      required
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex flex-row justify-between space-x-4">
-              {id && (
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-3xl">
+        {id && !product ? (
+          <LoadingSpinner size={36} />
+        )
+          : (<>
+            <DialogHeader className="space-y-2">
+              <DialogTitle>{product ? 'Edit' : 'Tambah'} produk</DialogTitle>
+              <DialogDescription>
+                {product ? 'Edit' : 'Tambah'} data produk{' '}
+                {product ? 'yang sudah tersimpan di' : 'ke'} database sistem
+                inventaris {process.env.NEXT_PUBLIC_APP_NAME}
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="flex flex-col gap-4">
+                <div className="space-y-3">
+                  <Dropzone
+                    required
+                    allowMultiple
+                    multipleImages={existingImages}
+                    onImagesChange={(images) => {
+                      setSelectedImages(images);
+                    }}
+                    onExistingImagesChange={(images) => {
+                      setExistingImages(images);
+                    }}
+                    maxFiles={12 - existingImages.length - selectedImages.length}
+                  />
+                </div>
                 <FormField
                   control={form.control}
-                  name="stock"
+                  name="serial_number"
                   render={({ field }) => (
-                    <FormItem className="w-1/2">
-                      <FormLabel>Stok</FormLabel>
+                    <FormItem className="w-full">
+                      <FormLabel>Serial Number</FormLabel>
+                      <div className="flex flex-row justify-between space-x-4">
+                        <FormControl>
+                          <Input
+                            placeholder="Kode S/N Produk"
+                            {...field}
+                            required
+                          />
+                        </FormControl>
+                        <Button
+                          onClick={() => generateSerialNumber()}
+                          type="button"
+                          variant="secondary"
+                          className="aspect-square px-2 py-0">
+                          <RefreshCcw size={20} />
+                        </Button>
+                        <ScannerDrawerDialog
+                          scannerType={scannerType}
+                          onScanResult={(res: string) => {
+                            if (res) {
+                              form.setValue("serial_number", res);
+                            }
+                          }}
+                        />
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nama</FormLabel>
                       <FormControl>
                         <Input
+                          placeholder="Nama Produk"
                           {...field}
-                          min={0}
-                          placeholder="Stok Produk"
-                          disabled
+                          required
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-              )}
-              <FormField
-                control={form.control}
-                name="unitId"
-                render={({ field }) => (
-                  <FormItem className={`md:mt-0 ${id ? 'w-1/2' : 'w-full'}`}>
-                    <FormLabel>Unit</FormLabel>
-                    <FormControl>
-                      <UnitCombobox
-                        value={field.value}
-                        onSelect={(unitId) => {
-                          form.setValue("unitId", unitId);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem className='w-full'>
+                      <FormLabel>Harga</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          value={field.value ?? ""}
+                          className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          min={0}
+                          max={9999999999}
+                          onChange={(event) => {
+                            const maxValue = 9999999999 // 10 digit
+                            let newValue = Number(event.target.value);
+                            if (newValue > maxValue) {
+                              newValue = maxValue
+                            }
+                            if (newValue >= 0) {
+                              form.setValue("price", newValue)
+                            }
+                          }}
+                          placeholder="Harga Produk"
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex flex-row justify-between space-x-4">
+                  {id && (
+                    <FormField
+                      control={form.control}
+                      name="stock"
+                      render={({ field }) => (
+                        <FormItem className="w-1/2">
+                          <FormLabel>Stok</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              min={0}
+                              placeholder="Stok Produk"
+                              disabled
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                  <FormField
+                    control={form.control}
+                    name="unitId"
+                    render={({ field }) => (
+                      <FormItem className={`md:mt-0 ${id ? 'w-1/2' : 'w-full'}`}>
+                        <FormLabel>Unit</FormLabel>
+                        <FormControl>
+                          <UnitCombobox
+                            value={field.value}
+                            onSelect={(unitId) => {
+                              form.setValue("unitId", unitId);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Deskripsi</FormLabel>
-                  <FormControl>
-                    {/* <Textarea
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Deskripsi</FormLabel>
+                      <FormControl>
+                        {/* <Textarea
                       rows={5}
                       placeholder="Deskripsi Produk"
                       {...field}
                       required
                     /> */}
-                    <RichTextEditor {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="w-full flex flex-col md:flex-row md:justify-between md:gap-x-4 gap-4 md:space-y-0">
-              <FormField
-                control={form.control}
-                name="supplierId"
-                render={({ field }) => (
-                  <FormItem className="w-full md:w-1/2 md:mt-0">
-                    <FormLabel>Supplier</FormLabel>
-                    <FormControl>
-                      <SupplierCombobox
-                        value={field.value ?? null}
-                        onSelect={(supplierId) => {
-                          form.setValue("supplierId", supplierId);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="categoryId"
-                render={({ field }) => (
-                  <FormItem className="w-full md:w-1/2 md:mt-0">
-                    <FormLabel>Kategori</FormLabel>
-                    <FormControl>
-                      <CategoryCombobox
-                        value={field.value}
-                        onSelect={(categoryId) => {
-                          form.setValue("categoryId", categoryId);
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+                        <RichTextEditor {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="w-full flex flex-col md:flex-row md:justify-between md:gap-x-4 gap-4 md:space-y-0">
+                  <FormField
+                    control={form.control}
+                    name="supplierId"
+                    render={({ field }) => (
+                      <FormItem className="w-full md:w-1/2 md:mt-0">
+                        <FormLabel>Supplier</FormLabel>
+                        <FormControl>
+                          <SupplierCombobox
+                            value={field.value ?? null}
+                            onSelect={(supplierId) => {
+                              form.setValue("supplierId", supplierId);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <FormItem className="w-full md:w-1/2 md:mt-0">
+                        <FormLabel>Kategori</FormLabel>
+                        <FormControl>
+                          <CategoryCombobox
+                            value={field.value}
+                            onSelect={(categoryId) => {
+                              form.setValue("categoryId", categoryId);
+                            }}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
-            <FormField
-              control={form.control}
-              name="expiry_period"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Periode Kedaluwarsa</FormLabel>
-                  <div className="flex flex-row justify-between space-x-4">
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value ?? ""}
-                        type="number"
-                        step={1}
-                        min={0}
-                        placeholder={`Periode Kedaluwarsa (${selectedPeriod})`}
-                      />
-                    </FormControl>
-                    <Select
-                      defaultValue="Bulan"
-                      onValueChange={(value: "Bulan" | "Tahun") => setSelectedPeriod(value)}
-                      required
-                    >
-                      <SelectTrigger id="periode" className="w-[25%]">
-                        <SelectValue placeholder="Periode" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectLabel>Periode</SelectLabel>
-                          <SelectItem key="0" value="Bulan">
-                            Bulan
-                          </SelectItem>
-                          <SelectItem key="1" value="Tahun">
-                            Tahun
-                          </SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter className="mt-4 h-10">
-              <Button
-                disabled={isLoading}
-                onClick={async () => {
-                  setIsLoading(true);
-                  try {
-                    await form.handleSubmit(onSubmit)();
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                className="w-full text-sm"
-                type="submit"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  "Simpan"
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+                <FormField
+                  control={form.control}
+                  name="expiry_period"
+                  render={({ field }) => (
+                    <FormItem className="w-full">
+                      <FormLabel>Periode Kedaluwarsa</FormLabel>
+                      <div className="flex flex-row justify-between space-x-4">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            value={field.value ?? ""}
+                            type="number"
+                            step={1}
+                            min={0}
+                            placeholder={`Periode Kedaluwarsa (${selectedPeriod})`}
+                          />
+                        </FormControl>
+                        <Select
+                          defaultValue="Bulan"
+                          onValueChange={(value: "Bulan" | "Tahun") => setSelectedPeriod(value)}
+                          required
+                        >
+                          <SelectTrigger id="periode" className="w-[25%]">
+                            <SelectValue placeholder="Periode" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectLabel>Periode</SelectLabel>
+                              <SelectItem key="0" value="Bulan">
+                                Bulan
+                              </SelectItem>
+                              <SelectItem key="1" value="Tahun">
+                                Tahun
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter className="mt-4 h-10">
+                  <Button
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await form.handleSubmit(onSubmit)();
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    className="w-full text-sm"
+                    type="submit"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Menyimpan...
+                      </>
+                    ) : (
+                      "Simpan"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </>)}
       </DialogContent>
     </Dialog >
   )

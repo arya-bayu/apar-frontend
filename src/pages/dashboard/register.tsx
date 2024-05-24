@@ -22,6 +22,7 @@ import {
 import { toast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
 import withForceLogout from "@/hoc/withForceLogout"
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
 
 const registerFormScheme = z
   .object({
@@ -49,6 +50,8 @@ const Register = () => {
   })
 
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [showPassword, setShowPassword] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof registerFormScheme>>({
     resolver: zodResolver(registerFormScheme),
@@ -63,6 +66,7 @@ const Register = () => {
   })
 
   const onSubmit = async (values: z.infer<typeof registerFormScheme>) => {
+    setIsLoading(true)
     const data = {
       name: values.name,
       phone: values.phone,
@@ -72,46 +76,50 @@ const Register = () => {
       password_confirmation: values.passwordConfirmation,
     }
 
-    register({
-      ...data,
-      setErrors: (errors: any) => {
-        if (errors) {
-          if (errors.name) {
-            form.setError('name', {
-              type: 'server',
-              message: errors.name,
-            })
+    try {
+      await register({
+        ...data,
+        setErrors: (errors: any) => {
+          if (errors) {
+            if (errors.name) {
+              form.setError('name', {
+                type: 'server',
+                message: errors.name,
+              })
+            }
+            if (errors.phone) {
+              form.setError('phone', {
+                type: 'server',
+                message: errors.phone,
+              })
+            }
+            if (errors.email) {
+              form.setError('email', {
+                type: 'server',
+                message: errors.email,
+              })
+            }
+            if (errors.password) {
+              form.setError('password', {
+                type: 'server',
+                message: errors.password,
+              })
+            }
+            if (errors.password_confirmation) {
+              form.setError('passwordConfirmation', {
+                type: 'server',
+                message: errors.password_confirmation,
+              })
+            }
+          } else {
+            setIsSubmitted(true)
           }
-          if (errors.phone) {
-            form.setError('phone', {
-              type: 'server',
-              message: errors.phone,
-            })
-          }
-          if (errors.email) {
-            form.setError('email', {
-              type: 'server',
-              message: errors.email,
-            })
-          }
-          if (errors.password) {
-            form.setError('password', {
-              type: 'server',
-              message: errors.password,
-            })
-          }
-          if (errors.password_confirmation) {
-            form.setError('passwordConfirmation', {
-              type: 'server',
-              message: errors.password_confirmation,
-            })
-          }
-        } else {
-          setIsSubmitted(true)
-        }
-      },
-      setStatus: status => { },
-    })
+        },
+        setStatus: status => { },
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const [isAuthorized, setIsAuthorized] = useState(false)
@@ -151,7 +159,7 @@ const Register = () => {
     }
   }, [router.isReady, router.query.invite, isSubmitted])
 
-  if (!isAuthorized) return <LoadingSpinner className="h-screen" size={36} />
+  if (!isAuthorized) return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
 
   return (
     <GuestLayout title="Register">
@@ -191,7 +199,7 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input required {...field} />
+                    <Input autoComplete="email" required {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -204,7 +212,16 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input required type="password" {...field} />
+                    <div className="relative">
+                      <Input required autoComplete="current-password" type={showPassword ? 'text' : 'password'} {...field} />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
+                        {showPassword ? (
+                          <EyeOffIcon className="h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
+                        ) : (
+                          <EyeIcon className=" h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -232,7 +249,17 @@ const Register = () => {
                 Sudah punya akun?
               </Link>
 
-              <Button className="ml-4">Daftar</Button>
+              <Button
+                disabled={isLoading}
+                className="ml-4">
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Daftar"
+                )}</Button>
             </div>
           </form>
         </Form>

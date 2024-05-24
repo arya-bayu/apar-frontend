@@ -37,6 +37,7 @@ import { AxiosError } from 'axios'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from "lucide-react"
+import { env } from "process"
 
 const inviteUserFormSchema = z.object({
   email: z.string().refine(validator.isEmail, {
@@ -114,8 +115,7 @@ export default function InviteUserDialog({ children }: PropsWithChildren) {
         <DialogHeader className="space-y-2">
           <DialogTitle>Undang Pengguna</DialogTitle>
           <DialogDescription>
-            Undang seseorang menjadi pengguna sistem inventaris CV. Indoka Surya
-            Jaya
+            Undang seseorang menjadi pengguna sistem inventaris ${process.env.NEXT_APP_NAME}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

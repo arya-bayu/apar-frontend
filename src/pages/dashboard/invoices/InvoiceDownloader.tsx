@@ -1,10 +1,6 @@
 import React, {
     PropsWithChildren,
-    PropsWithRef,
-    ReactElement,
-    RefObject,
     useEffect,
-    useRef,
     useState,
 } from 'react'
 
@@ -30,12 +26,10 @@ import {
 import currencyFormatter from "@/lib/currency"
 import generatePDF, { Options, usePDF } from "react-to-pdf";
 import { Separator } from "@/components/ui/separator"
-import Image from "next/image"
+import Image from "next/image"  // Alias the Next.js Image component
 import moment from "moment"
 import { PDFDocument, StandardFonts } from "pdf-lib"
 import { saveAs } from 'file-saver';
-import { useTheme } from "next-themes"
-import { ThemeProvider } from "@/components/ThemeProvider"
 
 interface InvoiceDownloaderProps {
     id: IInvoice["id"];
@@ -44,14 +38,14 @@ interface InvoiceDownloaderProps {
 interface InvoiceContentProps {
     invoice: IInvoice | undefined;
     setInvoice: React.Dispatch<React.SetStateAction<IInvoice | undefined>>
-    theme?: string;
 }
 
-const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContentProps) => {
+const InvoiceContent = ({ invoice, setInvoice }: InvoiceContentProps) => {
     if (!invoice) return null;
 
     const { authUser } = useAuth({ middleware: 'auth' })
     const { targetRef } = usePDF();
+    const [imgsLoaded, setImgsLoaded] = useState<boolean>(false)
 
     const options: Options = {
         filename: "invoice.pdf",
@@ -62,21 +56,28 @@ const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContent
         },
         canvas: {
             mimeType: "image/jpeg",
-            qualityRatio: 1
+            qualityRatio: 2
         },
         overrides: {
             pdf: {
                 compress: true
             },
             canvas: {
-                useCORS: true
+                useCORS: true,
+                allowTaint: true,
+                ignoreElements: function (e) {
+                    if ((e.tagName === "A" && e instanceof HTMLAnchorElement && e.host !== window.location.host) || e.getAttribute('loading') === "lazy") {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
             }
         }
     };
 
     useEffect(() => {
         if (!invoice) return;
-
         const generatePDFDocument = async () => {
             const document = await generatePDF(targetRef, options)
 
@@ -85,7 +86,6 @@ const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContent
             const pdfDoc = await PDFDocument.load(arrayBuffer);
 
             const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
-
 
             const textSize = 8;
 
@@ -128,24 +128,25 @@ const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContent
                 setInvoice(undefined);
             }, 100);
         })
+
     }, [invoice])
 
     return (
-        <div className="absolute z-[-50000] light">
+        <div className="absolute -left-96 z-[-50000] light tracking-[0.01px]">
             <div className="flex flex-col justify-between w-[210mm] min-h-[297mm]" ref={targetRef}>
                 <div>
                     <div className="flex flex-row gap-4 items-center justify-between dark:text-zinc-900">
-                        {/* company name from env */}
                         <div>
-                            <h1 className="text-2xl font-bold">PT. INDOKA SURYA JAYA</h1>
-                            <p className="text-sm max-w-[80%]">Jl. Letda Reta No.19, Dangin Puri Klod, Kec. Denpasar Tim., Kota Denpasar, Bali 80232</p>
-                            <p className="text-sm">Telp: +6281000000 | Email: hello@indokasuryajaya.com</p>
+                            <h1 className="text-2xl font-bold">{process.env.NEXT_APP_NAME}</h1>
+                            <p className="text-sm max-w-[80%]">Jl. Letda Made Putra No.4, Dangin Puri Klod, Denpasar, Bali</p>
+                            <p className="text-sm">Telp: +6285100665789</p>
                         </div>
                         <div className="relative w-20 h-20">
                             <Image src="/logo.png"
-                                layout="fill"
-                                objectFit='cover'
-                                objectPosition='center'
+                                height={80}
+                                width={80}
+                                loading="eager"
+                                priority
                                 unoptimized
                                 alt="Logo" />
                         </div>
@@ -246,12 +247,9 @@ const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContent
                         </Table>
                         <div className="flex flex-row justify-between mt-4 dark:text-zinc-900">
                             <div>
-                                <p className="text-sm">Pembayaran:</p>
-                                <p className="text-sm">PT. Indoka Surya Jaya</p>
-                                <p className="text-sm">5748377838 (Bank Central Asia)</p>
                                 <div className="space-y-3 mt-8">
-                                    <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Catatan Pembelian:</p>
-                                    <p className="text-sm font-normal">{invoice.description}</p>
+                                    <p className="text-sm">Catatan Pembelian:</p>
+                                    <p className="text-sm">{invoice.description ?? '-'}</p>
                                 </div>
                             </div>
                         </div>
@@ -264,13 +262,13 @@ const InvoiceContent = ({ invoice, setInvoice, theme = 'light' }: InvoiceContent
 
 const InvoiceDownloader = ({ id, children }: PropsWithChildren<InvoiceDownloaderProps>) => {
     const router = useRouter()
-
     const [invoice, setInvoice] = useState<IInvoice>()
 
-    async function fetchInvoice() {
+    const handleDownloadInvoice = async () => {
         try {
             const response = await axios.get(`/api/v1/invoices/${id}`)
             setInvoice(response.data.data)
+            console.log(response.data.data)
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response?.data.code === 404) {
@@ -286,11 +284,7 @@ const InvoiceDownloader = ({ id, children }: PropsWithChildren<InvoiceDownloader
         }
     }
 
-    const handleDownloadInvoice = () => {
-        if (!id) return
-        fetchInvoice()
-    }
-
+    if (!id) return <></>
     return (
         <div>
             <div onClick={handleDownloadInvoice}>

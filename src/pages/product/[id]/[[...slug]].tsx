@@ -51,7 +51,7 @@ export default function CategoryPage() {
     }, [slug, product, redirected, router, id]);
 
     if (!product || isProductValidating) {
-        return <LoadingSpinner className="h-screen" size={36} />;
+        return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />;
     }
 
     const title = `Jual ` + product?.data?.name + ` | ` + process.env.NEXT_PUBLIC_APP_NAME + ` - Marketplace Alat Pemadam Kebakaran No. 1 di Bali`

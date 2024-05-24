@@ -7,6 +7,8 @@ import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import Link from 'next/link'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
 import UnitDialog from '../../pages/dashboard/units/partials/UnitDialog'
+import LoadingSpinner from "../LoadingSpinner"
+import { useState } from "react"
 
 export const unitColumns: ColumnDef<IUnit>[] = [
   createSelectColumn(),
@@ -26,6 +28,7 @@ export const unitColumns: ColumnDef<IUnit>[] = [
     enableHiding: false,
     cell: ({ row, table }) => {
       const unit = row.original
+      const [isLoading, setIsLoading] = useState<boolean>(false)
 
       const can = table.options.meta?.can
 
@@ -53,12 +56,26 @@ export const unitColumns: ColumnDef<IUnit>[] = [
               size="icon"
               variant="outline"
               className="relative"
-              onClick={() => {
-                unit.id && table.options.meta?.handleRestore([unit])
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  unit.id && await table.options.meta?.handleRestore([unit])
+                } finally {
+                  setIsLoading(false)
+                }
               }}
             >
-              <DatabaseBackup size={16} />
-              <span className="sr-only">Pulihkan</span>
+              {isLoading ? (
+                <>
+                  <LoadingSpinner size={16} />
+                  <span className="sr-only">Memulihkan...</span>
+                </>
+              ) : (
+                <>
+                  <DatabaseBackup size={16} />
+                  <span className="sr-only">Pulihkan</span>
+                </>
+              )}
             </Button>
           )}
           {can('delete units') && (

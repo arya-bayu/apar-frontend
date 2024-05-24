@@ -38,6 +38,7 @@ import { IImage } from '@/types/image'
 import LucideIconPicker from "@/components/IconPicker/LucideIconPicker"
 import * as Lucide from 'lucide-react';
 import Dropzone, { CustomFile } from "@/components/ImageUploadHelpers/Dropzone"
+import LoadingSpinner from "@/components/LoadingSpinner"
 
 interface ICategoryDialog<TData> {
   data?: DataTable<TData>
@@ -293,206 +294,211 @@ export default function CategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0 sm:max-w-[50vw]">
-        <DialogHeader className="space-y-2 px-6">
-          <DialogTitle>{category ? 'Edit' : 'Tambah'} kategori</DialogTitle>
-          <DialogDescription>
-            {category ? 'Edit' : 'Tambah'} data kategori produk{' '}
-            {category ? 'yang sudah tersimpan di' : 'ke'} database sistem
-            inventaris {process.env.NEXT_PUBLIC_APP_NAME}
-          </DialogDescription>
-        </DialogHeader>
-        <div className="mx-6 flex flex-col-reverse gap-6 md:flex-row">
-          {/* <div className="md:w-[45%]"> */}
-          <div className="w-full">
-            <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
-              Metadata
-            </h3>
-            <Form {...form}>
-              <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-scroll rounded-lg border border-zinc-200 px-4 py-4 dark:border-zinc-700">
-                <div className="space-y-3">
-                  <Dropzone
-                    singleImage={form?.getValues("image")}
-                    onImagesChange={handleImagesChange}
-                  />
-                </div>
-                <FormField
-                  control={control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nama Kategori</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Hydrant" {...field} required />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Deskripsi Kategori</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          rows={5}
-                          placeholder="Tingkatkan proteksi kebakaran dengan Fire Hydrant andalan Indoka untuk perlindungan terbaik dalam keadaan darurat"
-                          {...field}
-                          required
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="mt-2 flex justify-between align-middle">
-                  <div>
-                    <div className="text-md font-medium">Fitur</div>
-                    <div className="text-xs font-light">
-                      Highlight fitur unggulan untuk kategori produk ini
+      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0">
+        {id && !category ? (
+          <LoadingSpinner size={36} />
+        )
+          : (<>
+            <DialogHeader className="space-y-2 px-6">
+              <DialogTitle>{category ? 'Edit' : 'Tambah'} kategori</DialogTitle>
+              <DialogDescription>
+                {category ? 'Edit' : 'Tambah'} data kategori produk{' '}
+                {category ? 'yang sudah tersimpan di' : 'ke'} database sistem
+                inventaris {process.env.NEXT_PUBLIC_APP_NAME}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mx-6 flex flex-col-reverse gap-6 md:flex-row">
+              {/* <div className="md:w-[45%]"> */}
+              <div className="w-full">
+                <h3 className="text-md mb-4 mt-6 font-semibold md:mt-0">
+                  Metadata
+                </h3>
+                <Form {...form}>
+                  <div className="flex max-h-[50vh] flex-col gap-4 overflow-y-scroll rounded-lg border border-zinc-200 px-4 py-4 dark:border-zinc-700">
+                    <div className="space-y-3">
+                      <Dropzone
+                        singleImage={form?.getValues("image")}
+                        onImagesChange={handleImagesChange}
+                      />
                     </div>
-                  </div>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="my-auto text-sm"
-                    onClick={() =>
-                      append({
-                        icon: 'Plus',
-                        name: '',
-                        description: '',
-                      })
-                    }
-                  >
-                    +
-                  </Button>
-                </div>
+                    <FormField
+                      control={control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nama Kategori</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Hydrant" {...field} required />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Deskripsi Kategori</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              rows={5}
+                              placeholder="Tingkatkan proteksi kebakaran dengan Fire Hydrant andalan Indoka untuk perlindungan terbaik dalam keadaan darurat"
+                              {...field}
+                              required
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                {/* feature form set */}
-                {fields.map((field, index) => (
-                  <div key={field.id} className="space-y-4">
-                    <div className="flex flex-row space-x-4 align-middle">
-                      <LucideIconPicker
-                        onSelect={(icon) => {
-                          setFeatureIcons(prevState => {
-                            const newState = [...prevState];
-                            newState[index] = icon;
-                            return newState;
-                          });
-                        }}
-                      >
-                        <Button
-                          variant="circle"
-                          size="expandableIcon"
-                          className="my-auto"
-                        >
-                          {React.createElement((Lucide as any)[featureIcons[index] ?? category?.features?.[index]?.icon ?? 'Plus'], { size: 18 })}
-                        </Button>
-                      </LucideIconPicker>
-                      <div className="w-full space-y-2">
-                        <FormField
-                          control={control}
-                          name={`features.${index}.name`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Input
-                                  placeholder={`Nama Fitur #${index + 1}`}
-                                  {...field}
-                                  required
-                                  onChange={e => {
-                                    field.onChange(e)
-                                    handleFeatureNameChange(
-                                      index,
-                                      e.target.value,
-                                    )
-                                  }}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={control}
-                          name={`features.${index}.description`}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormControl>
-                                <Textarea
-                                  rows={5}
-                                  placeholder={`Deskripsi Fitur #${index + 1}`}
-                                  {...field}
-                                  required
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
+                    <div className="mt-2 flex justify-between align-middle">
+                      <div>
+                        <div className="text-md font-medium">Fitur</div>
+                        <div className="text-xs font-light">
+                          Highlight fitur unggulan untuk kategori produk ini
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-row justify-end space-x-2">
                       <Button
-                        variant="destructive"
-                        className="text-sm"
+                        variant="secondary"
                         size="sm"
-                        onClick={() => handleFeatureRemove(index)}
+                        className="my-auto text-sm"
+                        onClick={() =>
+                          append({
+                            icon: 'Plus',
+                            name: '',
+                            description: '',
+                          })
+                        }
                       >
-                        Hapus #{index + 1}
+                        +
                       </Button>
-                      {index === fields.length - 1 &&
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          className="text-sm"
-                          size="sm"
-                          onClick={() =>
-                            append({
-                              icon: 'Plus',
-                              name: '',
-                              description: '',
-                            })
-                          }
-                        >
-                          Tambah
-                        </Button>
-                      }
                     </div>
-                  </div>
-                ))}
-              </div>
-            </Form>
 
-            <DialogFooter className="mt-4 h-10">
-              <Button
-                disabled={isLoading}
-                onClick={async () => {
-                  setIsLoading(true);
-                  try {
-                    await form.handleSubmit(onSubmit)();
-                  } finally {
-                    setIsLoading(false);
-                  }
-                }}
-                className="w-full text-sm"
-                type="submit"
-              >
-                {isLoading ? (
-                  <>
-                    <Lucide.Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Menyimpan...
-                  </>
-                ) : (
-                  "Simpan"
-                )}
-              </Button>
-            </DialogFooter>
-          </div>
-        </div>
+                    {/* feature form set */}
+                    {fields.map((field, index) => (
+                      <div key={field.id} className="space-y-4">
+                        <div className="flex flex-row space-x-4 align-middle">
+                          <LucideIconPicker
+                            onSelect={(icon) => {
+                              setFeatureIcons(prevState => {
+                                const newState = [...prevState];
+                                newState[index] = icon;
+                                return newState;
+                              });
+                            }}
+                          >
+                            <Button
+                              variant="circle"
+                              size="expandableIcon"
+                              className="my-auto"
+                            >
+                              {React.createElement((Lucide as any)[featureIcons[index] ?? category?.features?.[index]?.icon ?? 'Plus'], { size: 18 })}
+                            </Button>
+                          </LucideIconPicker>
+                          <div className="w-full space-y-2">
+                            <FormField
+                              control={control}
+                              name={`features.${index}.name`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Input
+                                      placeholder={`Nama Fitur #${index + 1}`}
+                                      {...field}
+                                      required
+                                      onChange={e => {
+                                        field.onChange(e)
+                                        handleFeatureNameChange(
+                                          index,
+                                          e.target.value,
+                                        )
+                                      }}
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={control}
+                              name={`features.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormControl>
+                                    <Textarea
+                                      rows={5}
+                                      placeholder={`Deskripsi Fitur #${index + 1}`}
+                                      {...field}
+                                      required
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                        <div className="flex flex-row justify-end space-x-2">
+                          <Button
+                            variant="destructive"
+                            className="text-sm"
+                            size="sm"
+                            onClick={() => handleFeatureRemove(index)}
+                          >
+                            Hapus #{index + 1}
+                          </Button>
+                          {index === fields.length - 1 &&
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              className="text-sm"
+                              size="sm"
+                              onClick={() =>
+                                append({
+                                  icon: 'Plus',
+                                  name: '',
+                                  description: '',
+                                })
+                              }
+                            >
+                              Tambah
+                            </Button>
+                          }
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Form>
+
+                <DialogFooter className="mt-4 h-10">
+                  <Button
+                    disabled={isLoading}
+                    onClick={async () => {
+                      setIsLoading(true);
+                      try {
+                        await form.handleSubmit(onSubmit)();
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                    className="w-full text-sm"
+                    type="submit"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Lucide.Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Menyimpan...
+                      </>
+                    ) : (
+                      "Simpan"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </div>
+            </div>
+          </>)}
       </DialogContent>
     </Dialog>
   )

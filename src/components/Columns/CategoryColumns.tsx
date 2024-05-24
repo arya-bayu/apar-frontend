@@ -6,6 +6,8 @@ import { ColumnDef, Row } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
 import CategoryDialog from '../../pages/dashboard/categories/partials/CategoryDialog'
+import { useState } from "react"
+import LoadingSpinner from "../LoadingSpinner"
 
 export const categoryColumns: ColumnDef<ICategory>[] = [
   createSelectColumn(),
@@ -34,6 +36,10 @@ export const categoryColumns: ColumnDef<ICategory>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Deskripsi" />
     ),
+    cell: ({ row }) => {
+      const category = row.original;
+      return <p className="line-clamp-2">{category.description}</p>
+    }
   },
   {
     accessorKey: 'aksi',
@@ -41,6 +47,7 @@ export const categoryColumns: ColumnDef<ICategory>[] = [
     enableHiding: false,
     cell: ({ row, table }) => {
       const category = row.original
+      const [isLoading, setIsLoading] = useState<boolean>(false)
 
       const can = table.options.meta?.can
 
@@ -65,15 +72,30 @@ export const categoryColumns: ColumnDef<ICategory>[] = [
           )}
           {table.options.meta?.isTrash && can('restore categories') && (
             <Button
+              disabled={isLoading}
               size="icon"
               variant="outline"
               className="relative"
-              onClick={() => {
-                category.id && table.options.meta?.handleRestore([category])
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  category.id && await table.options.meta?.handleRestore([category])
+                } finally {
+                  setIsLoading(false)
+                }
               }}
             >
-              <DatabaseBackup size={16} />
-              <span className="sr-only">Pulihkan</span>
+              {isLoading ? (
+                <>
+                  <LoadingSpinner size={16} />
+                  <span className="sr-only">Memulihkan...</span>
+                </>
+              ) : (
+                <>
+                  <DatabaseBackup size={16} />
+                  <span className="sr-only">Pulihkan</span>
+                </>
+              )}
             </Button>
           )}
           {can('delete categories') && (

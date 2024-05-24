@@ -7,7 +7,7 @@ export const usePurchase = (callback?: Function) => {
   const [filter, setFilter] = useState<string>('')
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: -1,
-    pageSize: 10,
+    pageSize: 15,
   })
 
   const pagination = useMemo(

@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { PenSquare, DatabaseBackup, Trash2 } from 'lucide-react'
+import { PenSquare, DatabaseBackup, Trash2, Loader2 } from 'lucide-react'
 import { ColumnDef } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
@@ -12,6 +12,8 @@ import { Switch } from "@/components/ui/switch"
 import axios from "@/lib/axios"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
+import { Badge } from "../ui/badge"
+import LoadingSpinner from "../LoadingSpinner"
 
 
 export const productColumns: ColumnDef<IProduct>[] = [
@@ -84,6 +86,10 @@ export const productColumns: ColumnDef<IProduct>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nama Produk" />
     ),
+    cell: ({ row }) => {
+      const product = row.original
+      return (<p className="line-clamp-2">{product.name}</p>)
+    }
   },
   {
     accessorKey: 'stock',
@@ -92,7 +98,11 @@ export const productColumns: ColumnDef<IProduct>[] = [
     },
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Stok" />
-    )
+    ),
+    cell: ({ row }) => {
+      const product = row.original
+      return (<>{product.stock} {product.stock < 5 && (<><Badge variant="warning" className="w-auto px-1">Low</Badge></>)}</>)
+    }
   },
   {
     accessorKey: 'price',
@@ -139,6 +149,7 @@ export const productColumns: ColumnDef<IProduct>[] = [
     enableHiding: false,
     cell: ({ row, table }) => {
       const product = row.original
+      const [isLoading, setIsLoading] = useState<boolean>(false)
 
       const can = table.options.meta?.can
 
@@ -163,15 +174,30 @@ export const productColumns: ColumnDef<IProduct>[] = [
           )}
           {table.options.meta?.isTrash && can('restore products') && (
             <Button
+              disabled={isLoading}
               size="icon"
               variant="outline"
               className="relative"
-              onClick={() => {
-                product.id && table.options.meta?.handleRestore([product])
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  product.id && await table.options.meta?.handleRestore([product])
+                } finally {
+                  setIsLoading(false)
+                }
               }}
             >
-              <DatabaseBackup size={16} />
-              <span className="sr-only">Pulihkan</span>
+              {isLoading ? (
+                <>
+                  <LoadingSpinner size={16} />
+                  <span className="sr-only">Memulihkan...</span>
+                </>
+              ) : (
+                <>
+                  <DatabaseBackup size={16} />
+                  <span className="sr-only">Pulihkan</span>
+                </>
+              )}
             </Button>
           )}
           {can('delete products') && (

@@ -21,7 +21,6 @@ import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { useState } from "react"
 import { Dialog } from "@/components/ui/dialog"
 import { useRouter } from "next/router"
-import InvoiceDialog from "../../pages/dashboard/invoices/partials/InvoiceDialog"
 import InvoiceDownloader from "../../pages/dashboard/invoices/InvoiceDownloader"
 
 export const invoiceColumns: ColumnDef<IInvoice>[] = [
@@ -96,7 +95,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
         <Dialog>
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger disabled={invoice.status === 1}>
-              <Badge variant={invoice.status === 0 ? 'warning' : 'success'}>{invoice.status === 0 ? 'Pending' : 'Disetujui'}</Badge>
+              <Badge variant={invoice.status === 1 ? 'success' : 'warning'}>{invoice.status === 1 ? 'Disetujui' : 'Pending'}</Badge>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
 
@@ -186,8 +185,8 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
         <div className="flex flex-row justify-end gap-2">
           <Link href={`/dashboard/invoices/${invoice.id}`}>
             <Button size="icon" variant="outline" className="relative">
-              <Eye size={16} />
-              <span className="sr-only">View</span>
+              {invoice.status === 1 ? <Eye size={16} /> : <EditIcon size={16} />}
+              <span className="sr-only">{invoice.status === 1 ? "View" : "Edit"}</span>
             </Button>
           </Link>
           <InvoiceDownloader id={invoice.id}>

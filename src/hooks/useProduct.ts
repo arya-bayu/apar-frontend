@@ -8,7 +8,7 @@ export const useProduct = (callback?: Function) => {
   const [filter, setFilter] = useState<string>('')
   const [{ pageIndex, pageSize }, setPagination] = useState<PaginationState>({
     pageIndex: -1,
-    pageSize: 10,
+    pageSize: 15,
   })
 
   const pagination = useMemo(
@@ -30,6 +30,7 @@ export const useProduct = (callback?: Function) => {
     data: products,
     error,
     isValidating,
+    isLoading,
     mutate,
   } = useSWR(apiUrl, fetcher, {
     keepPreviousData: true,
@@ -44,6 +45,7 @@ export const useProduct = (callback?: Function) => {
     products,
     error,
     isValidating,
+    isLoading,
     mutate,
   }
 }

@@ -6,6 +6,19 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 import '../../styles/globals.css'
 import { usePathname } from "next/navigation"
 
+import Router from 'next/router'
+import Link from 'next/link'
+import Head from 'next/head'
+import NProgress from 'nprogress'
+
+NProgress.configure({ showSpinner: false });
+Router.events.on('routeChangeStart', (url) => {
+  console.log(`Loading: ${url}`)
+  NProgress.start()
+})
+Router.events.on('routeChangeComplete', () => NProgress.done())
+Router.events.on('routeChangeError', () => NProgress.done())
+
 function App({ Component, pageProps }: AppProps) {
   // suppress useLayoutEffect warnings when running outside a browser
   if (!process.browser) React.useLayoutEffect = React.useEffect

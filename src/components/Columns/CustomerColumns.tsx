@@ -7,6 +7,8 @@ import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import Link from 'next/link'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
 import CustomerDialog from '../../pages/dashboard/customers/partials/CustomerDialog'
+import { useState } from "react"
+import LoadingSpinner from "../LoadingSpinner"
 
 export const customerColumns: ColumnDef<ICustomer>[] = [
   createSelectColumn(),
@@ -79,6 +81,7 @@ export const customerColumns: ColumnDef<ICustomer>[] = [
     enableHiding: false,
     cell: ({ row, table }) => {
       const customer = row.original
+      const [isLoading, setIsLoading] = useState<boolean>(false)
 
       const can = table.options.meta?.can
 
@@ -103,15 +106,30 @@ export const customerColumns: ColumnDef<ICustomer>[] = [
           )}
           {table.options.meta?.isTrash && can('restore customers') && (
             <Button
+              disabled={isLoading}
               size="icon"
               variant="outline"
               className="relative"
-              onClick={() => {
-                customer.id && table.options.meta?.handleRestore([customer])
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  customer.id && await table.options.meta?.handleRestore([customer])
+                } finally {
+                  setIsLoading(false)
+                }
               }}
             >
-              <DatabaseBackup size={16} />
-              <span className="sr-only">Pulihkan</span>
+              {isLoading ? (
+                <>
+                  <LoadingSpinner size={16} />
+                  <span className="sr-only">Memulihkan...</span>
+                </>
+              ) : (
+                <>
+                  <DatabaseBackup size={16} />
+                  <span className="sr-only">Pulihkan</span>
+                </>
+              )}
             </Button>
           )}
           {can('delete customers') && (

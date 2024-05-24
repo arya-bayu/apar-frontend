@@ -23,15 +23,16 @@ const UpdateProfilePhotoForm = () => {
   const { authUser, mutate } = useAuth({ middleware: 'auth' })
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click()
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    setisUploading(true);
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       form.setValue('photo', file);
-      form.handleSubmit(onSubmit)();
+      try {
+        await form.handleSubmit(onSubmit)();
+      } finally {
+        setisUploading(false);
+      }
     }
   }
 
@@ -147,14 +148,7 @@ const UpdateProfilePhotoForm = () => {
                           variant="outline"
                           type="button"
                           className="w-full"
-                          onClick={async () => {
-                            setisUploading(true);
-                            try {
-                              await handleButtonClick();
-                            } finally {
-                              setisUploading(false);
-                            }
-                          }}
+                          onClick={() => fileInputRef.current?.click()}
                         >
                           {isUploading ? (
                             <>
