@@ -36,25 +36,25 @@ import { CameraDevice } from "html5-qrcode/esm/camera/core"
 const qrConfig = {
   fps: 10,
   qrbox: { width: 300, height: 300 },
-  focusMode: "continous",
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
   },
+  advanced: [{ zoom: 2.0 }]
 }
 
 const barConfig = {
   fps: 10,
   qrbox: { width: 300, height: 150 },
-  focusMode: "continous",
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
   },
+  advanced: [{ zoom: 2.0 }]
 }
 
 let html5QrCode: Html5Qrcode | null = null;
@@ -93,7 +93,21 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
       type === 'QR' ? qrConfig : barConfig,
       qrCodeSuccessCallback,
       () => { }
-    )
+    ).then(async () => {
+      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      const scannerCapabilities = html5QrCode?.getRunningTrackCapabilities();
+
+      const constraints = {
+        width: { ideal: 1000 },
+        height: { ideal: 1000 },
+
+        frameRate: { ideal: scannerCapabilities?.frameRate?.max || 30 },
+        focusMode: "continuous",
+      };
+
+      await html5QrCode?.applyVideoConstraints(constraints)
+    })
   }
 
   const getCameras = () => {
