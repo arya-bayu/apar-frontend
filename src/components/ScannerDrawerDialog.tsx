@@ -34,7 +34,7 @@ import { ScanLine } from 'lucide-react'
 import { CameraDevice } from "html5-qrcode/esm/camera/core"
 
 const qrConfig = {
-  fps: 10,
+  fps: 30,
   qrbox: { width: 300, height: 300 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
@@ -47,7 +47,7 @@ const qrConfig = {
 }
 
 const barConfig = {
-  fps: 10,
+  fps: 30,
   qrbox: { width: 300, height: 150 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
@@ -113,15 +113,12 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
   }
 
   const handleStop = () => {
-    try {
-      html5QrCode?.stop()
-        .then(res => {
-          html5QrCode?.clear()
-        })
-        .catch(err => {
-        })
-    } catch (err) {
-    }
+    html5QrCode?.stop()
+      .then(res => {
+        html5QrCode?.clear()
+      })
+      .catch(err => {
+      })
   }
 
   return (
@@ -130,15 +127,17 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
         <Select
           value={activeCamera?.id}
           onValueChange={(value) => {
-            setActiveCamera(cameraList.find(cam => cam.id === value))
-            const oldRegion = document.getElementById('qr-shaded-region')
-            oldRegion && oldRegion.remove()
-            html5QrCode?.start(
-              activeCamera.id,
-              type === 'QR' ? qrConfig : barConfig,
-              qrCodeSuccessCallback,
-              () => { }
-            )
+            try {
+              setActiveCamera(cameraList.find(cam => cam.id === value))
+              handleStop()
+            } finally {
+              html5QrCode?.start(
+                activeCamera.id,
+                type === 'QR' ? qrConfig : barConfig,
+                qrCodeSuccessCallback,
+                () => { }
+              )
+            }
           }}
         >
           <SelectTrigger className="col-span-4">
