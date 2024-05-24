@@ -17,7 +17,6 @@ interface Html5QrcodePluginProps {
 
 const qrcodeRegionId = 'html5qr-code-full-region';
 
-// Creates the configuration object for Html5QrcodeScanner.
 const createConfig = (props: Html5QrcodePluginProps) => {
   let config: any = {};
 

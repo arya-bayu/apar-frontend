@@ -20,15 +20,20 @@ Router.events.on('routeChangeComplete', () => NProgress.done())
 Router.events.on('routeChangeError', () => NProgress.done())
 
 function App({ Component, pageProps }: AppProps) {
-  // suppress useLayoutEffect warnings when running outside a browser
   if (!process.browser) React.useLayoutEffect = React.useEffect
   const pathname = usePathname();
   const isDashboardPage = pathname ? pathname.startsWith('/dashboard') : false;
 
   return (
-    <ThemeProvider forcedTheme={isDashboardPage ? undefined : 'light'} attribute="class" defaultTheme="system" enableSystem>
-      <Component {...pageProps} />
-    </ThemeProvider>
+    <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1,user-scalable=0" />
+      </Head>
+      <ThemeProvider forcedTheme={isDashboardPage ? undefined : 'light'} attribute="class" defaultTheme="system" enableSystem>
+        <Component {...pageProps} />
+      </ThemeProvider>
+    </>
+
   )
 }
 export default App

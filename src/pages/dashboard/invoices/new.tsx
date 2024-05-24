@@ -100,6 +100,7 @@ const NewInvoicePage = () => {
     const [description, setDescription] = useState('')
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
+    const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof invoiceFormSchema>>({
         resolver: zodResolver(invoiceFormSchema),
@@ -450,12 +451,19 @@ const NewInvoicePage = () => {
                                 }} />
 
                             <Button
-                                onClick={() =>
-                                    selectedProductId && addInvoiceItem(selectedProductId)
+                                disabled={isFetchingProduct}
+                                onClick={async () => {
+                                    setIsFetchingProduct(true)
+                                    try {
+                                        selectedProductId && await addInvoiceItem(selectedProductId)
+                                    } finally {
+                                        setIsFetchingProduct(false)
+                                    }
+                                }
                                 }
                                 type="button"
                                 className="aspect-square px-2 py-0">
-                                <Plus size={20} />
+                                {isFetchingProduct ? <Loader2 className="animate-spin h-5 w-5" /> : <Plus size={20} />}
                             </Button>
                         </div>
 

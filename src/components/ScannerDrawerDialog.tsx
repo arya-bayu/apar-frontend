@@ -38,6 +38,11 @@ const qrConfig = {
   qrbox: { width: 300, height: 300 },
   focusMode: "continous",
   rememberLastUsedCamera: true,
+  showTorchButtonIfSupported: true,
+  useBarCodeDetectorIfSupported: true,
+  experimentalFeatures: {
+    useBarCodeDetectorIfSupported: true
+  },
 }
 
 const barConfig = {
@@ -45,6 +50,11 @@ const barConfig = {
   qrbox: { width: 300, height: 150 },
   focusMode: "continous",
   rememberLastUsedCamera: true,
+  showTorchButtonIfSupported: true,
+  useBarCodeDetectorIfSupported: true,
+  experimentalFeatures: {
+    useBarCodeDetectorIfSupported: true
+  },
 }
 
 let html5QrCode: Html5Qrcode | null = null;
@@ -116,8 +126,9 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
       {activeCamera && cameraList.length > 0 && (
         <Select
           value={activeCamera?.id}
-          onValueChange={value => {
+          onValueChange={(value) => {
             setActiveCamera(cameraList.find(cam => cam.id === value))
+            handleStartCamera()
           }}
         >
           <SelectTrigger className="col-span-4">

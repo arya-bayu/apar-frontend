@@ -110,7 +110,6 @@ const InvoicePage = () => {
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
     const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
-    const [isFetchingBarcode, setIsFetchingBarcode] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof invoiceFormSchema>>({
         resolver: zodResolver(invoiceFormSchema),
