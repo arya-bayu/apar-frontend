@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Eye, EditIcon, Download, DownloadIcon } from 'lucide-react'
+import { Eye, EditIcon, Download, DownloadIcon, Loader2 } from 'lucide-react'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
@@ -176,6 +176,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
     header: '',
     cell: ({ row, table }) => {
       const invoice = row.original
+      const [isDownloading, setIsDownloading] = useState<boolean>(false);
 
       const can = table.options.meta?.can
 
@@ -189,9 +190,9 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
               <span className="sr-only">{invoice.status === 1 ? "View" : "Edit"}</span>
             </Button>
           </Link>
-          <InvoiceDownloader id={invoice.id}>
+          <InvoiceDownloader id={invoice.id} setIsDownloading={setIsDownloading}>
             <Button size="icon" variant="outline" className="relative">
-              <DownloadIcon size={16} />
+              {isDownloading ? <Loader2 className="animate-spin h-4 w-4" /> : <DownloadIcon size={16} />}
               <span className="sr-only">Download</span>
             </Button>
           </InvoiceDownloader>

@@ -108,6 +108,9 @@ const InvoicePage = () => {
     const [existingImages, setExistingImages] = useState<IImage[]>([])
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
+    const [isDownloading, setIsDownloading] = useState<boolean>(false);
+    const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
+    const [isFetchingBarcode, setIsFetchingBarcode] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof invoiceFormSchema>>({
         resolver: zodResolver(invoiceFormSchema),
@@ -509,12 +512,19 @@ const InvoicePage = () => {
                                         }} />
 
                                     <Button
-                                        onClick={() =>
-                                            selectedProductId && addInvoiceItem(selectedProductId)
+                                        disabled={isFetchingProduct}
+                                        onClick={async () => {
+                                            setIsFetchingProduct(true)
+                                            try {
+                                                selectedProductId && addInvoiceItem(selectedProductId)
+                                            } finally {
+                                                setIsFetchingProduct(false)
+                                            }
+                                        }
                                         }
                                         type="button"
                                         className="aspect-square px-2 py-0">
-                                        <Plus size={20} />
+                                        {isFetchingProduct ? <Loader2 className="animate-spin h-5 w-5" /> : <Plus size={20} />}
                                     </Button>
                                 </div>
                             )}
@@ -968,9 +978,9 @@ const InvoicePage = () => {
                         {
                             invoice?.status === 1 && (
                                 <div className="m-6 sm:m-0 flex justify-end">
-                                    <InvoiceDownloader id={invoice?.id}>
+                                    <InvoiceDownloader id={invoice?.id} setIsDownloading={setIsDownloading}>
                                         <Button size='icon'>
-                                            {<DownloadIcon size={18} />}
+                                            {isDownloading ? <Loader2 className="animate-spin h-[18px] w-[18px]" /> : <DownloadIcon size={18} />}
                                         </Button>
                                     </InvoiceDownloader>
                                 </div>

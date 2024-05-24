@@ -33,6 +33,7 @@ import { saveAs } from 'file-saver';
 
 interface InvoiceDownloaderProps {
     id: IInvoice["id"];
+    setIsDownloading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 interface InvoiceContentProps {
@@ -45,7 +46,6 @@ const InvoiceContent = ({ invoice, setInvoice }: InvoiceContentProps) => {
 
     const { authUser } = useAuth({ middleware: 'auth' })
     const { targetRef } = usePDF();
-    const [imgsLoaded, setImgsLoaded] = useState<boolean>(false)
 
     const options: Options = {
         filename: "invoice.pdf",
@@ -260,10 +260,9 @@ const InvoiceContent = ({ invoice, setInvoice }: InvoiceContentProps) => {
     )
 }
 
-const InvoiceDownloader = ({ id, children }: PropsWithChildren<InvoiceDownloaderProps>) => {
+const InvoiceDownloader = ({ id, setIsDownloading, children }: PropsWithChildren<InvoiceDownloaderProps>) => {
     const router = useRouter()
     const [invoice, setInvoice] = useState<IInvoice>()
-
     const handleDownloadInvoice = async () => {
         try {
             const response = await axios.get(`/api/v1/invoices/${id}`)
@@ -287,7 +286,14 @@ const InvoiceDownloader = ({ id, children }: PropsWithChildren<InvoiceDownloader
     if (!id) return <></>
     return (
         <div>
-            <div onClick={handleDownloadInvoice}>
+            <div onClick={async () => {
+                setIsDownloading(true)
+                try {
+                    await handleDownloadInvoice()
+                } finally {
+                    setIsDownloading(false)
+                }
+            }}>
                 {children}
             </div>
             <InvoiceContent invoice={invoice} setInvoice={setInvoice} />

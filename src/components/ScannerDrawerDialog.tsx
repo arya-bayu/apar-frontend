@@ -28,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Html5Qrcode, Html5QrcodeResult, QrcodeSuccessCallback } from 'html5-qrcode'
+import { Html5Qrcode, Html5QrcodeResult } from 'html5-qrcode'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { ScanLine } from 'lucide-react'
 import { CameraDevice } from "html5-qrcode/esm/camera/core"
@@ -37,23 +37,14 @@ const qrConfig = {
   fps: 10,
   qrbox: { width: 300, height: 300 },
   focusMode: "continous",
-  advanced: [{ zoom: 2.0 }],
   rememberLastUsedCamera: true,
-  experimentalFeatures: {
-    useBarCodeDetectorIfSupported: true,
-  },
-  willReadFrequently: true
 }
+
 const barConfig = {
   fps: 10,
   qrbox: { width: 300, height: 150 },
   focusMode: "continous",
-  advanced: [{ zoom: 2.0 }],
   rememberLastUsedCamera: true,
-  experimentalFeatures: {
-    useBarCodeDetectorIfSupported: true,
-  },
-  willReadFrequently: true
 }
 
 let html5QrCode: Html5Qrcode | null = null;
@@ -83,18 +74,16 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
   }, [])
 
   const handleStartCamera = () => {
-    if (activeCamera) {
-      const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
-        onResult(decodedText)
-        handleStop()
-      }
-      html5QrCode?.start(
-        { facingMode: 'environment', deviceId: activeCamera?.id },
-        type === 'QR' ? qrConfig : barConfig,
-        qrCodeSuccessCallback,
-        () => { }
-      )
+    const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
+      onResult(decodedText)
+      handleStop()
     }
+    html5QrCode?.start(
+      { facingMode: 'environment' },
+      type === 'QR' ? qrConfig : barConfig,
+      qrCodeSuccessCallback,
+      () => { }
+    )
   }
 
   const getCameras = () => {
@@ -122,33 +111,28 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     }
   }
 
-  useEffect(() => {
-    handleStartCamera()
-  }, [activeCamera]);
 
+  if (!activeCamera) return <></>
   return (
     <div className="sn:px-0 flex flex-col space-y-4">
       {cameraList.length > 0 && (
         <Select
-          value={activeCamera?.id}
+          value={activeCamera.id}
           onValueChange={value => {
             setActiveCamera(cameraList.find(cam => cam.id === value))
           }}
         >
-          <SelectTrigger id="camera" className="col-span-4">
+          <SelectTrigger className="col-span-4">
             <SelectValue placeholder="Pilih Kamera" />
           </SelectTrigger>
           <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Pilih Kamera</SelectLabel>
-              {cameraList.map(camera => {
-                return (
-                  <SelectItem key={camera.id} value={camera.id}>
-                    {camera.label}
-                  </SelectItem>
-                )
-              })}
-            </SelectGroup>
+            {cameraList.map(camera => {
+              return (
+                <SelectItem key={camera.id} value={camera.id}>
+                  {camera.label}
+                </SelectItem>
+              )
+            })}
           </SelectContent>
         </Select>
       )}
