@@ -159,7 +159,7 @@ const Register = () => {
     }
   }, [router.isReady, router.query.invite, isSubmitted])
 
-  if (!isAuthorized) return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
+  if (!isAuthorized) return <LoadingSpinner className="h-[100vh] supports-[height:100dvh]:h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
 
   return (
     <GuestLayout title="Register">

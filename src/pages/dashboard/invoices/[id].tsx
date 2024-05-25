@@ -62,7 +62,6 @@ import { Textarea } from "@/components/ui/textarea"
 import Image from "next/image"
 import { Separator } from "@radix-ui/react-dropdown-menu"
 import InvoiceDownloader from "./InvoiceDownloader"
-import { overflowWrap } from "html2canvas/dist/types/css/property-descriptors/overflow-wrap"
 import LoadingSpinner from "@/components/LoadingSpinner"
 
 const invoiceFormSchema = z.object({
@@ -464,7 +463,7 @@ const InvoicePage = () => {
                                             </FormItem>
                                         )}
                                     />
-                                    <div className="w-full flex flex-row items-end gap-4">
+                                    <div className="w-full flex flex-row items-end gap-2 md:gap-4">
                                         <div className="flex-1 min-w-0">
                                             <FormField
                                                 name="productId"

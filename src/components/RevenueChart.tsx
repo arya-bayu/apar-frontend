@@ -27,6 +27,8 @@ interface RevenueChartProps {
 
 
 const RevenueChart = ({ data, period }: RevenueChartProps) => {
+    const longestRevenueLength = Math.max(...data.map(item => item.revenue.toString().length));
+
     return (
         <ResponsiveContainer width="100%" height="100%" className="text-sm">
             <LineChart
@@ -34,14 +36,14 @@ const RevenueChart = ({ data, period }: RevenueChartProps) => {
                 height={300}
                 data={data}
                 margin={{
-                    left: 0,
+                    left: Math.max(20, longestRevenueLength * 10),
                     right: 30,
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" stroke="#666" />
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey={period === "daily" ? "date" : period === "monthly" ? "month" : "year"} />
-                <YAxis />
+                <YAxis width={20} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />
                 <Line name="Pendapatan" type="monotone" dataKey="revenue" stroke="#EF4444" />

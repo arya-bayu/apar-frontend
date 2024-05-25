@@ -311,7 +311,7 @@ const NewInvoicePage = () => {
                     <form
                         onSubmit={form.handleSubmit(onSubmit)}
                         className="flex flex-col gap-4 overflow-scroll px-6 py-8">
-                        <div className="flex flex-col md:flex-row  items-center gap-4">
+                        <div className="flex flex-col md:flex-row items-center gap-4">
                             <FormField
                                 control={form.control}
                                 name="date"
@@ -410,7 +410,7 @@ const NewInvoicePage = () => {
                                     </FormItem>
                                 )}
                             />
-                            <div className="w-full flex flex-row items-end gap-4">
+                            <div className="w-full flex flex-row items-end gap-2 md:gap-4 ">
                                 <div className="flex-1 min-w-0">
                                     <FormField
                                         name="productId"

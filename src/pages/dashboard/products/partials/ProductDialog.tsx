@@ -49,7 +49,7 @@ import { CategoryCombobox } from "@/components/Combobox/CategoryCombobox"
 import { IImage } from "@/types/image"
 import { ScannerDrawerDialog } from "@/components/ScannerDrawerDialog"
 import { UnitCombobox } from "@/components/Combobox/UnitCombobox"
-import { Loader2, RefreshCcw } from "lucide-react"
+import { Loader2, RefreshCcw, ScanLine } from "lucide-react"
 import RichTextEditor from "@/components/TextEditor"
 import LoadingSpinner from "@/components/LoadingSpinner"
 
@@ -342,7 +342,7 @@ export default function ProductDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-3xl">
+      <DialogContent className="max-h-[100vh] supports-[max-height:100dvh]:max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] md:max-h-[calc(90dvh)] overflow-y-scroll sm:max-w-3xl">
         {id && !product ? (
           <LoadingSpinner size={36} />
         )
@@ -379,7 +379,7 @@ export default function ProductDialog({
                   render={({ field }) => (
                     <FormItem className="w-full">
                       <FormLabel>Serial Number</FormLabel>
-                      <div className="flex flex-row justify-between space-x-4">
+                      <div className="flex flex-row justify-between space-x-2 md:space-x-4">
                         <FormControl>
                           <Input
                             placeholder="Kode S/N Produk"
@@ -401,7 +401,14 @@ export default function ProductDialog({
                               form.setValue("serial_number", res);
                             }
                           }}
-                        />
+                        >
+                          <Button
+                            type="button"
+                            variant="default"
+                            className="aspect-square px-2 py-0">
+                            <ScanLine size={20} />
+                          </Button>
+                        </ScannerDrawerDialog>
                       </div>
                       <FormMessage />
                     </FormItem>

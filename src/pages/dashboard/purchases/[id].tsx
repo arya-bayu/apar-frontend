@@ -336,15 +336,11 @@ const PurchasePage = () => {
             title={title}
             headerAction={
                 <div className="flex flex-row space-x-2 ml-4" >
-                    {
-                        purchase?.status === 1 && (
-                            <Link href={`/dashboard/purchases`}>
-                                <Button variant="outline" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
-                                    {isBelowSm ? <ArrowLeft size={18} /> : 'Kembali'}
-                                </Button>
-                            </Link>
-                        )
-                    }
+                    <Link href={`/dashboard/purchases`}>
+                        <Button variant="outline" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                            {isBelowSm ? <ArrowLeft size={15} /> : 'Kembali'}
+                        </Button>
+                    </Link>
                     {
                         purchase?.status === 0 && (
                             <Button
@@ -489,7 +485,7 @@ const PurchasePage = () => {
                             />
                         </div>
                         {purchase?.status === 0 && (
-                            <div className="w-full flex flex-row items-end gap-4">
+                            <div className="w-full flex flex-row items-end gap-2 md:gap-4">
                                 <div className="w-full min-w-0">
                                     <FormField
                                         name="productId"
@@ -520,6 +516,20 @@ const PurchasePage = () => {
                                                     if (res.data.code === 200) {
                                                         addPurchaseItem(res.data.data.id)
                                                     }
+                                                }).catch((error) => {
+                                                    let errTitle;
+                                                    let errDescription;
+
+                                                    if (error.response.data.code === 404) {
+                                                        errTitle = "Barang tidak ditemukan"
+                                                        errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
+                                                    }
+
+                                                    toast({
+                                                        variant: 'destructive',
+                                                        title: errTitle ?? 'Terjadi kesalahan',
+                                                        description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
+                                                    })
                                                 })
                                             }
                                             finally {

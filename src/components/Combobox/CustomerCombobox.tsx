@@ -29,7 +29,7 @@ import { toast } from "@/components/ui/use-toast"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
-import { ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon, Loader2 } from "lucide-react";
 import CustomerDialog from "@/pages/dashboard/customers/partials/CustomerDialog";
 
 interface CustomerComboboxProps {
@@ -42,12 +42,13 @@ interface CustomerComboboxProps {
 export function CustomerCombobox({ value, disabled = false, onSelect, hasReset = false }: CustomerComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [customers, setCustomers] = useState<ICustomer[]>([]);
 
     async function fetchCustomers() {
+        setIsFetching(true)
         try {
             const response = await axios.get('api/v1/customers?columns=id,company_name');
-
             setCustomers(response.data.data)
         } catch (error) {
             if (error instanceof AxiosError)
@@ -56,6 +57,8 @@ export function CustomerCombobox({ value, disabled = false, onSelect, hasReset =
                     title: 'Terjadi kesalahan',
                     description: error.response?.data.errors,
                 })
+        } finally {
+            setIsFetching(false)
         }
     }
 
@@ -87,7 +90,7 @@ export function CustomerCombobox({ value, disabled = false, onSelect, hasReset =
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
+                    <CustomerList isFetching={isFetching} customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
                 </PopoverContent>
             </Popover>
         )
@@ -110,7 +113,7 @@ export function CustomerCombobox({ value, disabled = false, onSelect, hasReset =
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <CustomerList customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
+                    <CustomerList isFetching={isFetching} customers={customers} setOpen={setOpen} onSelect={onSelect} fetchCustomers={fetchCustomers} hasReset />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -122,13 +125,15 @@ function CustomerList({
     customers,
     setOpen,
     onSelect,
+    isFetching,
     fetchCustomers,
 }: {
     hasReset?: boolean
     customers: ICustomer[]
     setOpen: (open: boolean) => void
     onSelect: (customerId: ICustomer["id"]) => void
-    fetchCustomers: () => void;
+    isFetching: boolean
+    fetchCustomers: () => void
 }) {
     return (
         <Command>
@@ -136,7 +141,7 @@ function CustomerList({
                 placeholder="Cari customer..."
                 className="h-9"
             />
-            {hasReset && (
+            {hasReset && !isFetching && (
                 <CommandGroup>
                     <CommandItem
                         className="py-2 px-2 rounded-md"
@@ -155,29 +160,37 @@ function CustomerList({
             )}
             <CommandSeparator />
             <CommandList>
-                {customers.length < 1 ? (
-                    <CommandGroup className="py-6 text-center text-sm">
-                        Customer tidak ditemukan.
-                    </CommandGroup>
-                ) : (
-                    <>
-                        <CommandEmpty>Customer tidak ditemukan.</CommandEmpty>
-                        <CommandGroup>
-                            {customers.map((customer) => (
-                                <CommandItem
-                                    key={customer.id}
-                                    value={customer.company_name}
-                                    onSelect={() => {
-                                        onSelect(customer.id)
-                                        setOpen(false)
-                                    }}
-                                >
-                                    {customer.company_name}
-                                </CommandItem>
-                            ))}
+                {isFetching
+                    ? (
+                        <CommandGroup className="py-6 text-center text-sm">
+                            <Loader2 className="animate-spin mx-auto" />
                         </CommandGroup>
-                    </>
-                )}
+                    )
+                    : customers.length < 1
+                        ? (
+                            <CommandGroup className="py-6 text-center text-sm">
+                                Customer tidak ditemukan.
+                            </CommandGroup>
+                        ) : (
+                            <>
+                                <CommandEmpty>Customer tidak ditemukan.</CommandEmpty>
+                                <CommandGroup>
+                                    {customers.map((customer) => (
+                                        <CommandItem
+                                            key={customer.id}
+                                            value={customer.company_name}
+                                            onSelect={() => {
+                                                onSelect(customer.id)
+                                                setOpen(false)
+                                            }}
+                                        >
+                                            {customer.company_name}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                            </>
+                        )
+                }
             </CommandList>
             <CommandSeparator />
             <CommandGroup className="hover:bg-zinc-100 dark:hover:bg-zinc-800">

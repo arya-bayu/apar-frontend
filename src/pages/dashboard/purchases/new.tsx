@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { Loader2, Save, ScanLine } from 'lucide-react'
+import { ArrowLeft, Loader2, Save, ScanLine } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -56,6 +56,7 @@ import CustomAlertDialog from "@/components/CustomAlertDialog"
 import { EditText } from 'react-edit-text';
 import currencyFormatter from "@/lib/currency"
 import { Textarea } from "@/components/ui/textarea"
+import Link from "next/link"
 
 const purchaseFormSchema = z.object({
     purchase_number: z.string(),
@@ -287,6 +288,11 @@ const NewPurchasePage = () => {
             title={title}
             headerAction={
                 <div className="flex flex-row space-x-2 ml-4">
+                    <Link href={`/dashboard/purchases`}>
+                        <Button variant="outline" className={`uppercase ${isBelowSm ? 'px-2' : ''}`}>
+                            {isBelowSm ? <ArrowLeft size={15} /> : 'Kembali'}
+                        </Button>
+                    </Link>
                     <Button
                         disabled={isLoading}
                         onClick={async () => {
@@ -423,7 +429,7 @@ const NewPurchasePage = () => {
                                 )}
                             />
                         </div>
-                        <div className="w-full flex flex-row items-end gap-4">
+                        <div className="w-full flex flex-row items-end gap-2 md:gap-4">
                             <div className="w-full min-w-0">
                                 <FormField
                                     name="productId"
@@ -458,6 +464,20 @@ const NewPurchasePage = () => {
                                                 if (res.data.code === 200) {
                                                     addPurchaseItem(res.data.data.id)
                                                 }
+                                            }).catch((error) => {
+                                                let errTitle;
+                                                let errDescription;
+
+                                                if (error.response.data.code === 404) {
+                                                    errTitle = "Barang tidak ditemukan"
+                                                    errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
+                                                }
+
+                                                toast({
+                                                    variant: 'destructive',
+                                                    title: errTitle ?? 'Terjadi kesalahan',
+                                                    description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
+                                                })
                                             })
                                         } finally {
                                             setIsFetchingBarcode(false)

@@ -29,6 +29,7 @@ import { toast } from "@/components/ui/use-toast"
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
+import { Loader2 } from "lucide-react";
 
 interface CategoryComboboxProps {
     value: number | null;
@@ -39,13 +40,14 @@ interface CategoryComboboxProps {
 export function CategoryCombobox({ value, onSelect, hasReset = false }: CategoryComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [categories, setCategories] = useState<ICategory[]>([]);
 
     useEffect(() => {
         async function fetchCategories() {
+            setIsFetching(true)
             try {
                 const response = await axios.get('api/v1/categories?columns=id,name');
-
                 setCategories(response.data.data)
             } catch (error) {
                 if (error instanceof AxiosError)
@@ -54,6 +56,8 @@ export function CategoryCombobox({ value, onSelect, hasReset = false }: Category
                         title: 'Terjadi kesalahan',
                         description: error.response?.data.errors,
                     })
+            } finally {
+                setIsFetching(false)
             }
         }
 
@@ -83,7 +87,7 @@ export function CategoryCombobox({ value, onSelect, hasReset = false }: Category
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
+                    <CategoryList isFetching={isFetching} categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </PopoverContent>
             </Popover>
         )
@@ -106,7 +110,7 @@ export function CategoryCombobox({ value, onSelect, hasReset = false }: Category
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <CategoryList categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
+                    <CategoryList isFetching={isFetching} categories={categories} setOpen={setOpen} onSelect={onSelect} hasReset={hasReset} />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -117,12 +121,14 @@ function CategoryList({
     categories,
     setOpen,
     onSelect,
+    isFetching,
     hasReset
 }: {
-    hasReset?: boolean
     categories: ICategory[]
     setOpen: (open: boolean) => void
     onSelect: (category: ICategory["id"]) => void
+    isFetching: boolean
+    hasReset?: boolean
 }) {
     return (
         <Command>
@@ -130,7 +136,7 @@ function CategoryList({
                 placeholder="Cari kategori..."
                 className="h-9"
             />
-            {hasReset && (
+            {hasReset && !isFetching && (
                 <CommandGroup>
                     <CommandItem
                         className="py-2 px-2 rounded-md"
@@ -149,30 +155,36 @@ function CategoryList({
             )}
             <CommandSeparator />
             <CommandList>
-                {categories.length < 1 ? (
-                    <div
-                        className="py-6 text-center text-sm">
-                        Kategori tidak ditemukan.
-                    </div>
-                ) : (
-                    <>
-                        <CommandEmpty>Kategori tidak ditemukan.</CommandEmpty>
-                        <CommandGroup>
-                            {categories.map((category) => (
-                                <CommandItem
-                                    key={category.id}
-                                    value={category.name}
-                                    onSelect={() => {
-                                        onSelect(category.id)
-                                        setOpen(false)
-                                    }}
-                                >
-                                    {category.name}
-                                </CommandItem>
-                            ))}
+                {isFetching
+                    ? (
+                        <CommandGroup className="py-6 text-center text-sm">
+                            <Loader2 className="animate-spin mx-auto" />
                         </CommandGroup>
-                    </>
-                )}
+                    )
+                    : categories.length < 1 ? (
+                        <div
+                            className="py-6 text-center text-sm">
+                            Kategori tidak ditemukan.
+                        </div>
+                    ) : (
+                        <>
+                            <CommandEmpty>Kategori tidak ditemukan.</CommandEmpty>
+                            <CommandGroup>
+                                {categories.map((category) => (
+                                    <CommandItem
+                                        key={category.id}
+                                        value={category.name}
+                                        onSelect={() => {
+                                            onSelect(category.id)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        {category.name}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </>
+                    )}
             </CommandList>
         </Command>
     )

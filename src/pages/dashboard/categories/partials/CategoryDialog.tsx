@@ -294,7 +294,7 @@ export default function CategoryDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0">
+      <DialogContent className="max-h-[100vh] supports-[max-height:100dvh]:max-h-[calc(100dvh)] supports-[max-height:100svh]:max-h-[calc(100svh)] supports-[max-height:100cqh]:max-h-[calc(100cqh)] space-y-0 overflow-hidden overflow-y-scroll md:overflow-y-hidden px-0">
         {id && !category ? (
           <LoadingSpinner size={36} />
         )

@@ -30,6 +30,7 @@ import { CaretSortIcon } from "@radix-ui/react-icons"
 import { cn } from "@/lib/utils"
 import { ISupplier } from "@/types/supplier";
 import { ICategory } from "@/types/category";
+import { Loader2 } from "lucide-react";
 
 interface ProductComboboxProps {
     value: number | null;
@@ -41,10 +42,12 @@ interface ProductComboboxProps {
 export function ProductCombobox({ supplierId, categoryId, value, onSelect }: ProductComboboxProps) {
     const [open, setOpen] = useState(false)
     const { isAboveMd } = useBreakpoint('md')
+    const [isFetching, setIsFetching] = useState<boolean>(false);
     const [products, setProducts] = useState<IProduct[]>([]);
 
     useEffect(() => {
         async function fetchProducts() {
+            setIsFetching(true)
             const columns = ['id', 'name', 'serial_number'];
             if (supplierId) columns.push('supplier_id');
             if (categoryId) columns.push('category_id');
@@ -62,6 +65,8 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
                         title: 'Terjadi kesalahan',
                         description: error.response?.data.errors,
                     })
+            } finally {
+                setIsFetching(false)
             }
         }
 
@@ -91,7 +96,7 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-[var(--radix-popover-trigger-width)] max-h-[var(--radix-popover-content-available-height)] p-0">
-                    <ProductList products={products} setOpen={setOpen} onSelect={onSelect} />
+                    <ProductList isFetching={isFetching} products={products} setOpen={setOpen} onSelect={onSelect} />
                 </PopoverContent>
             </Popover>
         )
@@ -114,7 +119,7 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
             </DrawerTrigger>
             <DrawerContent>
                 <div className="mt-4 border-t">
-                    <ProductList products={products} setOpen={setOpen} onSelect={onSelect} />
+                    <ProductList isFetching={isFetching} products={products} setOpen={setOpen} onSelect={onSelect} />
                 </div>
             </DrawerContent>
         </Drawer>
@@ -124,10 +129,12 @@ export function ProductCombobox({ supplierId, categoryId, value, onSelect }: Pro
 function ProductList({
     products,
     setOpen,
+    isFetching,
     onSelect,
 }: {
     products: IProduct[]
     setOpen: (open: boolean) => void
+    isFetching: boolean
     onSelect: (productId: IProduct["id"], supplierId?: IProduct["supplier_id"]) => void
 }) {
     return (
@@ -137,30 +144,36 @@ function ProductList({
                 className="h-9"
             />
             <CommandList>
-                {products.length < 1 ? (
-                    <div
-                        className="py-6 text-center text-sm">
-                        Produk tidak ditemukan.
-                    </div>
-                ) : (
-                    <>
-                        <CommandEmpty>Produk tidak ditemukan.</CommandEmpty>
-                        <CommandGroup>
-                            {products.map((product) => (
-                                <CommandItem
-                                    key={product.id}
-                                    value={`[${product.serial_number}] ${product.name}`}
-                                    onSelect={() => {
-                                        onSelect(product.id, product.supplier_id)
-                                        setOpen(false)
-                                    }}
-                                >
-                                    {`[${product.serial_number}] ${product.name}`}
-                                </CommandItem>
-                            ))}
+                {isFetching
+                    ? (
+                        <CommandGroup className="py-6 text-center text-sm">
+                            <Loader2 className="animate-spin mx-auto" />
                         </CommandGroup>
-                    </>
-                )}
+                    )
+                    : products.length < 1 ? (
+                        <div
+                            className="py-6 text-center text-sm">
+                            Produk tidak ditemukan.
+                        </div>
+                    ) : (
+                        <>
+                            <CommandEmpty>Produk tidak ditemukan.</CommandEmpty>
+                            <CommandGroup>
+                                {products.map((product) => (
+                                    <CommandItem
+                                        key={product.id}
+                                        value={`[${product.serial_number}] ${product.name}`}
+                                        onSelect={() => {
+                                            onSelect(product.id, product.supplier_id)
+                                            setOpen(false)
+                                        }}
+                                    >
+                                        {`[${product.serial_number}] ${product.name}`}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </>
+                    )}
 
 
             </CommandList>
