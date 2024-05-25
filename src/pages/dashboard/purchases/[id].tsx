@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { ArrowLeft, Check, Dot, Loader2, Save, X } from 'lucide-react'
+import { ArrowLeft, Check, Dot, Loader2, Save, ScanLine, X } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -111,6 +111,7 @@ const PurchasePage = () => {
     const [existingImages, setExistingImages] = useState<IImage[]>([])
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
+    const [isFetchingBarcode, setIsFetchingBarcode] = useState<boolean>(false);
     const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
     const form = useForm<z.infer<typeof purchaseFormSchema>>({
         resolver: zodResolver(purchaseFormSchema),
@@ -513,13 +514,28 @@ const PurchasePage = () => {
                                     scannerType={scannerType}
                                     onScanResult={(res: string) => {
                                         if (res) {
-                                            axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
-                                                if (res.data.code === 200) {
-                                                    addPurchaseItem(res.data.data.id)
-                                                }
-                                            })
+                                            setIsFetchingBarcode(true)
+                                            try {
+                                                axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
+                                                    if (res.data.code === 200) {
+                                                        addPurchaseItem(res.data.data.id)
+                                                    }
+                                                })
+                                            }
+                                            finally {
+                                                setIsFetchingBarcode(false)
+                                            }
                                         }
-                                    }} />
+
+                                    }}>
+                                    <Button
+                                        disabled={isFetchingBarcode}
+                                        type="button"
+                                        variant="secondary"
+                                        className="aspect-square px-2 py-0">
+                                        {isFetchingBarcode ? <Loader2 className="animate-spin h-5 w-5" /> : <ScanLine size={20} />}
+                                    </Button>
+                                </ScannerDrawerDialog>
 
                                 <Button
                                     disabled={isFetchingProduct}
@@ -878,7 +894,7 @@ const PurchasePage = () => {
                                             )
                                         }
                                     </TableCell>
-                                    {!isBelowSm && (<TableCell />)}
+                                    {!isBelowSm && purchase.status == 0 && (<TableCell />)}
                                 </TableRow>
                                 <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
                                     <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Diskon</TableCell>
@@ -900,7 +916,7 @@ const PurchasePage = () => {
                                             formatDisplayText={(value) => `${currencyFormatter(Number(value))}`}
                                         />
                                     </TableCell>
-                                    {!isBelowSm && (<TableCell />)}
+                                    {!isBelowSm && purchase.status == 0 && (<TableCell />)}
                                 </TableRow>
                                 <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
                                     <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak (%)</TableCell>
@@ -922,7 +938,7 @@ const PurchasePage = () => {
                                             formatDisplayText={(value) => `${value}%`}
                                         />
                                     </TableCell>
-                                    {!isBelowSm && (<TableCell />)}
+                                    {!isBelowSm && purchase.status == 0 && (<TableCell />)}
                                 </TableRow>
                                 <TableRow className="bg-zinc-50 font-medium text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50 hover:bg-zinc-50/90 dark:hover:bg-zinc-800/90">
                                     <TableCell colSpan={isBelowSm ? 1 : 5} className="sm:text-right">Pajak</TableCell>
@@ -936,7 +952,7 @@ const PurchasePage = () => {
                                             )
                                         }
                                     </TableCell>
-                                    {!isBelowSm && (<TableCell />)}
+                                    {!isBelowSm && purchase.status == 0 && (<TableCell />)}
                                 </TableRow>
                                 <TableRow>
                                     <TableCell colSpan={isBelowSm ? 1 : 5}>Total</TableCell>
@@ -951,7 +967,7 @@ const PurchasePage = () => {
                                             )
                                         }
                                     </TableCell>
-                                    {!isBelowSm && (<TableCell />)}
+                                    {!isBelowSm && purchase.status == 0 && (<TableCell />)}
                                 </TableRow>
                             </TableFooter>
                         </Table>

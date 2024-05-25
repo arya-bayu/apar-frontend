@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { DownloadIcon, Loader2, Save } from 'lucide-react'
+import { DownloadIcon, Loader2, Save, ScanLine } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -109,6 +109,7 @@ const InvoicePage = () => {
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
     const [isDownloading, setIsDownloading] = useState<boolean>(false);
+    const [isFetchingBarcode, setIsFetchingBarcode] = useState<boolean>(false);
     const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof invoiceFormSchema>>({
@@ -289,7 +290,8 @@ const InvoicePage = () => {
             })
             return
         }
-        axios.get('api/v1/products/' + id).then((response) => {
+        try {
+            const response = await axios.get('api/v1/products/' + id)
             const newProduct: IProduct = response.data.data
             const newInvoiceItem: IInvoiceItem = {
                 category_id: newProduct.category_id,
@@ -302,15 +304,15 @@ const InvoicePage = () => {
                 product: newProduct,
             }
             setInvoiceItems([...invoiceItems, newInvoiceItem])
-        }).catch((error) => {
-            toast({
-                variant: 'destructive',
-                title: 'Terjadi kesalahan',
-                description: 'Error ' + error.response?.status + ': ' + error.response?.data.errors,
-            })
-        })
+        } catch (error) {
+            if (error instanceof AxiosError)
+                toast({
+                    variant: 'destructive',
+                    title: 'Terjadi kesalahan',
+                    description: 'Error ' + (error.response?.status || 'unknown') + ': ' + (error.response?.data.errors || 'unknown'),
+                })
+        }
     }
-
     if (!invoice) return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />
 
     return (
@@ -318,7 +320,7 @@ const InvoicePage = () => {
             title={title}
             headerAction={
                 <div className="flex flex-row space-x-2 ml-4" >
-                    <Button className="uppercase" variant={"outline"} onClick={router.back}>
+                    <Button className="uppercase" variant={"outline"} onClick={() => (window.history?.length && window.history.length > 1) ? router.back() : router.replace("/dashboard/invoices")}>
                         Kembali
                     </Button>
                     {
@@ -443,11 +445,11 @@ const InvoicePage = () => {
                                 />
                             </div>
                             {invoice?.status === 0 && (
-                                <div className="w-full flex flex-row items-end gap-4">
+                                <div className="w-full flex flex-col md:flex-row items-end gap-4">
                                     <FormField
                                         name="categoryId"
                                         render={() => (
-                                            <FormItem className="w-1/3 md:mt-0">
+                                            <FormItem className="w-full md:w-1/3 md:mt-0">
                                                 <FormLabel>Kategori</FormLabel>
                                                 <FormControl>
                                                     <CategoryCombobox
@@ -462,69 +464,83 @@ const InvoicePage = () => {
                                             </FormItem>
                                         )}
                                     />
-                                    <div className="flex-1 min-w-0">
-                                        <FormField
-                                            name="productId"
-                                            render={() => (
-                                                <FormItem>
-                                                    <FormLabel>Produk</FormLabel>
+                                    <div className="w-full flex flex-row items-end gap-4">
+                                        <div className="flex-1 min-w-0">
+                                            <FormField
+                                                name="productId"
+                                                render={() => (
+                                                    <FormItem>
+                                                        <FormLabel>Produk</FormLabel>
 
-                                                    <FormControl>
-                                                        <ProductCombobox
-                                                            categoryId={selectedCategoryId ?? null}
-                                                            value={selectedProductId ?? null}
-                                                            onSelect={(productId) => {
-                                                                setSelectedProductId(productId);
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
+                                                        <FormControl>
+                                                            <ProductCombobox
+                                                                categoryId={selectedCategoryId ?? null}
+                                                                value={selectedProductId ?? null}
+                                                                onSelect={(productId) => {
+                                                                    setSelectedProductId(productId);
+                                                                }}
+                                                            />
+                                                        </FormControl>
+                                                        <FormMessage />
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </div>
+                                        <ScannerDrawerDialog
+                                            scannerType={scannerType}
+                                            onScanResult={(res: string) => {
+                                                if (res) {
+                                                    setIsFetchingBarcode(true)
+                                                    try {
+                                                        axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
+                                                            if (res.data.code === 200) {
+                                                                addInvoiceItem(res.data.data.id)
+                                                            }
+                                                        }).catch((error) => {
+                                                            let errTitle;
+                                                            let errDescription;
+
+                                                            if (error.response.data.code === 404) {
+                                                                errTitle = "Barang tidak ditemukan"
+                                                                errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
+                                                            }
+
+                                                            toast({
+                                                                variant: 'destructive',
+                                                                title: errTitle ?? 'Terjadi kesalahan',
+                                                                description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
+                                                            })
+                                                        })
+                                                    } finally {
+                                                        setIsFetchingBarcode(false)
+                                                    }
+                                                }
+                                            }}>
+                                            <Button
+                                                disabled={isFetchingBarcode}
+                                                type="button"
+                                                variant="secondary"
+                                                className="aspect-square px-2 py-0">
+                                                {isFetchingBarcode ? <Loader2 className="animate-spin h-5 w-5" /> : <ScanLine size={20} />}
+                                            </Button>
+                                        </ScannerDrawerDialog>
+
+                                        <Button
+                                            disabled={isFetchingProduct}
+                                            onClick={async () => {
+                                                setIsFetchingProduct(true)
+                                                try {
+                                                    selectedProductId && await addInvoiceItem(selectedProductId)
+                                                } finally {
+                                                    setIsFetchingProduct(false)
+                                                }
+                                            }
+                                            }
+                                            type="button"
+                                            className="aspect-square px-2 py-0">
+                                            {isFetchingProduct ? <Loader2 className="animate-spin h-5 w-5" /> : <Plus size={20} />}
+                                        </Button>
                                     </div>
-
-                                    <ScannerDrawerDialog
-                                        scannerType={scannerType}
-                                        onScanResult={(res: string) => {
-                                            if (res) {
-                                                axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
-                                                    if (res.data.code === 200) {
-                                                        addInvoiceItem(res.data.data.id)
-                                                    }
-                                                }).catch((error) => {
-                                                    let errTitle;
-                                                    let errDescription;
-
-                                                    if (error.response.data.code === 404) {
-                                                        errTitle = "Barang tidak ditemukan"
-                                                        errDescription = "Kode serial " + res + " tidak ditemukan pada sistem."
-                                                    }
-
-                                                    toast({
-                                                        variant: 'destructive',
-                                                        title: errTitle ?? 'Terjadi kesalahan',
-                                                        description: errDescription ?? 'Error ' + error.response?.data.code + ': ' + error.response?.data.status,
-                                                    })
-                                                })
-                                            }
-                                        }} />
-
-                                    <Button
-                                        disabled={isFetchingProduct}
-                                        onClick={async () => {
-                                            setIsFetchingProduct(true)
-                                            try {
-                                                selectedProductId && await addInvoiceItem(selectedProductId)
-                                            } finally {
-                                                setIsFetchingProduct(false)
-                                            }
-                                        }
-                                        }
-                                        type="button"
-                                        className="aspect-square px-2 py-0">
-                                        {isFetchingProduct ? <Loader2 className="animate-spin h-5 w-5" /> : <Plus size={20} />}
-                                    </Button>
                                 </div>
                             )}
 

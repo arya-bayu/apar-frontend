@@ -10,7 +10,7 @@ import AppLayout from '@/components/Layouts/AppLayout'
 import { Button } from '@/components/ui/button'
 import withProtected from '@/hoc/withProtected'
 import { useRouter } from 'next/router'
-import { Loader2, Save } from 'lucide-react'
+import { Loader2, Save, ScanLine } from 'lucide-react'
 import ContentLayout from '@/components/Layouts/ContentLayout'
 import { useBreakpoint } from "@/hooks/useBreakpoint"
 
@@ -99,6 +99,7 @@ const NewPurchasePage = () => {
     const [description, setDescription] = useState('')
     const [selectedImages, setSelectedImages] = useState<CustomFile[]>([]);
     const [scannerType, setScannerType] = useState<"BAR" | "QR">("BAR");
+    const [isFetchingBarcode, setIsFetchingBarcode] = useState<boolean>(false);
     const [isFetchingProduct, setIsFetchingProduct] = useState<boolean>(false);
 
     const form = useForm<z.infer<typeof purchaseFormSchema>>({
@@ -451,13 +452,27 @@ const NewPurchasePage = () => {
                                 scannerType={scannerType}
                                 onScanResult={(res: string) => {
                                     if (res) {
-                                        axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
-                                            if (res.data.code === 200) {
-                                                addPurchaseItem(res.data.data.id)
-                                            }
-                                        })
+                                        setIsFetchingBarcode(true)
+                                        try {
+                                            axios.get(`/api/v1/products/serial-number/${res}`).then((res) => {
+                                                if (res.data.code === 200) {
+                                                    addPurchaseItem(res.data.data.id)
+                                                }
+                                            })
+                                        } finally {
+                                            setIsFetchingBarcode(false)
+                                        }
                                     }
-                                }} />
+
+                                }}>
+                                <Button
+                                    disabled={isFetchingBarcode}
+                                    type="button"
+                                    variant="secondary"
+                                    className="aspect-square px-2 py-0">
+                                    {isFetchingBarcode ? <Loader2 className="animate-spin h-5 w-5" /> : <ScanLine size={20} />}
+                                </Button>
+                            </ScannerDrawerDialog>
 
                             <Button
                                 disabled={isFetchingProduct}

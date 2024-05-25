@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { PropsWithChildren, useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -25,25 +25,24 @@ import {
   SelectGroup,
   SelectItem,
   SelectLabel,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Html5Qrcode, Html5QrcodeResult } from 'html5-qrcode'
+import { Html5Qrcode, Html5QrcodeSupportedFormats } from 'html5-qrcode'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
-import { ScanLine } from 'lucide-react'
-import { CameraDevice } from "html5-qrcode/esm/camera/core"
+import { ScanLine, ZapIcon, ZapOff } from 'lucide-react'
+import { BooleanCameraCapability, CameraDevice } from "html5-qrcode/esm/camera/core"
 
 const qrConfig = {
   fps: 30,
   qrbox: { width: 300, height: 300 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
-  focusMode: "continuous",
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
   },
-  advanced: [{ zoom: 2.0 }]
 }
 
 const barConfig = {
@@ -51,12 +50,10 @@ const barConfig = {
   qrbox: { width: 300, height: 150 },
   rememberLastUsedCamera: true,
   showTorchButtonIfSupported: true,
-  focusMode: "continuous",
   useBarCodeDetectorIfSupported: true,
   experimentalFeatures: {
     useBarCodeDetectorIfSupported: true
   },
-  advanced: [{ zoom: 2.0 }]
 }
 
 let html5QrCode: Html5Qrcode | null = null;
@@ -69,34 +66,61 @@ interface ScannerProps {
 
 export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
   const [cameraList, setCameraList] = useState<CameraDevice[]>([]);
-  const [activeCamera, setActiveCamera] = useState<CameraDevice | undefined>();
+  const [activeCamera, setActiveCamera] = useState<CameraDevice | "environment" | "user" | undefined>();
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const [isTorchOn, setIsTorchOn] = useState<boolean>(false)
+  const [currentCameraHasTorch, setCurrentCameraHasTorch] = useState<boolean>(false)
+  const [currentCameraTorchFeature, setCurrentCameraTorchFeature] = useState<BooleanCameraCapability | undefined>(undefined)
 
   useEffect(() => {
-    if (!isScanning) {
+    if (!isScanning && html5QrCode?.isScanning) {
       handleStop()
     }
   }, [isScanning])
 
   useEffect(() => {
-    html5QrCode = new Html5Qrcode('reader')
-    getCameras()
-    const oldRegion = document.getElementById('qr-shaded-region')
-    oldRegion && oldRegion.remove()
-    handleStartCamera()
-  }, [])
+    const initializeScanner = async () => {
+      html5QrCode = new Html5Qrcode('reader');
+      getCameras();
+      const oldRegion = document.getElementById('qr-shaded-region');
+      oldRegion && oldRegion.remove();
+      !isIOS && await new Promise(resolve => setTimeout(resolve, 1000))
+      handleStartCamera({ facingMode: 'environment' });
+    };
 
-  const qrCodeSuccessCallback = (decodedText: string, decodedResult: Html5QrcodeResult) => {
-    onResult(decodedText)
-    handleStop()
-  }
+    initializeScanner();
+  }, []);
 
-  const handleStartCamera = () => {
+  const handleStartCamera = async (cameraIdOrConfig: MediaTrackConstraints) => {
+    const qrCodeSuccessCallback = (decodedText: string) => {
+      onResult(decodedText)
+    }
+
     html5QrCode?.start(
-      { facingMode: 'environment' },
+      cameraIdOrConfig,
       type === 'QR' ? qrConfig : barConfig,
       qrCodeSuccessCallback,
-      () => { }
-    )
+      () => { },
+    ).then(() => {
+      const applyVideoConstraintsWhenScanning = async () => {
+        if (html5QrCode?.isScanning) {
+          html5QrCode?.applyVideoConstraints({
+            // @ts-ignore
+            focusMode: "continuous",
+            // @ts-ignore
+            advanced: [{ zoom: 2.0 }],
+          });
+        } else {
+          setTimeout(applyVideoConstraintsWhenScanning, 100);
+        }
+      }
+
+      const torchFeature = html5QrCode?.getRunningTrackCameraCapabilities().torchFeature()
+      const hasTorch = torchFeature?.isSupported()
+      setCurrentCameraHasTorch(hasTorch || false)
+      setCurrentCameraTorchFeature(torchFeature || undefined)
+      applyVideoConstraintsWhenScanning();
+    })
   }
 
   const getCameras = () => {
@@ -104,7 +128,7 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
       .then(devices => {
         if (devices && devices.length) {
           setCameraList(devices)
-          setActiveCamera(devices[0])
+          setActiveCamera("environment")
         }
       })
       .catch(err => {
@@ -116,43 +140,87 @@ export const Scanner = ({ isScanning, onResult, type }: ScannerProps) => {
     html5QrCode?.stop()
       .then(res => {
         html5QrCode?.clear()
+        setIsTorchOn(false)
       })
       .catch(err => {
       })
   }
 
+  function isCameraDevice(camera: any): camera is CameraDevice {
+    return camera && typeof camera === 'object' && 'id' in camera;
+  }
+
+  const toggleTorch = () => {
+    if (currentCameraHasTorch && currentCameraTorchFeature) {
+      const value = currentCameraTorchFeature!.value()
+      setIsTorchOn(!value)
+      currentCameraTorchFeature!.apply(!value)
+    }
+  }
+
   return (
     <div className="sn:px-0 flex flex-col space-y-4">
-      {activeCamera && cameraList.length > 0 && (
-        <Select
-          value={activeCamera?.id}
-          onValueChange={(value) => {
-            try {
-              setActiveCamera(cameraList.find(cam => cam.id === value))
-              handleStop()
-            } finally {
-              html5QrCode?.start(
-                activeCamera.id,
-                type === 'QR' ? qrConfig : barConfig,
-                qrCodeSuccessCallback,
-                () => { }
-              )
-            }
-          }}
-        >
-          <SelectTrigger className="col-span-4">
-            <SelectValue placeholder="Pilih Kamera" />
-          </SelectTrigger>
-          <SelectContent>
-            {cameraList.map(camera => {
-              return (
-                <SelectItem key={camera.id} value={camera.id}>
-                  {camera.label}
+      {activeCamera && (
+        <div className="flex flex-row gap-2">
+          <Select
+            value={isCameraDevice(activeCamera) ? activeCamera.id : activeCamera}
+            onValueChange={async (value) => {
+              if (value) {
+                setActiveCamera(value === "environment" || value === "user" ? value : cameraList.find(cam => cam.id === value));
+
+                if (html5QrCode?.isScanning) {
+                  await html5QrCode.stop();
+                  html5QrCode.clear();
+                }
+
+                const cameraConfig = value === "environment" || value === "user"
+                  ? { facingMode: { exact: value } }
+                  : { deviceId: { exact: value } };
+                handleStartCamera(cameraConfig);
+              }
+            }}
+          >
+            <SelectTrigger className="col-span-4">
+              <SelectValue placeholder="Pilih Kamera" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Facing Mode</SelectLabel>
+                <SelectItem value={"environment"}>
+                  Back Camera
                 </SelectItem>
-              )
-            })}
-          </SelectContent>
-        </Select>
+                <SelectItem value={"user"}>
+                  Front Camera
+                </SelectItem>
+              </SelectGroup>
+              {cameraList.length > 2 && (
+                <>
+                  <SelectSeparator />
+                  <SelectGroup>
+                    <SelectLabel>Advanced</SelectLabel>
+                    {cameraList.map(camera => (
+                      <SelectItem key={camera.id} value={camera.id}>
+                        {camera.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </>
+              )}
+            </SelectContent>
+          </Select>
+          {(currentCameraHasTorch && currentCameraTorchFeature) && (
+            <Button
+              size="icon"
+              variant="outline"
+              aria-label="Toggle torch"
+              className="aspect-square px-2 py-0"
+              onClick={() =>
+                toggleTorch()
+              }>
+              {isTorchOn ? <ZapIcon size={15} /> : <ZapOff size={15} />}
+            </Button>
+          )}
+        </div>
       )}
       <div id="reader" className="w-[100%]"></div>
     </div>
@@ -164,7 +232,7 @@ export interface ScannerDrawerDialogProps {
   onScanResult: (result: string) => void;
 }
 
-export function ScannerDrawerDialog({ scannerType, onScanResult }: ScannerDrawerDialogProps) {
+export function ScannerDrawerDialog({ scannerType, onScanResult, children }: PropsWithChildren<ScannerDrawerDialogProps>) {
   const { isAboveMd } = useBreakpoint('md')
   const [open, setOpen] = useState(false)
 
@@ -172,16 +240,11 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }: ScannerDrawer
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button
-            type="button"
-            variant="secondary"
-            className="aspect-square px-2 py-0">
-            <ScanLine size={20} />
-          </Button>
+          {children}
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>Scan barcode</DialogTitle>
+            <DialogTitle>Scan barcode { }</DialogTitle>
             <DialogDescription>
               Pindai barcode produk inventory {process.env.NEXT_PUBLIC_APP_NAME}
             </DialogDescription>
@@ -205,9 +268,7 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }: ScannerDrawer
       onOpenChange={setOpen}
     >
       <DrawerTrigger asChild>
-        <Button type="button" className="aspect-square px-2 py-0">
-          <ScanLine size={20} />
-        </Button>
+        {children}
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
@@ -228,7 +289,7 @@ export function ScannerDrawerDialog({ scannerType, onScanResult }: ScannerDrawer
         </div>
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
-            <Button variant="outline">Batal</Button>
+            <Button onClick={() => setOpen(false)} variant="outline">Batal</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
