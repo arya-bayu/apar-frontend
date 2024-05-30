@@ -38,7 +38,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { AxiosError } from 'axios'
 import { IProduct } from '@/types/product'
 import { KeyedMutator } from 'swr'
@@ -358,7 +357,7 @@ export default function ProductDialog({
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-4">
+                className="flex flex-col gap-4 overflow-x-hidden">
                 <div className="space-y-3">
                   <Dropzone
                     required
