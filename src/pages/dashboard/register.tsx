@@ -52,6 +52,7 @@ const Register = () => {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showConfPassword, setShowConfPassword] = useState<boolean>(false)
 
   const form = useForm<z.infer<typeof registerFormScheme>>({
     resolver: zodResolver(registerFormScheme),
@@ -213,7 +214,7 @@ const Register = () => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input required autoComplete="current-password" type={showPassword ? 'text' : 'password'} {...field} />
+                      <Input required autoComplete="new-password" type={showPassword ? 'text' : 'password'} {...field} />
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
                         {showPassword ? (
                           <EyeOffIcon className="h-5 w-5" onClick={() => setShowPassword(!showPassword)} />
@@ -234,7 +235,16 @@ const Register = () => {
                 <FormItem>
                   <FormLabel>Konfirmasi Password</FormLabel>
                   <FormControl>
-                    <Input required type="password" {...field} />
+                    <div className="relative">
+                      <Input required autoComplete="new-password" type={showConfPassword ? 'text' : 'password'} {...field} />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 cursor-pointer">
+                        {showConfPassword ? (
+                          <EyeOffIcon className="h-5 w-5" onClick={() => setShowConfPassword(!showConfPassword)} />
+                        ) : (
+                          <EyeIcon className=" h-5 w-5" onClick={() => setShowConfPassword(!showConfPassword)} />
+                        )}
+                      </div>
+                    </div>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

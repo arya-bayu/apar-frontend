@@ -356,14 +356,10 @@ const Customers = () => {
 
   const handleExportData = async (
     fileType: 'XLSX' | 'CSV',
-    id?: ICustomer['id'][],
-    startDate?: string,
-    endDate?: string,
+    id?: ICustomer['id'][]
   ) => {
     const params = {
       id: id,
-      startDate: startDate,
-      endDate: endDate,
       fileType: fileType,
     }
 
@@ -384,10 +380,6 @@ const Customers = () => {
 
       if (id && id.length > 0) {
         fileName += ' (Custom Export)'
-      }
-
-      if (startDate && endDate) {
-        fileName += ` (Custom Range Export) ${startDate}-${endDate}`
       }
 
       fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`

@@ -356,13 +356,9 @@ const Categories = () => {
   const handleExportData = async (
     fileType: 'XLSX' | 'CSV',
     id?: ICategory['id'][],
-    startDate?: string,
-    endDate?: string,
   ) => {
     const params = {
       id: id,
-      startDate: startDate,
-      endDate: endDate,
       fileType: fileType,
     }
 
@@ -383,10 +379,6 @@ const Categories = () => {
 
       if (id && id.length > 0) {
         fileName += ' (Custom Export)'
-      }
-
-      if (startDate && endDate) {
-        fileName += ` (Custom Range Export) ${startDate}-${endDate}`
       }
 
       fileName += ` ${date} T${time} ${appName}.${fileType?.toLowerCase()}`

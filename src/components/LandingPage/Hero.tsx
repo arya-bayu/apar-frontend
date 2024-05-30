@@ -39,7 +39,7 @@ const Hero = () => (
                 </div>
             </div>
             <div className="mx-auto mt-16 lg:mt-0 overflow-hidden flex justify-center lg:justify-normal max-w-2xl lg:ml-10 lg:mr-0 lg:max-w-none lg:flex-none xl:ml-24">
-                <img src="/hero.png" alt="mockup" className="h-[25rem]" />
+                <img src="/hero.svg" alt="mockup" className="h-[25rem]" />
             </div>
         </div>
     </section>

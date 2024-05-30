@@ -6,7 +6,7 @@ const AuthCard = ({ children }: PropsWithChildren) => (
   <div className="flex min-h-screen flex-col items-center bg-zinc-100 pt-6 dark:bg-zinc-900 sm:justify-center sm:pt-0">
     <div>
       <Link href="/">
-        <Image src="/logo.png" width={80} height={80} alt="Logo" />
+        <Image src="/logo.png" width={80} height={80} alt="Logo" priority />
       </Link>
     </div>
 
