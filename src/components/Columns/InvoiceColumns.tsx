@@ -59,10 +59,10 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
   {
     accessorKey: 'total',
     meta: {
-      title: 'Total Pembelian',
+      title: 'Total Penjualan',
     },
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Total Pembelian" />
+      <DataTableColumnHeader column={column} title="Total Penjualan" />
     ),
     cell: ({ row }) => {
       const invoice = row.original
@@ -106,7 +106,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
                     toast({
                       variant: 'success',
                       title: 'Sukses',
-                      description: `Data pembelian ${invoice?.invoice_number} telah disetujui.`,
+                      description: `Data penjualan ${invoice?.invoice_number} telah disetujui.`,
                     })
 
                     table.options.meta?.mutate?.()
@@ -126,8 +126,8 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
               {/* reject invoice */}
               {can('delete invoices') && (
                 <DropdownMenuItem onClick={() => {
-                  setAlertTitle("Tolak Pembelian")
-                  setAlertDescription("Apakah Anda yakin ingin mengubah status pembelian menjadi ditolak? Menolak pembelian akan menghapus data pembelian ini.")
+                  setAlertTitle("Tolak Penjualan")
+                  setAlertDescription("Apakah Anda yakin ingin mengubah status penjualan menjadi ditolak? Menolak penjualan akan menghapus data penjualan ini.")
                   setAlertContinueAction(() => {
                     return () => {
                       axios.delete(`/api/v1/invoices`, {
@@ -136,7 +136,7 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
                         toast({
                           variant: 'success',
                           title: 'Sukses',
-                          description: `Data pembelian ${invoice?.invoice_number} telah dihapus.`,
+                          description: `Data penjualan ${invoice?.invoice_number} telah dihapus.`,
                         })
 
                         table.options.meta?.mutate?.()

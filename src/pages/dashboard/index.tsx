@@ -3,7 +3,7 @@ import ContentLayout from '@/components/Layouts/ContentLayout'
 import withProtected from '@/hoc/withProtected'
 import currencyFormatter from "@/lib/currency";
 import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
-import { CreditCardIcon, ShoppingBagIcon, Users2Icon } from "lucide-react"
+import { ArrowDown, ArrowUp, ArrowUp01Icon, BoxesIcon, CreditCardIcon, DownloadIcon, ShoppingBagIcon, Users2Icon } from "lucide-react"
 import RevenueChart, { IRevenueData } from "../../components/RevenueChart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
@@ -68,6 +68,35 @@ const DashboardCard = ({ title, data, icon, trend }: CardProps) => {
   )
 }
 
+const HorizontalDashboardCard = ({ title, data, icon, trend }: CardProps) => {
+  return (
+    <div className="flex flex-row w-full justify-between bg-zinc-50 px-4 py-4 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+      <div className="flex flex-row items-center space-x-2">
+        {icon}
+        <p className="text-sm font-medium">{title}</p>
+        {trend !== null && trend > 0 ? (
+          <div className="flex items-center bg-green-200/60 dark:bg-green-500/60 h-4 rounded-lg text-[0.5rem] text-green-500 dark:text-white px-1 font-semibold">
+            <ArrowTopRightIcon height={11} width={11} />
+            <span>+{trend}%</span>
+          </div>
+        ) : trend !== null && trend < 0 ? (
+          <div className="flex items-center bg-red-200/60 dark:bg-red-500/60 h-4 rounded-lg text-[0.5rem] text-red-500 dark:text-white px-1 font-semibold">
+            <ArrowBottomLeftIcon height={11} width={11} />
+            <span>{trend}%</span>
+          </div>
+        ) : trend !== null && trend === 0 ? (
+          <div className="flex items-center bg-zinc-200/60 dark:bg-zinc-500/60 h-4 rounded-lg text-[0.5rem] text-zinc-500 dark:text-white px-2 font-semibold">
+            {trend}%
+          </div>
+        ) : null}
+      </div>
+      <div className="flex flex-row">
+        <p className="text-lg font-bold">{data}</p>
+      </div>
+    </div>
+  )
+}
+
 interface InvoiceParams {
   columns: string;
   from_date?: string;
@@ -82,15 +111,24 @@ const Dashboard = () => {
     to: new Date(),
   })
   const [chartPeriod, setChartPeriod] = useState<'daily' | 'monthly' | 'yearly'>('daily')
+
   const [revenue, setRevenue] = useState(0)
   const [prevRevenue, setPrevRevenue] = useState(0)
+
+  const [expense, setExpense] = useState(0)
+  const [prevExpense, setPrevExpense] = useState(0)
+
+  const [netIncome, setNetIncome] = useState(0)
+  const [prevNetIncome, setPrevNetIncome] = useState(0)
+
   const [orders, setOrders] = useState(0)
   const [prevOrders, setPrevOrders] = useState(0)
+
   const [products, setProducts] = useState(0)
   const [prevProducts, setPrevProducts] = useState(0)
-  const [customers, setCustomers] = useState(0)
-  const [prevCustomers, setPrevCustomers] = useState(0)
+
   const [revenueData, setRevenueData] = useState<IRevenueData[]>()
+
   const [invoices, setInvoices] = useState<IInvoice[]>()
   const [invoiceStatus, setInvoiceStatus] = useState('1')
 
@@ -106,14 +144,17 @@ const Dashboard = () => {
       setRevenue(response.data.data.revenue)
       setPrevRevenue(response.data.data.previous_revenue)
 
+      setExpense(response.data.data.expense)
+      setPrevExpense(response.data.data.previous_expense)
+
+      setNetIncome(response.data.data.net_income)
+      setPrevNetIncome(response.data.data.previous_net_income)
+
       setOrders(response.data.data.approved_orders)
       setPrevOrders(response.data.data.previous_approved_orders)
 
       setProducts(response.data.data.products_sold)
       setPrevProducts(response.data.data.previous_products_sold)
-
-      setCustomers(response.data.data.customers)
-      setPrevCustomers(response.data.data.previous_customers)
 
       setRevenueData(response.data.data.sales_timeseries)
     } catch (error) {
@@ -175,24 +216,47 @@ const Dashboard = () => {
     >
       <ContentLayout className="sm:my-12 sm:mx-6 lg:mx-8 py-8 px-6">
         <div className="space-y-4">
+          <div>
+            <HorizontalDashboardCard
+              icon={
+                <div className="bg-zinc-500/15 border-zinc-500/15 dark:bg-zinc-200/15 border dark:border-zinc-200/15 w-6 h-6 flex justify-center items-center rounded-md shadow-xl shadow-zinc-500/60">
+                  <p className="text-zinc-800 dark:text-zinc-300 font-bold text-xs">Rp</p>
+                </div>
+              }
+              title="Net Income"
+              data={currencyFormatter(netIncome)}
+              trend={netIncome ? ((netIncome - prevNetIncome) / prevNetIncome) * 100 : null}
+            />
+          </div>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <DashboardCard
               icon={
-                <div className="bg-blue-500/15 border border-blue-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-blue-500/60">
-                  <p className="text-blue-500 font-bold">Rp</p>
+                <div className="bg-green-500/15 border border-green-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-green-500/60">
+                  <ArrowDown size="24" className="text-green-600" />
                 </div>
               }
-              title="Total Pendapatan"
+              title="Pendapatan"
               data={currencyFormatter(revenue)}
               trend={prevRevenue ? ((revenue - prevRevenue) / prevRevenue) * 100 : null}
             />
+
             <DashboardCard
               icon={
-                <div className="bg-green-500/15 border border-green-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-green-500/60">
-                  <CreditCardIcon size="24" className="text-green-500" />
+                <div className="bg-red-500/15 border border-red-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-red-500/60">
+                  <ArrowUp size="24" className="text-red-500" />
                 </div>
               }
-              title="Pesanan"
+              title="Pengeluaran"
+              data={currencyFormatter(expense)}
+              trend={prevExpense ? ((expense - prevExpense) / prevExpense) * 100 : null}
+            />
+            <DashboardCard
+              icon={
+                <div className="bg-blue-500/15 border border-blue-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-blue-500/60">
+                  <ShoppingBagIcon size="24" className="text-blue-500" />
+                </div>
+              }
+              title="Pesanan Sukses"
               data={String(orders)}
               trend={prevOrders ? ((orders - prevOrders) / prevOrders) * 100 : null}
             />
@@ -200,23 +264,12 @@ const Dashboard = () => {
             <DashboardCard
               icon={
                 <div className="bg-purple-500/15 border border-purple-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-purple-500/60">
-                  <ShoppingBagIcon size="24" className="text-purple-500" />
+                  <BoxesIcon size="24" className="text-purple-500" />
                 </div>
               }
               title="Produk Terjual"
               data={String(products)}
               trend={prevProducts ? ((products - prevProducts) / prevProducts) * 100 : null}
-            />
-
-            <DashboardCard
-              icon={
-                <div className="bg-red-500/15 border border-red-500/15 w-9 h-9 flex justify-center items-center rounded-md shadow-xl shadow-red-500/60">
-                  <Users2Icon size="24" className="text-red-500" />
-                </div>
-              }
-              title="Customer"
-              data={customers.toString()}
-              trend={prevCustomers ? ((customers - prevCustomers) / prevCustomers) * 100 : null}
             />
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
