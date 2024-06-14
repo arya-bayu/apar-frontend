@@ -19,9 +19,10 @@ interface ICustomAlertDialog {
     title: string;
     description: string;
     onContinue: () => void;
+    withManualClose?: boolean;
 }
 
-const CustomAlertDialog = ({ open, onOpenChange, title, description, onContinue }: ICustomAlertDialog) => {
+const CustomAlertDialog = ({ open, onOpenChange, title, description, onContinue, withManualClose = false }: ICustomAlertDialog) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     return (
@@ -41,7 +42,7 @@ const CustomAlertDialog = ({ open, onOpenChange, title, description, onContinue 
                                 await onContinue();
                             } finally {
                                 setIsLoading(false);
-                                onOpenChange(false);
+                                !withManualClose && onOpenChange(false);
                             }
                         }}
                     >

@@ -52,7 +52,7 @@ export default function CategoryPage() {
         pageSize: 12,
     });
 
-    const productsUrl = `api/v1/products?columns=id,name,price,category_id&pageIndex=${pageIndex}&pageSize=${pageSize}${filter ? `&filter=${filter}` : ''}${sortBy ? `&sortBy=${sortBy}` : ''}`;
+    const productsUrl = `api/v1/products?columns=id,name,price,category_id&status=1&pageIndex=${pageIndex}&pageSize=${pageSize}${filter ? `&filter=${filter}` : ''}${sortBy ? `&sortBy=${sortBy}` : ''}`;
     const { data: products, isValidating: isProductsValidating } = useSWR(productsUrl, fetcher, { keepPreviousData: true });
 
     const pageCount = Array.from({ length: products?.data?.pageCount }, (_, i) => i + 1);

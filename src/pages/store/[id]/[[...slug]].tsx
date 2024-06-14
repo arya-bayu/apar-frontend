@@ -53,9 +53,9 @@ export default function CategoryPage() {
         pageSize: 12,
     });
 
-    const { data: category, error: categoriesError } = useSWR(`api/v1/categories/${id}`, fetcher, { keepPreviousData: true });
+    const { data: category, error: categoryError, isValidating: isCategoryValidating } = useSWR(`api/v1/categories/${id}`, fetcher, { keepPreviousData: true });
 
-    if (categoriesError) {
+    if (categoryError) {
         router.push('/404');
     }
 
@@ -70,7 +70,7 @@ export default function CategoryPage() {
         }
     }, [slug, category, redirected, router, id]);
 
-    const productsUrl = `api/v1/products?columns=id,name,price,category_id&category_id=${id}&pageIndex=${pageIndex}&pageSize=${pageSize}${filter ? `&filter=${filter}` : ''}${sortBy ? `&sortBy=${sortBy}` : ''}`;
+    const productsUrl = `api/v1/products?columns=id,name,price,category_id&category_id=${id}&status=1&pageIndex=${pageIndex}&pageSize=${pageSize}${filter ? `&filter=${filter}` : ''}${sortBy ? `&sortBy=${sortBy}` : ''}`;
     const { data: products, isValidating: isProductsValidating } = useSWR(productsUrl, fetcher, { keepPreviousData: true });
 
     const pageCount = Array.from({ length: products?.data?.pageCount }, (_, i) => i + 1);
@@ -99,7 +99,7 @@ export default function CategoryPage() {
         setFilter(debouncedFilter)
     }, [debouncedFilter])
 
-    if (!category) {
+    if (!category || isCategoryValidating) {
         return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />;
     }
 

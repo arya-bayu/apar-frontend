@@ -58,6 +58,7 @@ const Products = () => {
   const [alertContinueAction, setAlertContinueAction] = useState(() => {
     return () => { };
   });
+  const [alertWithManualClose, setAlertWithManualClose] = useState(false)
 
   const [exportDialog, setExportDialog] = useState(false)
   const [exportDialogDescription, setExportDialogDescription] = useState<string>("")
@@ -194,11 +195,14 @@ const Products = () => {
   }
 
   const handleDelete = async (data: IProduct[] | string[]) => {
+
+    let isConflict = false;
+
     const id = isProductArray(data)
       ? data.map(produk => produk.id)
       : data
 
-
+    setAlertWithManualClose(true)
     setAlertTitle("Hapus Produk?")
     setAlertDescription(`
       ${(isProductArray(data) ? data[0]["name"] : data.length + ' data ')}
@@ -312,6 +316,8 @@ const Products = () => {
           }
         } catch (error) {
           if (error instanceof AxiosError && error.response?.data.code === 409) {
+            isConflict = true
+            setAlertWithManualClose(false)
             setAlertTitle("Nonaktifkan Produk?")
             setAlertDescription(`Data produk masih terasosiasi dengan data pembelian atau invoice.`)
             setAlertContinueAction(() => {
@@ -320,19 +326,18 @@ const Products = () => {
                   'product_ids': id,
                   'active': false
                 }).then(() => {
-                  mutate()
                   toast({
                     variant: 'default',
                     title: 'Sukses',
                     description: `${isProductArray(data) ? data[0]['name'] : data.length + ' produk'} telah dinonaktifkan.`
                   })
                 })
+                router.reload()
               }
             })
 
             setAlert(true)
-          }
-          else {
+          } else {
             toast({
               variant: 'destructive',
               title: 'Gagal',
@@ -343,6 +348,8 @@ const Products = () => {
             })
           }
         }
+
+        if (!isConflict) setAlert(false)
       }
     })
 
@@ -352,6 +359,7 @@ const Products = () => {
   const handleEmptyTrash = async () => {
     if (!isTrash) return
 
+    setAlertWithManualClose(false)
     setAlertTitle("Kosongkan Sampah?")
     setAlertDescription(`Seluruh data akan dihapus secara permanen`)
     setAlertContinueAction(() => {
@@ -499,6 +507,7 @@ const Products = () => {
         title={alertTitle}
         description={alertDescription}
         onContinue={alertContinueAction}
+        withManualClose={alertWithManualClose}
       />
       <CustomExportDialog
         open={exportDialog}

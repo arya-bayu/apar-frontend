@@ -42,6 +42,11 @@ export default function CategoryPage() {
     useEffect(() => {
         if (!product || redirected) return;
 
+        if (product?.data?.status === 0) {
+            router.push('/404');
+            return;
+        }
+
         const correctSlug = formatNameForSlug(product?.data?.name);
 
         if (slug !== correctSlug) {
@@ -50,7 +55,7 @@ export default function CategoryPage() {
         }
     }, [slug, product, redirected, router, id]);
 
-    if (!product || isProductValidating) {
+    if (!product || isProductValidating || product?.data?.status === 0) {
         return <LoadingSpinner className="h-[calc(100dvh)] supports-[height:100svh]:h-[calc(100svh)] supports-[height:100cqh]:h-[calc(100cqh)]" size={36} />;
     }
 
