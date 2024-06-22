@@ -1131,6 +1131,23 @@ const InvoicePage = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                        {invoice.images.length > 0 && (
+                                            <div className="space-y-3">
+                                                <p className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Lampiran</p>
+                                                <Dropzone
+                                                    disabled={true}
+                                                    allowMultiple
+                                                    multipleImages={existingImages}
+                                                    onImagesChange={(images) => {
+                                                        setSelectedImages(images);
+                                                    }}
+                                                    onExistingImagesChange={(images) => {
+                                                        setExistingImages(images);
+                                                    }}
+                                                    maxFiles={20 - existingImages.length - selectedImages.length}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

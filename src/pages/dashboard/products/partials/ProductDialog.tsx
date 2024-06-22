@@ -204,7 +204,6 @@ export default function ProductDialog({
         images.push(response.data.data);
       } catch (error) {
         if (error instanceof AxiosError) {
-          console.log(error)
           toast({
             variant: 'destructive',
             title: 'Terjadi kesalahan',
