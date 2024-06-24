@@ -101,7 +101,7 @@ export const productColumns: ColumnDef<IProduct>[] = [
     ),
     cell: ({ row }) => {
       const product = row.original
-      return (<>{product.stock} {product.stock < 5 && (<><Badge variant="warning" className="w-auto px-1">Low</Badge></>)}</>)
+      return product.stock
     }
   },
   {
@@ -128,6 +128,7 @@ export const productColumns: ColumnDef<IProduct>[] = [
     cell: ({ row }) => {
       const product = row.original
       return product.supplier?.name
+      // return `${product.supplier?.name} (${product.supplier.category})`
     }
   },
   {

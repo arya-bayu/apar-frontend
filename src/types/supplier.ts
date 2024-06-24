@@ -1,6 +1,7 @@
 export interface ISupplier {
   id: number
   name: string
+  category:string
   phone: string
   email: string
   address: string

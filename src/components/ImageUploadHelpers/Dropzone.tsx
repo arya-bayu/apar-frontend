@@ -156,6 +156,8 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                     {maxImages === 1 && (singleImage || images.length > 0) && (
                         <Image
                             priority
+                            loading="eager"
+                            unoptimized
                             src={images.length > 0 ? images[0].preview : `${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + singleImage?.path}
                             alt={images.length > 0 ? images[0].name : "Header Image"}
                             width={0}
@@ -216,11 +218,12 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                                     <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3">
                                         <Image
                                             priority
+                                            loading="eager"
+                                            unoptimized
                                             src={`${process.env.NEXT_PUBLIC_BACKEND_URL}/storage/` + image.path}
                                             alt={`Gambar ${index}`}
                                             width={100}
                                             height={100}
-                                            unoptimized
                                             className='h-full w-full object-contain rounded-lg aspect-square bg-white border'
                                         />
                                         {!disabled && onExistingImagesChange && (
@@ -244,6 +247,8 @@ const Dropzone: React.FC<DropzoneProps> = ({ className, required = false, disabl
                                     <CarouselItem key={index} className="md:basis-1/2 relative lg:basis-1/3">
                                         <Image
                                             priority
+                                            loading="eager"
+                                            unoptimized
                                             src={file.preview}
                                             alt={file.name}
                                             width={100}

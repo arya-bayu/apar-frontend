@@ -47,6 +47,7 @@ interface ISupplierDialog<TData> {
 
 const supplierFormSchema = z.object({
   name: z.string(),
+  category: z.string(),
   phone: z.string().refine(validator.isMobilePhone, {
     message: 'Nomor telepon tidak valid',
   }),
@@ -98,6 +99,7 @@ export default function SupplierDialog({
   useEffect(() => {
     form.reset({
       name: supplier?.name ?? '',
+      category: supplier?.category ?? '',
       phone: supplier?.phone ?? '',
       email: supplier?.email ?? '',
       address: supplier?.address ?? '',
@@ -115,6 +117,7 @@ export default function SupplierDialog({
 
     const data = {
       name: values.name,
+      category: values.category,
       phone: values.phone,
       email: values.email,
       address: values.address,
@@ -145,6 +148,12 @@ export default function SupplierDialog({
             form.setError('name', {
               type: 'server',
               message: errors.name,
+            })
+          }
+          if (errors.category) {
+            form.setError('category', {
+              type: 'server',
+              message: errors.category,
             })
           }
           if (errors.phone) {
@@ -205,7 +214,24 @@ export default function SupplierDialog({
                       <FormLabel>Nama Perusahaan</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="PT. Alat Pemadam Api Ringan"
+                          placeholder="PT. Surya Global Trade"
+                          {...field}
+                          required
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Kategori Supplier</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Dry Powder & Foam Refill Manufacturer"
                           {...field}
                           required
                         />
@@ -221,7 +247,7 @@ export default function SupplierDialog({
                     <FormItem>
                       <FormLabel>Telepon</FormLabel>
                       <FormControl>
-                        <Input placeholder="+6281000000" {...field} required />
+                        <Input placeholder="+628100000000" {...field} required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -235,7 +261,7 @@ export default function SupplierDialog({
                       <FormLabel>Email</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="hello@indokasuryajaya.com"
+                          placeholder="business@suryaglobaltrade.com"
                           {...field}
                           required
                         />

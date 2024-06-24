@@ -528,7 +528,7 @@ const NewInvoicePage = () => {
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead className="gap-2">Stok </TableHead>
-                                                <TableCell>{item.product.stock} {item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
+                                                <TableCell>{item.product.stock}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableHead>Qty</TableHead>
@@ -678,7 +678,7 @@ const NewInvoicePage = () => {
                                         <TableRow key={item.id}>
                                             <TableCell className="font-medium"><p className="line-clamp-2">{item.product?.name}</p></TableCell>
                                             <TableCell>{item.category.name}</TableCell>
-                                            <TableCell className="gap-2">{item.product?.stock} {item.quantity > item.product.stock && (<><Badge variant="warning" className="w-auto px-1">Low Stock</Badge></>)}</TableCell>
+                                            <TableCell className="gap-2">{item.product?.stock}</TableCell>
                                             <TableCell>
                                                 <FormField
                                                     name="quantity"

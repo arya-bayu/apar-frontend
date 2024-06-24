@@ -3,7 +3,7 @@ import ContentLayout from '@/components/Layouts/ContentLayout'
 import withProtected from '@/hoc/withProtected'
 import currencyFormatter from "@/lib/currency";
 import { ArrowBottomLeftIcon, ArrowTopRightIcon } from "@radix-ui/react-icons";
-import { ArrowDown, ArrowUp, ArrowUp01Icon, BoxesIcon, CreditCardIcon, DownloadIcon, ShoppingBagIcon, Users2Icon } from "lucide-react"
+import { ArrowDown, ArrowUp, BoxesIcon, LineChart, ShoppingBagIcon, Table2Icon } from "lucide-react"
 import RevenueChart, { IRevenueData } from "../../components/RevenueChart";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Link from "next/link";
@@ -34,6 +34,8 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb"
+import { cn } from '@/lib/utils';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface CardProps {
   title: string;
@@ -104,13 +106,43 @@ interface InvoiceParams {
   status?: string;
 }
 
+
+export const reportMode = [
+  {
+    label: "Statistik Pendapatan",
+    icon: (
+      <LineChart />
+    ),
+  },
+  {
+    label: "Ranking Pendapatan",
+    icon: (
+      <Table2Icon />
+    ),
+  },
+]
+
+export type ReportMode = (typeof reportMode)[number]
+
+type MonthlyRevenueRank = {
+  [key: string]: number;
+};
+
 const Dashboard = () => {
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(false)
+  const [selectedReportMode, setSelectedReportMode] = useState<string>(
+    reportMode[0].label
+  )
+
+
   const title = 'Dashboard'
   const [date, setDate] = useState<DateRange | undefined>({
-    from: subMonths(new Date(), 1),
+    from: subMonths(new Date(), 12),
     to: new Date(),
   })
-  const [chartPeriod, setChartPeriod] = useState<'daily' | 'monthly' | 'yearly'>('daily')
+  const [chartPeriod, setChartPeriod] = useState<'daily' | 'monthly' | 'yearly'>('monthly')
+
+  const [rankMonthlyRevenueByLeast, setRankMonthlyRevenueByLeast] = useState<'0' | '1'>('0')
 
   const [revenue, setRevenue] = useState(0)
   const [prevRevenue, setPrevRevenue] = useState(0)
@@ -128,6 +160,7 @@ const Dashboard = () => {
   const [prevProducts, setPrevProducts] = useState(0)
 
   const [revenueData, setRevenueData] = useState<IRevenueData[]>()
+  const [monthlyRevenueRank, setMonthlyRevenueRank] = useState<MonthlyRevenueRank | null>(null)
 
   const [invoices, setInvoices] = useState<IInvoice[]>()
   const [invoiceStatus, setInvoiceStatus] = useState('1')
@@ -138,7 +171,8 @@ const Dashboard = () => {
         params: {
           from_date: date?.from ? format(date?.from, 'yyyy-MM-dd') : undefined,
           to_date: date?.to ? format(date?.to, 'yyyy-MM-dd') : undefined,
-          period: chartPeriod
+          period: chartPeriod,
+          rank_monthly_revenue_by_least: rankMonthlyRevenueByLeast
         }
       });
       setRevenue(response.data.data.revenue)
@@ -157,6 +191,7 @@ const Dashboard = () => {
       setPrevProducts(response.data.data.previous_products_sold)
 
       setRevenueData(response.data.data.sales_timeseries)
+      setMonthlyRevenueRank(response.data.data.monthly_revenue)
     } catch (error) {
       if (error instanceof AxiosError) {
         toast({
@@ -194,7 +229,7 @@ const Dashboard = () => {
     if (!date) return
     fetchDashboard()
     fetchInvoices()
-  }, [date, chartPeriod])
+  }, [date, chartPeriod, rankMonthlyRevenueByLeast])
 
   useEffect(() => {
     fetchInvoices()
@@ -274,23 +309,101 @@ const Dashboard = () => {
           </div>
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex flex-col w-full lg:w-2/3 bg-zinc-50 shadow-md dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-700 rounded-lg">
-              <div className="flex flex-row justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800">
-                <h2 className="text-md font-semibold">Statistik Pendapatan</h2>
-                <ToggleGroup value={chartPeriod} type="single" size="default" onValueChange={(value: "daily" | "monthly" | "yearly") => setChartPeriod(value)}>
-                  <ToggleGroupItem value="daily" aria-label="Toggle daily">
-                    1D
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="monthly" aria-label="Toggle monthly">
-                    1M
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="yearly" aria-label="Toggle chart">
-                    1Y
-                  </ToggleGroupItem>
-                </ToggleGroup>
+              <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 justify-between items-center border-0 border-b-2 py-4 px-4 dark:border-zinc-800 space-x-8">
+                <Select defaultValue={selectedReportMode} onValueChange={setSelectedReportMode}>
+                  <SelectTrigger
+                    className={cn(
+                      "flex items-center gap-2 [&>span]:line-clamp-1 [&>span]:flex [&>span]:w-full [&>span]:items-center [&>span]:gap-1 [&>span]:truncate [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0",
+                      isCollapsed &&
+                        "flex h-9 w-9 shrink-0 items-center justify-center p-0 [&>span]:w-auto [&>svg]:hidden"
+                    )}
+                    aria-label="Pilih Mode Laporan"
+                  >
+                    <SelectValue placeholder="Pilih Mode Laporan">
+                      {reportMode.find((report) => report.label === selectedReportMode)?.icon}
+                      <span className={cn("ml-2", isCollapsed && "hidden")}>
+                        {
+                          reportMode.find((report) => report.label === selectedReportMode)
+                            ?.label
+                        }
+                      </span>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {reportMode.map((account) => (
+                      <SelectItem key={account.label} value={account.label}>
+                        <div className="flex items-center gap-3 [&_svg]:h-4 [&_svg]:w-4 [&_svg]:shrink-0 [&_svg]:text-foreground">
+                          {account.icon}
+                          {account.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {
+                  selectedReportMode === reportMode[0].label ? (
+                  <div className='w-full flex justify-end px-4 sm:px-0'>
+                    <ToggleGroup value={chartPeriod} type="single" size="default" onValueChange={(value: "daily" | "monthly" | "yearly") => setChartPeriod(value)}>
+                    <ToggleGroupItem value="daily" aria-label="Toggle daily">
+                      1D
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="monthly" aria-label="Toggle monthly">
+                      1M
+                    </ToggleGroupItem>
+                    <ToggleGroupItem value="yearly" aria-label="Toggle chart">
+                      1Y
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  </div>
+                  ) : selectedReportMode === reportMode[1].label && (
+                  <div className='w-full flex justify-end px-4 sm:px-0'>
+                    <Select
+                      value={rankMonthlyRevenueByLeast}
+                      onValueChange={(value: "0" | "1") => setRankMonthlyRevenueByLeast(value)}>
+                      <SelectTrigger className="w-auto overflow-hidden">
+                        <SelectValue placeholder="Urutkan Berdasarkan" />
+                      </SelectTrigger>
+                      <SelectContent ref={(ref) => {
+                        if (!ref) return;
+                        ref.ontouchstart = (e) => {
+                          e.preventDefault();
+                        }
+                      }}>
+                        <SelectGroup>
+                          <SelectLabel>Urutkan Berdasarkan</SelectLabel>
+                          <SelectItem value="0">Pendapatan Tertinggi</SelectItem>
+                          <SelectItem value="1">Pendapatan Terendah</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                </div>
+                  )
+                }
               </div>
               <div className="h-96 py-8">
-                {revenueData && (
+                {revenueData && (selectedReportMode === reportMode[0].label) ? (
                   <RevenueChart data={revenueData} period={chartPeriod} />
+                ) : monthlyRevenueRank && (selectedReportMode === reportMode[1].label) && (
+                  <ScrollArea className='h-full border overflow-y-auto mx-4'>
+                    <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead>Rank</TableHead>
+                              <TableHead>Periode</TableHead>
+                              <TableHead>Pendapatan</TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {monthlyRevenueRank && Object.entries(monthlyRevenueRank).map(([month, revenue], index) => (
+                          <TableRow key={month}>
+                            <TableCell className="font-medium"><p className="line-clamp-2">{index + 1}</p></TableCell>
+                            <TableCell className="font-medium"><p className="line-clamp-2">{month}</p></TableCell>
+                            <TableCell>{currencyFormatter(revenue)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </ScrollArea>
                 )}
               </div>
             </div>

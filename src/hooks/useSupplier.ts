@@ -22,7 +22,7 @@ export const useSupplier = (callback?: Function) => {
   const apiUrl =
     'api/v1/suppliers' +
     (isTrash ? '/trash' : '') +
-    '/?columns=id,name,phone,email,address' +
+    '/?columns=id,category,name,phone,email,address' +
     `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
     (filter ? `&filter=${filter}` : '')
 

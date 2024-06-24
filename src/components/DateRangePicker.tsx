@@ -4,7 +4,15 @@ import { useEffect, useState, HTMLAttributes } from "react"
 import { CalendarIcon } from "@radix-ui/react-icons"
 import { addDays, format, subMonths, subYears } from "date-fns"
 import { DateRange } from "react-day-picker"
-
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -23,9 +31,31 @@ export function CalendarDateRangePicker({
     onChange,
 }: CalendarRangeProps) {
     const [date, setDate] = useState<DateRange | undefined>({
-        from: subMonths(new Date(), 1),
-        to: new Date(),
+      from: subMonths(new Date(), 12),
+      to: new Date(),
     })
+    const [calendarOpen, setCalendarOpen] = useState(false);
+    const [period, setPeriod] = useState<"lastMonth" | "lastYear" | undefined>("lastYear");
+
+    useEffect(() => {
+        setCalendarOpen(false);
+        switch (period) {
+            case "lastMonth":
+                setDate({
+                    from: subMonths(new Date(), 1),
+                    to: new Date(),
+                });
+                break;
+            case "lastYear":
+                setDate({
+                    from: subMonths(new Date(), 12),
+                    to: new Date(),
+                });
+                break;
+            default:
+                break;
+        }
+    }, [period])
 
     useEffect(() => {
         date && onChange(date)
@@ -33,7 +63,7 @@ export function CalendarDateRangePicker({
 
     return (
         <div className={cn("grid gap-2", className)}>
-            <Popover>
+              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         id="date"
@@ -59,6 +89,27 @@ export function CalendarDateRangePicker({
                     </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
+                    <div className="flex justify-center px-4 pt-4">
+                        <Select
+                            value={period}
+                            onValueChange={(value: "lastMonth" | "lastYear") => setPeriod(value)}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Pilih Periode" />
+                            </SelectTrigger>
+                            <SelectContent ref={(ref) => {
+                            if (!ref) return;
+                            ref.ontouchstart = (e) => {
+                                e.preventDefault();
+                            }
+                            }}>
+                                <SelectGroup>
+                                    <SelectLabel>Periode</SelectLabel>
+                                    <SelectItem value="lastMonth">Sebulan Terakhir</SelectItem>
+                                    <SelectItem value="lastYear">Setahun Terakhir</SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </div>
                     <Calendar
                         initialFocus
                         mode="range"

@@ -45,7 +45,7 @@ export function SupplierCombobox({ value, onSelect, disabled = false, hasReset =
     useEffect(() => {
         async function fetchSuppliers() {
             try {
-                const response = await axios.get('api/v1/suppliers?columns=id,name');
+                const response = await axios.get('api/v1/suppliers?columns=id,category,name');
 
                 setSuppliers(response.data.data)
             } catch (error) {
@@ -77,9 +77,11 @@ export function SupplierCombobox({ value, onSelect, disabled = false, hasReset =
                     >
                         <p className="truncate ...">
                             {value
-                                ? suppliers.find(
+                                ? `${suppliers.find(
                                     (supplier) => supplier.id === value
-                                )?.name
+                                )?.name} (${suppliers.find(
+                                    (supplier) => supplier.id === value
+                                )?.category})`
                                 : "Pilih supplier produk"}
                         </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -167,13 +169,13 @@ function SupplierList({
                             {suppliers.map((supplier) => (
                                 <CommandItem
                                     key={supplier.id}
-                                    value={supplier.name}
+                                    value={`${supplier.name} (${supplier.category})`}
                                     onSelect={() => {
                                         onSelect(supplier.id)
                                         setOpen(false)
                                     }}
                                 >
-                                    {supplier.name}
+                                    {`${supplier.name} (${supplier.category})`}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

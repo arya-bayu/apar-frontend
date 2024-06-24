@@ -22,6 +22,15 @@ export const supplierColumns: ColumnDef<ISupplier>[] = [
     ),
   },
   {
+    accessorKey: 'category',
+    meta: {
+      title: 'Kategori',
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Kategori" />
+    ),
+  },
+  {
     accessorKey: 'telepon',
     meta: {
       title: 'Telepon',
