@@ -1,6 +1,7 @@
 import { IImage } from './image'
 import { IInvoiceItem } from './invoiceItem'
 import { ICustomer } from './customer'
+import { IUser } from './user'
 
 export interface IInvoice {
   id: number
@@ -14,6 +15,7 @@ export interface IInvoice {
   description: string
   images: IImage[]
   customer: ICustomer
+  created_by: IUser
   invoice_items: IInvoiceItem[]
   created_at: string
   updated_at: string

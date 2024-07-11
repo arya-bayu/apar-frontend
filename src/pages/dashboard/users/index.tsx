@@ -46,9 +46,10 @@ const Users = () => {
 
   const handleGetAllId = async () => {
     try {
-      const response = await axios.get(`api/v1/users/?columns=id`)
+      const response = await axios.get(`api/v1/users/`)
 
-      return response.data.data
+      console.log(response.data.data.rows.filter((item: any) => item.deleted_at === null).map((item: any) => ({ id: item.id })))
+      return response.data.data.rows.filter((item: any) => item.deleted_at === null).map((item: any) => ({ id: item.id }))
     } catch (error) {
       toast({
         variant: 'destructive',
@@ -65,7 +66,7 @@ const Users = () => {
     let id = isUserArray(data) ? data.map(user => user.id) : data
 
     if (id.includes(String(authUser?.id)) || id.includes(authUser?.id)) {
-      router.push('dashboard/profile?deleteAccount')
+      router.push('/dashboard/profile?deleteAccount')
 
       if (id.length > 1) {
         id = id.filter(id => id !== String(authUser?.id))
@@ -195,7 +196,6 @@ const Users = () => {
               can,
               mutate,
               authUser,
-              handleGetAllId,
               handleDelete,
               handleUpdateRole,
             }}

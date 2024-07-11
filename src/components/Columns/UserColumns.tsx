@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
-import { ColumnDef, RowData } from '@tanstack/react-table'
+import { ColumnDef, Row, RowData } from '@tanstack/react-table'
 import { Role } from '@/enums/Role'
 import { DataTableColumnHeader } from '@/components/DataTableColumnHeader'
 import Shortcut from '@/components/Shortcut'
@@ -33,6 +33,7 @@ import Shortcut from '@/components/Shortcut'
 import '@tanstack/react-table'
 import createSelectColumn from '@/components/Columns/ColumnHelpers/CreateSelectColumn'
 import { Dialog } from "@/components/ui/dialog"
+import { Badge } from "../ui/badge"
 
 declare module '@tanstack/table-core' {
   interface TableMeta<TData extends RowData> {
@@ -42,7 +43,6 @@ declare module '@tanstack/table-core' {
 }
 
 export const userColumns: ColumnDef<IUser>[] = [
-  createSelectColumn(),
   {
     accessorKey: 'name',
     meta: {
@@ -52,6 +52,12 @@ export const userColumns: ColumnDef<IUser>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Nama" />
     ),
+    cell: ({ row }) => {
+      const user = row.original
+      return (
+        <p style={{ opacity: user.deleted_at ? 0.5 : 1 }}>{user.name}</p>
+      )
+    }
   },
   {
     accessorKey: 'phone',
@@ -62,6 +68,12 @@ export const userColumns: ColumnDef<IUser>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Telepon" />
     ),
+    cell: ({ row }) => {
+      const user = row.original
+      return (
+        <p style={{ opacity: user.deleted_at ? 0.5 : 1 }}>{user.phone}</p>
+      )
+    }
   },
   {
     accessorKey: 'email',
@@ -70,6 +82,12 @@ export const userColumns: ColumnDef<IUser>[] = [
     },
     size: 180,
     header: 'Email',
+    cell: ({ row }) => {
+      const user = row.original
+      return (
+        <p style={{ opacity: user.deleted_at ? 0.5 : 1 }}>{user.email}</p>
+      )
+    }
   },
   {
     accessorKey: 'role',
@@ -90,7 +108,7 @@ export const userColumns: ColumnDef<IUser>[] = [
 
       return can('update roles') ? (
         <Select
-          disabled={user.id === authUser?.id}
+          disabled={user.id === authUser?.id || user.deleted_at != null}
           defaultValue={user.role}
           onValueChange={(newValue: Role) => {
             table.options.meta?.handleUpdateRole([user], newValue)
@@ -114,6 +132,26 @@ export const userColumns: ColumnDef<IUser>[] = [
         user.role
       )
     },
+  },
+  {
+    accessorKey: 'deleted_at',
+    meta: {
+      title: 'Status',
+    },
+    size: 180,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Status" />
+    ),
+    cell: ({ row }) => {
+      const user = row.original
+
+      return (
+        <div className={`min-w-20 flex items-center ${user.deleted_at ? 'opacity-50' : 'opacity-1'}`} title={user.deleted_at ? `Dihapus pada: ${new Date(user.deleted_at).toLocaleString()}` : user.created_at && `Dibuat pada: ${new Date(user.created_at).toLocaleString()}`}>
+          {user.deleted_at ? <span className="h-2 w-2 rounded-full bg-red-500 mr-2"></span> : <span className="h-2 w-2 rounded-full bg-green-500 mr-2"></span>}
+          <span>{user.deleted_at ? 'Dihapus' : 'Aktif'}</span>
+        </div>
+      )
+    }
   },
   {
     accessorKey: 'aksi',
@@ -169,7 +207,7 @@ export const userColumns: ColumnDef<IUser>[] = [
                   </DropdownMenuPortal>
                 </DropdownMenuSub>
               </DropdownMenuGroup>
-              {(authUser?.id === user.id || can('delete users')) && (
+              {(authUser?.id === user.id || can('delete users')) && (!user.deleted_at) && (
                 <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem

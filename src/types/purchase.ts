@@ -1,6 +1,7 @@
 import { ISupplier } from './supplier'
 import { IImage } from './image'
 import { IPurchaseItem } from './purchaseItem'
+import { IUser } from './user'
 
 export interface IPurchase {
   id: number
@@ -14,6 +15,7 @@ export interface IPurchase {
   description: string
   images: IImage[]
   supplier: ISupplier
+  created_by: IUser
   purchase_items: IPurchaseItem[]
   created_at: string
   updated_at: string

@@ -11,6 +11,7 @@ export interface IUser {
   permissions?: string[]
   email_verified_at?: string
   must_verify_email?: boolean
+  deleted_at?: string
   created_at?: string
   updated_at?: string
 }

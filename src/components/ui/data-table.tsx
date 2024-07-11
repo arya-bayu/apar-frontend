@@ -216,88 +216,114 @@ export function DataTable<TData, TValue>({
           <ContextMenuTrigger
             disabled={data?.totalRowCount <= 0 || disabledContextMenu}
           >
-            <div
-              className={`${Object.keys(rowSelection).length === 0
-                ? 'bg-inherit dark:bg-inherit'
-                : 'bg-zinc-950 dark:bg-zinc-50'
-                } flex h-16 w-full items-center justify-between rounded-t-md border-b border-zinc-200 px-4 dark:border-zinc-700`}
-            >
+
+            {table?.options?.meta?.handleGetAllId && (
               <div
-                className={`flex-1 text-sm ${Object.keys(rowSelection).length === 0
-                  ? 'text-zinc-950 dark:text-zinc-50'
-                  : 'font-medium text-zinc-50 dark:text-zinc-950'
-                  }`}
+                className={`${Object.keys(rowSelection).length === 0
+                  ? 'bg-inherit dark:bg-inherit'
+                  : 'bg-zinc-950 dark:bg-zinc-50'
+                  } flex h-16 w-full items-center justify-between rounded-t-md border-b border-zinc-200 px-4 dark:border-zinc-700`}
               >
-                {Object.keys(table.getState().rowSelection).length} /{' '}
-                {data?.totalRowCount ?? 0} data dipilih
-              </div>
-              <div className="flex justify-end space-x-2">
-                {!isTrash &&
-                  Object.keys(rowSelection).length > 0 &&
-                  table.options?.meta?.handleExportData && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="secondary"
-                          size="expandableIcon"
-                          className="ml-auto md:gap-2 md:px-4"
-                        >
-                          <FileDown size={16} />
-                          <span className="hidden md:block">
-                            Ekspor{' '}
-                            {Object.keys(rowSelection).length === 0 ||
-                              Object.keys(rowSelection).length ===
-                              data?.totalRowCount
-                              ? 'Seluruh'
-                              : Object.keys(rowSelection).length}{' '}
-                            Data
-                          </span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-24">
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (
-                              table.options?.meta?.handleExportData(
-                                'CSV',
-                                Object.keys(rowSelection).length === 0 ||
-                                  Object.keys(rowSelection).length ===
-                                  data?.totalRowCount
-                                  ? undefined
-                                  : Object.keys(rowSelection),
+                <div
+                  className={`flex-1 text-sm ${Object.keys(rowSelection).length === 0
+                    ? 'text-zinc-950 dark:text-zinc-50'
+                    : 'font-medium text-zinc-50 dark:text-zinc-950'
+                    }`}
+                >
+                  {Object.keys(table.getState().rowSelection).length} /{' '}
+                  {data?.totalRowCount ?? 0} data dipilih
+                </div>
+                <div className="flex justify-end space-x-2">
+                  {!isTrash &&
+                    Object.keys(rowSelection).length > 0 &&
+                    table.options?.meta?.handleExportData && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="secondary"
+                            size="expandableIcon"
+                            className="ml-auto md:gap-2 md:px-4"
+                          >
+                            <FileDown size={16} />
+                            <span className="hidden md:block">
+                              Ekspor{' '}
+                              {Object.keys(rowSelection).length === 0 ||
+                                Object.keys(rowSelection).length ===
+                                data?.totalRowCount
+                                ? 'Seluruh'
+                                : Object.keys(rowSelection).length}{' '}
+                              Data
+                            </span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-24">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              if (
+                                table.options?.meta?.handleExportData(
+                                  'CSV',
+                                  Object.keys(rowSelection).length === 0 ||
+                                    Object.keys(rowSelection).length ===
+                                    data?.totalRowCount
+                                    ? undefined
+                                    : Object.keys(rowSelection),
+                                )
                               )
-                            )
-                              table.resetRowSelection()
-                          }}
-                        >
-                          CSV
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            if (
-                              table.options?.meta?.handleExportData(
-                                'XLSX',
-                                Object.keys(rowSelection),
+                                table.resetRowSelection()
+                            }}
+                          >
+                            CSV
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              if (
+                                table.options?.meta?.handleExportData(
+                                  'XLSX',
+                                  Object.keys(rowSelection),
+                                )
                               )
-                            )
-                              table.resetRowSelection()
-                          }}
-                        >
-                          XLSX
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                {Object.keys(rowSelection).length > 0 && (
-                  <>
-                    {(isTrash
-                      ? permissions?.forceDelete
-                      : permissions?.delete) && (
+                                table.resetRowSelection()
+                            }}
+                          >
+                            XLSX
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  {Object.keys(rowSelection).length > 0 && (
+                    <>
+                      {(isTrash
+                        ? permissions?.forceDelete
+                        : permissions?.delete) && (
+                          <Button
+                            disabled={isRestoring}
+                            onClick={() => {
+                              if (
+                                table.options?.meta?.handleDelete(
+                                  Object.keys(rowSelection).length === 1
+                                    ? [
+                                      table.getRow(Object.keys(rowSelection)[0])
+                                        .original,
+                                    ]
+                                    : Object.keys(rowSelection),
+                                )
+                              )
+                                table.resetRowSelection()
+                            }}
+                            variant="destructive"
+                            size="icon"
+                            className="ml-auto transition-none"
+                          >
+                            <Trash2 size={16} />
+                          </Button>
+                        )}
+                      {isTrash && permissions?.restore && (
                         <Button
                           disabled={isRestoring}
-                          onClick={() => {
-                            if (
-                              table.options?.meta?.handleDelete(
+                          onClick={async () => {
+                            setIsRestoring(true)
+                            try {
+                              await table.options?.meta?.handleRestore(
                                 Object.keys(rowSelection).length === 1
                                   ? [
                                     table.getRow(Object.keys(rowSelection)[0])
@@ -305,56 +331,33 @@ export function DataTable<TData, TValue>({
                                   ]
                                   : Object.keys(rowSelection),
                               )
-                            )
+                            } finally {
                               table.resetRowSelection()
+                              setIsRestoring(false)
+                            }
                           }}
-                          variant="destructive"
-                          size="icon"
-                          className="ml-auto transition-none"
+                          variant="secondary"
+                          size="expandableIcon"
+                          className="ml-auto md:gap-2 md:px-4"
                         >
-                          <Trash2 size={16} />
+                          {isRestoring ? (
+                            <>
+                              <LoadingSpinner size={16} />
+                              <span className="hidden md:block">Memulihkan</span>
+                            </>
+                          ) : (
+                            <>
+                              <DatabaseBackup size={16} />
+                              <span className="hidden md:block">Pulihkan Data</span>
+                            </>
+                          )}
                         </Button>
                       )}
-                    {isTrash && permissions?.restore && (
-                      <Button
-                        disabled={isRestoring}
-                        onClick={async () => {
-                          setIsRestoring(true)
-                          try {
-                            await table.options?.meta?.handleRestore(
-                              Object.keys(rowSelection).length === 1
-                                ? [
-                                  table.getRow(Object.keys(rowSelection)[0])
-                                    .original,
-                                ]
-                                : Object.keys(rowSelection),
-                            )
-                          } finally {
-                            table.resetRowSelection()
-                            setIsRestoring(false)
-                          }
-                        }}
-                        variant="secondary"
-                        size="expandableIcon"
-                        className="ml-auto md:gap-2 md:px-4"
-                      >
-                        {isRestoring ? (
-                          <>
-                            <LoadingSpinner size={16} />
-                            <span className="hidden md:block">Memulihkan</span>
-                          </>
-                        ) : (
-                          <>
-                            <DatabaseBackup size={16} />
-                            <span className="hidden md:block">Pulihkan Data</span>
-                          </>
-                        )}
-                      </Button>
-                    )}
-                  </>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map(headerGroup => (
@@ -461,14 +464,14 @@ export function DataTable<TData, TValue>({
                 )}
               </ContextMenuItem>
             )}
-            {!table.getIsAllPageRowsSelected() && (
+            {!table.getIsAllPageRowsSelected() && meta.handleGetAllId && (
               <ContextMenuItem
                 onClick={() => table.toggleAllPageRowsSelected(true)}
               >
                 Pilih semua data di halaman ini
               </ContextMenuItem>
             )}
-            {!(Object.keys(rowSelection).length === data?.totalRowCount) && (
+            {!(Object.keys(rowSelection).length === data?.totalRowCount) && meta.handleGetAllId && (
               <ContextMenuItem
                 onClick={async () => {
                   const data: { id: number }[] = await meta.handleGetAllId()

@@ -69,6 +69,7 @@ const Invoices = () => {
         `api/v1/invoices/?columns=id`,
       )
 
+      console.log(response.data.data)
       return response.data.data
     } catch (error) {
       toast({

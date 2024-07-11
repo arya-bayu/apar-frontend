@@ -77,11 +77,7 @@ export function SupplierCombobox({ value, onSelect, disabled = false, hasReset =
                     >
                         <p className="truncate ...">
                             {value
-                                ? `${suppliers.find(
-                                    (supplier) => supplier.id === value
-                                )?.name} (${suppliers.find(
-                                    (supplier) => supplier.id === value
-                                )?.category})`
+                                ? `${suppliers.find(supplier => supplier.id === value)?.name} ${suppliers.find(supplier => supplier.id === value)?.category || ''}`
                                 : "Pilih supplier produk"}
                         </p>
                         <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -169,13 +165,13 @@ function SupplierList({
                             {suppliers.map((supplier) => (
                                 <CommandItem
                                     key={supplier.id}
-                                    value={`${supplier.name} (${supplier.category})`}
+                                    value={`${supplier.name} ${supplier.category && `(${supplier.category})`}`}
                                     onSelect={() => {
                                         onSelect(supplier.id)
                                         setOpen(false)
                                     }}
                                 >
-                                    {`${supplier.name} (${supplier.category})`}
+                                    {`${supplier.name} ${supplier.category && `(${supplier.category})`}`}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

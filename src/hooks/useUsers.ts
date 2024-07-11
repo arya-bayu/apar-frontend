@@ -20,8 +20,7 @@ export const useUsers = (callback?: Function) => {
 
   const apiUrl =
     'api/v1/users' +
-    '/?columns=id,name,phone,email' +
-    `&pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
+    `?pageIndex=${pageIndex + 1}&pageSize=${pageSize}` +
     (filter ? `&filter=${filter}` : '')
 
   const {

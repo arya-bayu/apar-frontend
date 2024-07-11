@@ -70,6 +70,19 @@ export const invoiceColumns: ColumnDef<IInvoice>[] = [
     }
   },
   {
+    accessorKey: 'created_by',
+    meta: {
+      title: 'Dibuat Oleh',
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Dibuat Oleh" />
+    ),
+    cell: ({ row }) => {
+      const invoice = row.original
+      return invoice?.created_by?.name
+    }
+  },
+  {
     accessorKey: 'status',
     meta: {
       title: 'Status',

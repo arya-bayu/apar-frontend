@@ -227,7 +227,7 @@ export default function ProductDialog({
     formData.append('serial_number', values.serial_number);
     formData.append('description', values.description);
     formData.append('price', String(values.price));
-    { values.expiry_period && formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period && values.expiry_period * 12)) };
+    { values.expiry_period && values.expiry_period > 0 && formData.append('expiry_period', String(selectedPeriod === 'Bulan' ? values.expiry_period : values.expiry_period && values.expiry_period * 12)) };
     formData.append('unit_id', String(values.unitId));
     formData.append('supplier_id', String(values.supplierId));
     formData.append('category_id', String(values.categoryId));

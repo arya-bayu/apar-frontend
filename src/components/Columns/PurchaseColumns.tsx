@@ -68,6 +68,19 @@ export const purchaseColumns: ColumnDef<IPurchase>[] = [
     }
   },
   {
+    accessorKey: 'created_by',
+    meta: {
+      title: 'Dibuat Oleh',
+    },
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Dibuat Oleh" />
+    ),
+    cell: ({ row }) => {
+      const purchase = row.original
+      return purchase?.created_by?.name
+    }
+  },
+  {
     accessorKey: 'status',
     meta: {
       title: 'Status',
